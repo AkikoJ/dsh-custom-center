@@ -1,0 +1,6 @@
+# Bundle patch for the dsh-custom-center plugin. Install the linked checkout with:
+#   dsh plugin --profile web add link:$(pwd)
+# The row id is the loader entry id; the name must equal this package's name.
+- insert:
+    - id: ui-custom-center
+      name: dsh-custom-center

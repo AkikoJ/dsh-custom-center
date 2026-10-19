@@ -1,0 +1,4 @@
+# Standalone plugin project settings (pnpm 11 reads these here).
+# The DSH host supplies the runtime peer; never install a second copy into this
+# tree.
+autoInstallPeers: false
