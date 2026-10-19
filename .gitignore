@@ -1,6 +1,39 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build output
 lib/
-coverage/
-.DS_Store
-*.log
+dist/
 *.tsbuildinfo
+
+# Test output
+coverage/
+.vitest/
+
+# Caches
+.cache/
+.turbo/
+.vite/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment (keep the example file)
+.env
+.env.*
+!.env.example
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*~
