@@ -187,5 +187,4 @@ pnpm watch       # rebuild bundles while developing
   service types, so `src/client/dsh-env.ts` declares narrow structural faces
   and augments `SlotMap` with `settings.section`. Replace these with real
   imports if the public SDK widens.
-- License: `UNLICENSED` (private project). Choose and add a license before
-  publishing.
+- License: [MIT](LICENSE).

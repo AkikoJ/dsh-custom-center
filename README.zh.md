@@ -154,4 +154,4 @@ pnpm watch       # 开发时监听重建
 - 当前安装的 SDK 未发布 renderer 的 `SlotRegistry` 和 theme 服务类型，因此
   `src/client/dsh-env.ts` 声明了精简的结构化接口，并把 `settings.section` 增强
   进 `SlotMap`。若未来公共 SDK 扩展，可替换为真实导入。
-- 许可证：`UNLICENSED`（私有项目）。发布前请选择并添加许可证。
+- 许可证：[MIT](LICENSE)。

@@ -68,7 +68,8 @@
     "icon.svg",
     "cordis.patch.yml",
     "README.md",
-    "README.zh.md"
+    "README.zh.md",
+    "LICENSE"
   ],
-  "license": "UNLICENSED"
+  "license": "MIT"
 }
