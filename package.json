@@ -2,10 +2,11 @@
   "name": "dsh-custom-center",
   "version": "0.1.0",
   "private": true,
-  "description": "Standalone DSH Web GUI plugin scaffold for a customization center.",
+  "description": "个性化中心：在设置里新增独立的侧边栏页面，提供自定义图片 / 视频壁纸，以及模型上下文窗口与自动压缩阈值设置。",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
+  "icon": "./icon.svg",
   "exports": {
     ".": {
       "types": "./lib/types/index.d.ts",
@@ -15,6 +16,7 @@
       "types": "./lib/types/client/index.d.ts",
       "default": "./lib/client.js"
     },
+    "./icon": "./icon.svg",
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
@@ -26,8 +28,15 @@
       "patch": "./cordis.patch.yml"
     },
     "client": {
-      "inject": [],
-      "platform": "web"
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
     }
   },
   "scripts": {
@@ -45,6 +54,7 @@
     "@deepseek-ai/cordis": "^4.0.5",
     "@deepseek-ai/dsh-client-ui-slots": "^0.2.1-rc.2",
     "@deepseek-ai/schemastery": "^3.18.5",
+    "@types/node": "22.20.5",
     "@types/react": "~18.3.1",
     "@types/react-dom": "^18.3.5",
     "react": "^18.3.1",
@@ -55,6 +65,7 @@
   },
   "files": [
     "lib",
+    "icon.svg",
     "cordis.patch.yml",
     "README.md",
     "README.zh.md"
