@@ -41,7 +41,7 @@ navigation (alongside General, Models, Plugins, ...).
   DSH. A scope dropdown picks which models the window is written to: one
   model, every model of a provider, or all editable models at once. The host
   enumerates them through `llm.listProviders` / `llm.listModels`; the browser
-  never sends a list of ids. **Restore recommended** fills in 256k maximum context, a 32768 output
+  never sends a list of ids. **Restore recommended** fills in 272k maximum context, a 32768 output
   reserve, a 0.8 threshold ratio and 16384 headroom (not yet saved).
 
 The palette engine keeps WCAG contrast against the skin's own surface by

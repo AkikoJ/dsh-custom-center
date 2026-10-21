@@ -24,11 +24,11 @@ export const COMPACTION_DEFAULTS = Object.freeze({
 /**
  * Values the tab applies for "restore recommended". They differ from
  * `COMPACTION_DEFAULTS` on purpose: the plugin default headroom (65 536)
- * leaves a 256k window compacting at about 62%, while 16 384 lets the 0.8
- * ratio decide, so compaction starts at 80% of the window.
+ * leaves a 272k window compacting at about 64%, while 16 384 lets the 0.8
+ * ratio decide, so compaction starts at 80% of the window (217 600 tokens).
  */
 export const RECOMMENDED = Object.freeze({
-  contextWindow: 256_000,
+  contextWindow: 272_000,
   maxTokens: 32_768,
   auto: true,
   thresholdRatio: 0.8,

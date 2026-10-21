@@ -384,7 +384,7 @@ export function TuningPanel(): JSX.Element {
             <Row label="应用范围" hint={scopeNote}>
               <Select ariaLabel="应用范围" value={targetKey} onChange={chooseTarget} options={targetOptions} />
             </Row>
-            <Row label="最大上下文" hint="模型一次可接收的内容量，推荐 256000" htmlFor="dsh-cc-window">
+            <Row label="最大上下文" hint={`模型一次可接收的内容量，推荐 ${RECOMMENDED.contextWindow}`} htmlFor="dsh-cc-window">
               <NumberField
                 id="dsh-cc-window"
                 unit="tokens"
@@ -398,7 +398,7 @@ export function TuningPanel(): JSX.Element {
                 }}
               />
             </Row>
-            <Row label="输出预留" hint="为模型回复预留的空间，推荐 32768" htmlFor="dsh-cc-reserve">
+            <Row label="输出预留" hint={`为模型回复预留的空间，推荐 ${RECOMMENDED.maxTokens}`} htmlFor="dsh-cc-reserve">
               <NumberField
                 id="dsh-cc-reserve"
                 unit="tokens"
@@ -454,7 +454,7 @@ export function TuningPanel(): JSX.Element {
           </Row>
           {preset?.error !== undefined && <p className="dsh-cc-warn">{preset.error}</p>}
           {preset?.broken !== undefined && <p className="dsh-cc-warn">该 preset 激活失败：{preset.broken}</p>}
-          <Row label="压缩阈值" hint="用量达到最大上下文的该比例时压缩，推荐 0.8" htmlFor="dsh-cc-ratio">
+          <Row label="压缩阈值" hint={`用量达到最大上下文的该比例时压缩，推荐 ${RECOMMENDED.thresholdRatio}`} htmlFor="dsh-cc-ratio">
             <NumberField
               id="dsh-cc-ratio"
               min={0.05}
@@ -468,7 +468,7 @@ export function TuningPanel(): JSX.Element {
               }}
             />
           </Row>
-          <Row label="压缩余量" hint="距上限至少留出的空间，推荐 16384" htmlFor="dsh-cc-headroom">
+          <Row label="压缩余量" hint={`距上限至少留出的空间，推荐 ${RECOMMENDED.headroomTokens}`} htmlFor="dsh-cc-headroom">
             <NumberField
               id="dsh-cc-headroom"
               unit="tokens"
@@ -498,7 +498,7 @@ export function TuningPanel(): JSX.Element {
             />
           </Row>
           {retentionMode === 'ratio' ? (
-            <Row label="保留比例" hint="占（最大上下文 − 输出预留）的比例，推荐 0.16" htmlFor="dsh-cc-retain">
+            <Row label="保留比例" hint={`占（最大上下文 − 输出预留）的比例，推荐 ${RECOMMENDED.retainRatio}`} htmlFor="dsh-cc-retain">
               <NumberField
                 id="dsh-cc-retain"
                 min={0.01}

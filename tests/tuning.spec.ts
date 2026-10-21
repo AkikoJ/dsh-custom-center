@@ -256,15 +256,15 @@ describe('model route config', () => {
 })
 
 describe('recommended values', () => {
-  it('compact at the ratio on a 256k window and leave a message budget', () => {
+  it('compact at the ratio on a 272k window and leave a message budget', () => {
     const result = computeCompaction(RECOMMENDED.contextWindow, RECOMMENDED.maxTokens, {
       auto: RECOMMENDED.auto,
       thresholdRatio: RECOMMENDED.thresholdRatio,
       headroomTokens: RECOMMENDED.headroomTokens,
       retainRatio: RECOMMENDED.retainRatio,
     })
-    expect(result.thresholdTokens).toBe(204_800)
-    expect(result.retainTokens).toBe(35_717)
+    expect(result.thresholdTokens).toBe(217_600)
+    expect(result.retainTokens).toBe(38_277)
   })
 })
 
