@@ -2,12 +2,12 @@
 
 [English](README.md)
 
-一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增一个独立的「个性化中心」
-页面，用来给 DeepSeek Harness 界面换肤：配色自动跟随画面主色调的自定义
-图片 / 视频壁纸。
+一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增两个独立页面：「外观」和
+「上下文与压缩」。前者用自定义图片 / 视频壁纸给 DeepSeek Harness 界面换肤，
+配色自动跟随画面主色调；后者设置模型上下文窗口与自动压缩阈值。
 
-与「通用设置」里插入一行不同，本插件注册自己的一级 `settings.section` 条目，
-因此它作为一个独立页面出现在设置导航中（和通用、模型、插件等并列）。
+与「通用设置」里插入一行不同，本插件注册自己的两个一级 `settings.section` 条目，
+因此它们作为两个独立页面出现在设置导航中（和通用、模型、插件等并列）。
 
 ## 功能
 
@@ -25,7 +25,7 @@
   界面，之后的所有更改立即生效但不保存；点「保存」才会持久化，点「退出预览」
   回到已保存的样子，点「撤销更改」同时丢弃草稿。
 - **恢复默认** — 页面底部的按钮，清除壁纸、配色和所有已保存的设置。
-- **上下文与压缩标签页** — 页面顶部新增「上下文与压缩」标签。读取当前默认模型的最大上下文与输出预留，并可为每个 agent preset 调整自动压缩阈值、压缩余量、近期保留方式（窗口比例或固定 tokens）与自动压缩开关。保存会通过 `configEditor` 写入当前 profile 的 `cordis.patch.yml` 并由 Loader 热应用；页面用与 DSH 相同的公式预览触发阈值与逐字保留预算。「应用范围」下拉框可选择单个模型、某个 provider 的全部模型，或一次应用到全部可编辑模型；模型列表由宿主通过 `llm.listProviders` / `llm.listModels` 枚举，浏览器不会提交模型 id 列表。「恢复推荐值」会填入最大上下文 272k、输出预留 32768、压缩阈值 0.8、压缩余量 16384（仍需保存）。
+- **上下文与压缩页面** — 与「外观」并列的设置页。读取当前默认模型的最大上下文与输出预留，并可为每个 agent preset 调整自动压缩阈值、压缩余量、近期保留方式（窗口比例或固定 tokens）与自动压缩开关。保存会通过 `configEditor` 写入当前 profile 的 `cordis.patch.yml` 并由 Loader 热应用；页面用与 DSH 相同的公式预览触发阈值与逐字保留预算。「应用范围」下拉框可选择单个模型、某个 provider 的全部模型，或一次应用到全部可编辑模型；模型列表由宿主通过 `llm.listProviders` / `llm.listModels` 枚举，浏览器不会提交模型 id 列表。「恢复推荐值」会填入最大上下文 272k、输出预留 32768、压缩阈值 0.8、压缩余量 16384（仍需保存）。
 
 配色引擎在构造上保证对皮肤自身表面的 WCAG 对比度（文字、强调色、焦点色均经
 对比度校正）。
@@ -48,11 +48,11 @@
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
 | Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center` |
 | Host 半区 | `src/index.ts`：`Config.enabled` 设置页 + 壁纸库路由（`src/host/library.ts`）+ 上下文/压缩路由（`src/host/tuning.ts`） |
-| 浏览器半区 | `src/client/index.ts`：注册 `settings.section` 页面 |
+| 浏览器半区 | `src/client/index.ts`：注册两个 `settings.section` 页面（外观、上下文与压缩） |
 | 共享逻辑 | `src/core/*`（配色、皮肤、取色、壁纸库规则）及其单测 |
 | 构建 | `tsc` 声明 + `tsdown` host/client 产物 |
 
-浏览器半区注册到 `settings.section` 插槽（带独立导航条目的完整设置页），
+浏览器半区注册到 `settings.section` 插槽（两个带独立导航条目的完整设置页），
 而不是 `settings.general.item`。
 
 ## 目录结构
@@ -72,8 +72,9 @@ dsh-custom-center/
       dsh-env.ts            # 精简的 DSH 服务类型 + SlotMap 增强
       controller.ts         # 命令式皮肤引擎（token、壁纸、持久化）
       wallpaper.ts          # DOM/localStorage/IndexedDB + 图片/视频解码
-      CustomCenterPage.tsx  # 设置页（React 视图，含「外观 / 上下文与压缩」标签）
-      TuningPanel.tsx       # 上下文与压缩标签的表单
+      AppearancePage.tsx    # 外观页（壁纸、遮罩、预览与保存）
+      TuningPage.tsx        # 上下文与压缩页（页头 + 表单）
+      TuningPanel.tsx       # 上下文与压缩表单
       Select.tsx            # 自绘下拉框（替代原生 select）
       LibraryPicker.tsx     # 图片/视频标签、上传、缩略图
       library.ts            # 壁纸库路由的浏览器端客户端
@@ -101,8 +102,9 @@ dsh plugin --profile web add link:$(pwd)
 # 完成后刷新 DSH Web 界面
 ```
 
-刷新后打开「设置」，侧边栏会出现「个性化中心」条目。点「选择图片 / 视频」设置壁纸，
-先「预览」（预览中所有更改立即生效），满意再「保存」；「恢复默认」会清除全部设置。
+刷新后打开「设置」，侧边栏会出现「外观」和「上下文与压缩」两个条目。在「外观」里点
+「选择图片 / 视频」设置壁纸，先「预览」（预览中所有更改立即生效），满意再「保存」；
+「恢复默认」会清除全部设置。在「上下文与压缩」里调整模型窗口与压缩参数后点「保存」。
 
 卸载：
 

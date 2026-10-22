@@ -81,12 +81,6 @@ const CSS_TEXT = [
   '.dsh-cc-btn-active{border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 1px var(--dsw-alias-brand-primary) inset}',
   '.dsh-cc-btn-primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsh-cc-on-accent,#fff)}',
   '.dsh-cc-btn-primary:hover:not(:disabled){background:var(--dsw-alias-brand-primary);filter:brightness(1.08)}',
-  // page tabs
-  '.dsh-cc-tabbar{display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--dsw-alias-border-l2)}',
-  '.dsh-cc-tabbtn{margin-bottom:-1px;padding:8px 14px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:13px;line-height:20px;cursor:pointer}',
-  '.dsh-cc-tabbtn:hover{color:var(--dsw-alias-label-primary)}',
-  '.dsh-cc-tabbtn:focus-visible{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:1px}',
-  '.dsh-cc-tabbtn-active{color:var(--dsw-alias-label-primary);border-bottom-color:var(--dsw-alias-brand-primary);font-weight:600}',
   // themed dropdown
   '.dsh-cc-select{position:relative;min-width:0}',
   '.dsh-cc-select-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;box-sizing:border-box;width:100%;height:34px;padding:0 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-layer-2,var(--dsw-alias-bg-layer-1));color:var(--dsw-alias-label-primary);font:inherit;font-size:13px;line-height:20px;text-align:left;cursor:pointer}',

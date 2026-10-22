@@ -1,31 +1,30 @@
 /**
- * The Customization Center settings page.
+ * The Appearance settings page.
  *
- * Rendered inside its own `settings.section` nav entry (not inside General).
- * It is a thin view over the imperative {@link SkinController}: it subscribes
- * to the controller snapshot with `useSyncExternalStore` and calls actions on
- * click. File decoding is delegated to the wallpaper runtime.
+ * Rendered inside its own `settings.section` nav entry (not inside General),
+ * next to the context / compaction page. It is a thin view over the imperative
+ * {@link SkinController}: it subscribes to the controller snapshot with
+ * `useSyncExternalStore` and calls actions on click. File decoding is
+ * delegated to the wallpaper runtime.
  */
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import type { SkinController } from "./controller.ts";
 import { LibraryPicker } from "./LibraryPicker.tsx";
-import { TuningPanel } from "./TuningPanel.tsx";
 import type { SectionProps } from "./dsh-env.ts";
 
 /** Props: the composed slot props plus the shared controller. */
-export type CustomCenterPageProps = SectionProps & {
+export type AppearancePageProps = SectionProps & {
   controller: SkinController;
 };
 
-/** The settings-section page component. */
-export function CustomCenterPage(props: CustomCenterPageProps): JSX.Element {
+/** The wallpaper / appearance settings page. */
+export function AppearancePage(props: AppearancePageProps): JSX.Element {
   const { controller } = props;
   const snap = useSyncExternalStore(
     useCallback((cb: () => void) => controller.subscribe(cb), [controller]),
     () => controller.getSnapshot(),
   );
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [tab, setTab] = useState<"appearance" | "tuning">("appearance");
   // left and right veil move together; starts on when they already match
   const [linked, setLinked] = useState(snap.sideOpacity === snap.bgOpacity);
   const hasWallpaper = snap.kind !== "none";
@@ -65,37 +64,12 @@ export function CustomCenterPage(props: CustomCenterPageProps): JSX.Element {
   return (
     <div className="dsh-cc-page">
       <header className="dsh-cc-header">
-        <h2 className="dsh-cc-heading">个性化中心</h2>
+        <h2 className="dsh-cc-heading">外观</h2>
         <p className="dsh-cc-intro">
-          {tab === "appearance"
-            ? "用你自己的图片 / 视频作为壁纸，为 DeepSeek Harness 界面换肤，配色自动跟随画面主色调。"
-            : "设置当前模型的最大上下文与每个 agent preset 的自动压缩阈值；保存后写入当前 profile，最大上下文下一次请求起生效，压缩设置对之后新建的会话生效。"}
+          用你自己的图片 / 视频作为壁纸，为 DeepSeek Harness 界面换肤，配色自动跟随画面主色调。
         </p>
       </header>
 
-      <div className="dsh-cc-tabbar" role="tablist" aria-label="个性化中心">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "appearance"}
-          className={`dsh-cc-tabbtn${tab === "appearance" ? " dsh-cc-tabbtn-active" : ""}`}
-          onClick={() => setTab("appearance")}
-        >
-          外观
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "tuning"}
-          className={`dsh-cc-tabbtn${tab === "tuning" ? " dsh-cc-tabbtn-active" : ""}`}
-          onClick={() => setTab("tuning")}
-        >
-          上下文与压缩
-        </button>
-      </div>
-
-      {tab === "tuning" ? <TuningPanel /> : (
-      <>
       <section className="dsh-cc-section">
         <h3 className="dsh-cc-section-title">壁纸</h3>
         <button
@@ -280,8 +254,6 @@ export function CustomCenterPage(props: CustomCenterPageProps): JSX.Element {
           </button>
         </div>
       </div>
-      </>
-      )}
     </div>
   );
 }

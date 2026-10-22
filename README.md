@@ -2,13 +2,14 @@
 
 [中文](README.zh.md)
 
-A standalone **DSH Web GUI plugin** that adds a dedicated **Customization
-Center** page to the Settings sidebar. It reskins the DeepSeek Harness UI with
-a custom image/video wallpaper whose palette is sampled
-from the picture.
+A standalone **DSH Web GUI plugin** that adds two dedicated pages to the
+Settings sidebar: **Appearance** and **Context & Compaction**. Appearance
+reskins the DeepSeek Harness UI with a custom image/video wallpaper whose
+palette is sampled from the picture; Context & Compaction sets the model
+context window and the automatic compaction policy.
 
-Unlike a General-settings row, the center registers its own first-level
-`settings.section` entry, so it appears as a separate page in the settings
+Unlike a General-settings row, the plugin registers its own two first-level
+`settings.section` entries, so they appear as separate pages in the settings
 navigation (alongside General, Models, Plugins, ...).
 
 ## Features
@@ -32,7 +33,7 @@ navigation (alongside General, Models, Plugins, ...).
   the draft.
 - **Restore default** — a button at the bottom of the page that clears the
   wallpaper, palette and every stored setting.
-- **Context and compaction tab** — a second tab at the top of the page. It reads
+- **Context and compaction page** — a settings page next to Appearance. It reads
   the current default model's maximum context and output reserve and lets you
   tune each agent preset's automatic compaction: threshold ratio, headroom,
   retention mode (window fraction or fixed tokens) and the auto switch. Saving
@@ -70,12 +71,12 @@ Legibility over a photo is checked rather than assumed:
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
 | Loader row | `ui-custom-center` -> package `dsh-custom-center` |
 | Host half | `src/index.ts`: `Config.enabled` settings page plus the wallpaper library routes (`src/host/library.ts`) and the context/compaction routes (`src/host/tuning.ts`) |
-| Browser half | `src/client/index.ts`: registers a `settings.section` page |
+| Browser half | `src/client/index.ts`: registers two `settings.section` pages (Appearance, Context & Compaction) |
 | Shared logic | `src/core/*` (colour, palette, sampling, library rules) with unit tests |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
 
-The browser half registers into the `settings.section` slot (a full settings
-page with its own nav entry), not `settings.general.item`.
+The browser half registers into the `settings.section` slot (two full settings
+pages, each with its own nav entry), not `settings.general.item`.
 
 ## Layout
 
@@ -94,7 +95,8 @@ dsh-custom-center/
       dsh-env.ts            # narrow DSH service typings + SlotMap augmentation
       controller.ts         # imperative skin engine (tokens, wallpaper, persistence)
       wallpaper.ts          # DOM/localStorage/IndexedDB + image/video decode
-      CustomCenterPage.tsx  # the settings page (React view, appearance and tuning tabs)
+      AppearancePage.tsx    # appearance page (wallpaper, veils, preview/save)
+      TuningPage.tsx        # context/compaction page (frame + form)
       TuningPanel.tsx       # context/compaction form
       Select.tsx            # themed dropdown (replaces native select)
       LibraryPicker.tsx     # image/video tabs, upload, thumbnails
@@ -124,9 +126,11 @@ dsh plugin --profile web add link:$(pwd)
 # refresh the DSH Web GUI afterwards
 ```
 
-After the refresh, open Settings — a **Customization Center** entry appears in
-the sidebar. Choose an image/video wallpaper, press Preview to try it (changes apply live), then Save to keep it.
-Restore default clears everything.
+After the refresh, open Settings — **Appearance** and **Context & Compaction**
+entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
+press Preview to try it (changes apply live), then Save to keep it; Restore
+default clears everything. In Context & Compaction, adjust the model window and
+compaction values, then press Save.
 
 Remove it again:
 

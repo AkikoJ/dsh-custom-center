@@ -2,7 +2,7 @@
   "name": "dsh-custom-center",
   "version": "0.1.0",
   "private": true,
-  "description": "个性化中心：在设置里新增独立的侧边栏页面，提供自定义图片 / 视频壁纸，以及模型上下文窗口与自动压缩阈值设置。",
+  "description": "个性化中心：在设置侧边栏新增「外观」和「上下文与压缩」两个独立页面，提供自定义图片 / 视频壁纸，以及模型上下文窗口与自动压缩阈值设置。",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",

@@ -2,9 +2,10 @@
  * Browser-half entry for dsh-custom-center.
  *
  * The DSH Web GUI loads this half through `window.__ModuleLoader__` from
- * `/plugins/ui-custom-center/client.js`. It registers a dedicated
- * `settings.section` page (its OWN entry in the Settings sidebar, NOT a row in
- * General), backed by the skin controller ported from dsh-client-ui-skins.
+ * `/plugins/ui-custom-center/client.js`. It registers TWO dedicated
+ * `settings.section` pages, each its OWN entry in the Settings sidebar (NOT a
+ * row in General): 外观 (wallpaper and skin, backed by the skin controller
+ * ported from dsh-client-ui-skins) and 上下文与压缩 (backed by the tuning form).
  *
  * The wallpaper library (list / upload / file) is served by the host half over
  * loopback-only routes; no source patch. Wallpapers never leave the machine
@@ -15,32 +16,41 @@ import type { Context } from '@deepseek-ai/cordis'
 import type { ClientCtx } from './dsh-env.ts'
 import { ensureStyle } from './styles.ts'
 import { createController } from './controller.ts'
-import { CustomCenterPage } from './CustomCenterPage.tsx'
+import { AppearancePage } from './AppearancePage.tsx'
+import { TuningPage } from './TuningPage.tsx'
 
 /** Browser services this plugin requires before activation. */
 export const inject = ['slots', 'theme']
 
-/** Settings-nav marker so bundled CSS could later reskin this row's icon. */
+/** Settings-nav marker so bundled CSS could later reskin these rows' icons. */
 const NAV_MARKER = 'data-dsh-custom-center-nav'
 
+/** The pages this plugin contributes, in Settings-sidebar order. */
+const NAV_SECTIONS = [
+  { id: 'custom-center-appearance', label: '外观', marker: 'appearance', order: 40 },
+  { id: 'custom-center-tuning', label: '上下文与压缩', marker: 'tuning', order: 41 },
+] as const
+
 /**
- * Keep {@link NAV_MARKER} on the settings-nav button whose visible text is this
- * plugin's nav label. DSH 0.1.x/0.2.x projects only id/order/label
- * from a `settings.section` registration and picks icons from a closed built-in
- * list, so the plugin can only mark its own row after the dialog mounts. The
- * marker owns no shell structure and is removed on disposal (HMR-safe).
- * @param label - nav label resolver.
+ * Keep {@link NAV_MARKER} on the settings-nav buttons this plugin owns, keyed by
+ * their visible label. DSH 0.1.x/0.2.x projects only id/order/label from a
+ * `settings.section` registration and picks icons from a closed built-in list,
+ * so the plugin can only mark its own rows after the dialog mounts. The marker
+ * owns no shell structure and is removed on disposal (HMR-safe).
  * @returns disposer that disconnects observation and clears owned markers.
  */
-function registerNavMarker(label: () => string): () => void {
+function registerNavMarker(): () => void {
   let disposed = false
   let frame: number | null = null
+  const markers = new Map<string, string>(
+    NAV_SECTIONS.map((section) => [section.label, section.marker]),
+  )
   const sync = (): void => {
     if (disposed) return
-    const current = label().trim()
     const buttons = document.querySelectorAll('[role="dialog"] nav button')
     for (const button of buttons) {
-      if (current.length > 0 && button.textContent?.trim() === current) button.setAttribute(NAV_MARKER, '')
+      const marker = markers.get(button.textContent?.trim() ?? '')
+      if (marker !== undefined) button.setAttribute(NAV_MARKER, marker)
       else button.removeAttribute(NAV_MARKER)
     }
   }
@@ -74,24 +84,39 @@ export function apply(rawCtx: Context): void {
 
   const controller = createController(theme, (handler) => ctx.on('theme/change', handler))
 
-  // The plugin is Chinese-only, so the nav label is a constant.
-  const navLabel = (): string => '个性化'
+  // The plugin is Chinese-only, so the nav labels are constants.
+  const [appearance, tuning] = NAV_SECTIONS
 
-  ctx.effect(() => registerNavMarker(navLabel), 'dsh-custom-center: settings nav marker')
+  ctx.effect(() => registerNavMarker(), 'dsh-custom-center: settings nav markers')
   ctx.effect(
     () =>
       ctx.slots.inject('settings.section', () =>
         ctx.slots.register(
           {
             name: 'settings.section',
-            id: 'custom-center',
-            order: 40,
-            label: () => navLabel(),
+            id: appearance.id,
+            order: appearance.order,
+            label: () => appearance.label,
           },
-          (props) => createElement(CustomCenterPage, { ...props, controller }),
+          (props) => createElement(AppearancePage, { ...props, controller }),
         ),
       ),
-    'dsh-custom-center: settings section',
+    'dsh-custom-center: appearance settings section',
+  )
+  ctx.effect(
+    () =>
+      ctx.slots.inject('settings.section', () =>
+        ctx.slots.register(
+          {
+            name: 'settings.section',
+            id: tuning.id,
+            order: tuning.order,
+            label: () => tuning.label,
+          },
+          () => createElement(TuningPage),
+        ),
+      ),
+    'dsh-custom-center: tuning settings section',
   )
   ctx.effect(() => () => controller.dispose(), 'dsh-custom-center: controller lifecycle')
 }
