@@ -8,11 +8,14 @@
 export interface CustomCenterConfig {
   /** Master switch for the customization center. */
   enabled: boolean
+  /** Skills management page. */
+  skills: boolean
 }
 
 /** Defaults applied when the profile row carries no explicit value. */
 export const DEFAULT_CUSTOM_CENTER_CONFIG: Readonly<CustomCenterConfig> = Object.freeze({
   enabled: true,
+  skills: true,
 })
 
 /**
@@ -27,5 +30,8 @@ export function resolveCustomCenterConfig(
     enabled: typeof value?.enabled === 'boolean'
       ? value.enabled
       : DEFAULT_CUSTOM_CENTER_CONFIG.enabled,
+    skills: typeof value?.skills === 'boolean'
+      ? value.skills
+      : DEFAULT_CUSTOM_CENTER_CONFIG.skills,
   }
 }

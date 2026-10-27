@@ -6,6 +6,7 @@
  * `settings.section` pages, each its OWN entry in the Settings sidebar (NOT a
  * row in General): 外观 (wallpaper and skin, backed by the skin controller
  * ported from dsh-client-ui-skins) and 上下文与压缩 (backed by the tuning form).
+ * A child plugin adds a third page, 技能, ported from dsh-skills-manager.
  *
  * The wallpaper library (list / upload / file) is served by the host half over
  * loopback-only routes; no source patch. Wallpapers never leave the machine
@@ -18,6 +19,7 @@ import { ensureStyle } from './styles.ts'
 import { createController } from './controller.ts'
 import { AppearancePage } from './AppearancePage.tsx'
 import { TuningPage } from './TuningPage.tsx'
+import * as skills from '../skills/client.ts'
 
 /** Browser services this plugin requires before activation. */
 export const inject = ['slots', 'theme']
@@ -119,4 +121,8 @@ export function apply(rawCtx: Context): void {
     'dsh-custom-center: tuning settings section',
   )
   ctx.effect(() => () => controller.dispose(), 'dsh-custom-center: controller lifecycle')
+
+  // Skills management (ported from dsh-skills-manager) is its own fiber: it
+  // needs `locale`, and a missing service must not block the pages above.
+  rawCtx.plugin({ name: 'custom-center-skills', inject: skills.inject, apply: skills.apply as never })
 }

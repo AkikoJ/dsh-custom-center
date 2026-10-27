@@ -2,13 +2,15 @@
 
 [中文](README.zh.md)
 
-A standalone **DSH Web GUI plugin** that adds two dedicated pages to the
-Settings sidebar: **Appearance** and **Context & Compaction**. Appearance
-reskins the DeepSeek Harness UI with a custom image/video wallpaper whose
-palette is sampled from the picture; Context & Compaction sets the model
-context window and the automatic compaction policy.
+A standalone **DSH Web GUI plugin** that adds three dedicated pages to the
+Settings sidebar: **Appearance**, **Context & Compaction** and **Skills**.
+Appearance reskins the DeepSeek Harness UI with a custom image/video wallpaper
+whose palette is sampled from the picture; Context & Compaction sets the model
+context window and the automatic compaction policy; Skills manages DSH's own
+skills and shows other agents' skills so you can sync them into DSH (derived
+from [dsh-skills-manager](https://github.com/MichengAI/dsh-skills-manager)).
 
-Unlike a General-settings row, the plugin registers its own two first-level
+Unlike a General-settings row, the plugin registers its own first-level
 `settings.section` entries, so they appear as separate pages in the settings
 navigation (alongside General, Models, Plugins, ...).
 
@@ -44,6 +46,25 @@ navigation (alongside General, Models, Plugins, ...).
   enumerates them through `llm.listProviders` / `llm.listModels`; the browser
   never sends a list of ids. **Restore recommended** fills in 272k maximum context, a 32768 output
   reserve, a 0.8 threshold ratio and 16384 headroom (not yet saved).
+- **Skills page** — derived from dsh-skills-manager 1.2.11, with one core
+  change: other agents' skill folders (Codex, Claude Code, Copilot and the
+  rest) are **view-and-sync only**. DSH no longer loads them directly.
+  - The **Other agents** tab lists them read-only with a sync status: not
+    synced, synced, source updated, or a same-name skill already in DSH.
+  - **Sync to DSH** copies a skill (one, or all of a source) into
+    `~/.dsh/skills`; on the project view it copies into that project's
+    `.dsh/skills`. It is a one-time copy, never a link, and source files are
+    never modified. Later edits to the source only flip the status to
+    "source updated"; sync again by hand. A same-name skill in DSH is skipped
+    unless you tick overwrite, and the old version goes to trash first.
+  - Only skills in DSH's own folders are loaded by DSH, and only those have
+    enable/disable switches (a local policy that never edits skill files).
+  - Everything else is unchanged: create skills, import ZIP / folder /
+    `SKILL.md`, trash, categories, an optional sidebar entry, and the
+    `create_skill` tool (asks before running). The original plugin's
+    Discover tab (GitHub repositories, ClawHub, skills.sh), self-update check
+    and GitHub link buttons were left out. Turn the page off with the `skills` switch in the
+    plugin settings.
 
 The palette engine keeps WCAG contrast against the skin's own surface by
 construction (contrast-checked text, accent and focus colours).
@@ -70,13 +91,15 @@ Legibility over a photo is checked rather than assumed:
 | --- | --- |
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
 | Loader row | `ui-custom-center` -> package `dsh-custom-center` |
-| Host half | `src/index.ts`: `Config.enabled` settings page plus the wallpaper library routes (`src/host/library.ts`) and the context/compaction routes (`src/host/tuning.ts`) |
-| Browser half | `src/client/index.ts`: registers two `settings.section` pages (Appearance, Context & Compaction) |
+| Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/host/library.ts`), the context/compaction routes (`src/host/tuning.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
+| Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
 | Shared logic | `src/core/*` (colour, palette, sampling, library rules) with unit tests |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
 
-The browser half registers into the `settings.section` slot (two full settings
-pages, each with its own nav entry), not `settings.general.item`.
+The browser half registers into the `settings.section` slot (full settings
+pages, each with its own nav entry), not `settings.general.item`. The skills
+module mounts as a separate Cordis child plugin on both halves: if the host
+lacks a service it needs, only the Skills page is missing.
 
 ## Layout
 
@@ -110,6 +133,10 @@ dsh-custom-center/
       media.ts              # file classes, name rules, range parsing
       config.ts             # shared host config defaults
       tuning.ts             # validation, budget formula, profile config transforms
+    skills/                 # skills management (ported from dsh-skills-manager, Apache-2.0)
+      index.ts              # host: /api/dsh-custom-center/skills routes, skill provider, create_skill
+      client.ts             # browser: Skills settings page
+      core.ts               # skill scanning, toggle policy, sync from other agents, create/import/trash
   tests/                    # vitest: color, skins, sample, config, tuning
 ```
 
@@ -126,11 +153,12 @@ dsh plugin --profile web add link:$(pwd)
 # refresh the DSH Web GUI afterwards
 ```
 
-After the refresh, open Settings — **Appearance** and **Context & Compaction**
-entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
+After the refresh, open Settings — **Appearance**, **Context & Compaction** and
+**Skills** entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
 press Preview to try it (changes apply live), then Save to keep it; Restore
 default clears everything. In Context & Compaction, adjust the model window and
-compaction values, then press Save.
+compaction values, then press Save. In Skills, open **Other agents** to
+review another agent's skills and sync the ones you want into DSH.
 
 Remove it again:
 
@@ -191,4 +219,17 @@ pnpm watch       # rebuild bundles while developing
   service types, so `src/client/dsh-env.ts` declares narrow structural faces
   and augments `SlotMap` with `settings.section`. Replace these with real
   imports if the public SDK widens.
-- License: [MIT](LICENSE).
+- The skills routes (`/api/dsh-custom-center/skills/*`) keep the original
+  checks: only loopback or DSH-trusted Hosts, no cross-site requests; writes
+  also need the `x-dsh-custom-center-skills` marker header and JSON. Skill
+  state lives in `$DSH_HOME/skills-manager/`, shared with the original plugin,
+  so moving over from dsh-skills-manager keeps toggles and categories.
+- Skills you have not synced are invisible to DSH. After upgrading from
+  dsh-skills-manager, anything that only lived in another agent's folder must
+  be synced once to keep working. Sync records are kept in
+  `$DSH_HOME/skills-manager/sync-records.json`.
+- Do not enable the Skills page alongside `@michengai/dsh-skills-manager`: both
+  would register a skill provider and a `create_skill` tool. If you keep the
+  original plugin, set this plugin's `skills` switch off.
+- License: [MIT](LICENSE). `src/skills/` is ported from dsh-skills-manager under
+  [Apache-2.0](LICENSE-skills-manager).

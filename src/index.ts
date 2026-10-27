@@ -5,7 +5,9 @@
  * a folder under the DSH home (`background/images`, `background/videos`) and
  * the loopback-only routes the browser half uses to list, upload and read it.
  * The host auto-generates this profile entry's settings page from the `Config`
- * schema below, so `enabled` is a real, persisted switch.
+ * schema below, so `enabled` and `skills` are real, persisted switches.
+ * The skills management module under `src/skills/` is ported from
+ * dsh-skills-manager and mounted as a child plugin.
  */
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
@@ -20,6 +22,7 @@ import type {
 } from './host/env.ts'
 import { createLibraryRoutes, defaultLibraryRoot } from './host/library.ts'
 import { createTuningRoutes } from './host/tuning.ts'
+import * as skills from './skills/index.ts'
 
 /** Stable Cordis plugin name; keep it equal to the patch row id. */
 export const name = 'ui-custom-center'
@@ -28,6 +31,8 @@ export const name = 'ui-custom-center'
 export interface Config {
   /** Master switch for the customization center. */
   enabled?: boolean
+  /** Skills management page (ported from dsh-skills-manager). */
+  skills?: boolean
 }
 
 /**
@@ -36,6 +41,9 @@ export interface Config {
  */
 export const Config = z.object({
   enabled: z.boolean().default(DEFAULT_CUSTOM_CENTER_CONFIG.enabled).volatile(),
+  skills: z.boolean().default(DEFAULT_CUSTOM_CENTER_CONFIG.skills)
+    .description('技能管理页面。与 @michengai/dsh-skills-manager 同时安装时请关闭其中一个。')
+    .volatile(),
 })
 
 /** Host services the library routes need. */
@@ -69,5 +77,10 @@ export function apply(ctx: Context, config?: Config): void {
   ]
   for (const route of routes) {
     ctx.effect(() => host.webServer.register(route), `dsh-custom-center: ${route.path}`)
+  }
+  // Skills management runs as its own fiber: it injects `skills`, `tools` and
+  // `sessions`, and a missing service must not block the wallpaper/tuning routes.
+  if (config?.skills !== false) {
+    ctx.plugin({ name: skills.name, inject: skills.inject, apply: skills.apply as never })
   }
 }
