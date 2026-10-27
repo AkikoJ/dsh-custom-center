@@ -2,12 +2,14 @@
 
 [English](README.md)
 
-一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增两个独立页面：「外观」和
-「上下文与压缩」。前者用自定义图片 / 视频壁纸给 DeepSeek Harness 界面换肤，
-配色自动跟随画面主色调；后者设置模型上下文窗口与自动压缩阈值。
+一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增三个独立页面：「外观」、
+「上下文与压缩」和「技能」。「外观」用自定义图片 / 视频壁纸给 DeepSeek Harness
+界面换肤，配色自动跟随画面主色调；「上下文与压缩」设置模型上下文窗口与自动压缩
+阈值；「技能」管理 DSH 自己的技能，并展示其他 Agent 的技能供你同步到 DSH（改自
+[dsh-skills-manager](https://github.com/MichengAI/dsh-skills-manager)）。
 
-与「通用设置」里插入一行不同，本插件注册自己的两个一级 `settings.section` 条目，
-因此它们作为两个独立页面出现在设置导航中（和通用、模型、插件等并列）。
+与「通用设置」里插入一行不同，本插件注册自己的一级 `settings.section` 条目，
+因此它们作为独立页面出现在设置导航中（和通用、模型、插件等并列）。
 
 ## 功能
 
@@ -26,6 +28,11 @@
   回到已保存的样子，点「撤销更改」同时丢弃草稿。
 - **恢复默认** — 页面底部的按钮，清除壁纸、配色和所有已保存的设置。
 - **上下文与压缩页面** — 与「外观」并列的设置页。读取当前默认模型的最大上下文与输出预留，并可为每个 agent preset 调整自动压缩阈值、压缩余量、近期保留方式（窗口比例或固定 tokens）与自动压缩开关。保存会通过 `configEditor` 写入当前 profile 的 `cordis.patch.yml` 并由 Loader 热应用；页面用与 DSH 相同的公式预览触发阈值与逐字保留预算。「应用范围」下拉框可选择单个模型、某个 provider 的全部模型，或一次应用到全部可编辑模型；模型列表由宿主通过 `llm.listProviders` / `llm.listModels` 枚举，浏览器不会提交模型 id 列表。「恢复推荐值」会填入最大上下文 272k、输出预留 32768、压缩阈值 0.8、压缩余量 16384（仍需保存）。
+- **技能页面** — 改自 dsh-skills-manager 1.2.11，核心行为有一处改动：其他 Agent 的技能目录（Codex、Claude Code、Copilot 等）只做**查看与同步**，DSH 不再直接加载。
+  - 「其他 Agent」页签只读列出这些技能，并标出同步状态：未同步、已同步、源已更新、DSH 已有同名。
+  - 「同步到 DSH」把技能（单个或某来源全部）复制到 `~/.dsh/skills`；在项目视图下复制到该项目的 `.dsh/skills`。这是一次性复制，不是链接，也不会修改来源文件。之后来源再变化，只会把状态标成「源已更新」，需要时手动再同步。DSH 里已有同名技能时默认跳过，勾选覆盖后才会替换，旧版本先进回收站。
+  - 只有位于 DSH 自己目录里的技能才会被 DSH 加载，也只有它们有启停开关（本地策略，不改技能文件）。
+  - 其余功能不变：创建技能，导入 ZIP / 文件夹 / `SKILL.md`，回收站，分类，可选的侧边栏入口，以及 `create_skill` 工具（执行前需确认）。原插件的「发现技能」页（GitHub 仓库、ClawHub、skills.sh）、自更新检查与 GitHub 链接按钮未保留。可在插件设置里用 `skills` 开关关闭此页面。
 
 配色引擎在构造上保证对皮肤自身表面的 WCAG 对比度（文字、强调色、焦点色均经
 对比度校正）。
@@ -47,13 +54,14 @@
 | --- | --- |
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
 | Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center` |
-| Host 半区 | `src/index.ts`：`Config.enabled` 设置页 + 壁纸库路由（`src/host/library.ts`）+ 上下文/压缩路由（`src/host/tuning.ts`） |
-| 浏览器半区 | `src/client/index.ts`：注册两个 `settings.section` 页面（外观、上下文与压缩） |
+| Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/host/library.ts`）+ 上下文/压缩路由（`src/host/tuning.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
+| 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」两个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
 | 共享逻辑 | `src/core/*`（配色、皮肤、取色、壁纸库规则）及其单测 |
 | 构建 | `tsc` 声明 + `tsdown` host/client 产物 |
 
-浏览器半区注册到 `settings.section` 插槽（两个带独立导航条目的完整设置页），
-而不是 `settings.general.item`。
+浏览器半区注册到 `settings.section` 插槽（带独立导航条目的完整设置页），
+而不是 `settings.general.item`。技能模块在两端都作为独立的 Cordis 子插件挂载：
+宿主缺少它依赖的服务时只有「技能」页不出现，其余页面不受影响。
 
 ## 目录结构
 
@@ -87,6 +95,10 @@ dsh-custom-center/
       media.ts              # 文件类别、命名规则、Range 解析
       config.ts             # 共享 host 配置默认值
       tuning.ts             # 校验、压缩预算公式、profile 配置变换
+    skills/                 # 技能管理（移植自 dsh-skills-manager，Apache-2.0）
+      index.ts              # host：/api/dsh-custom-center/skills 路由、技能 provider、create_skill
+      client.ts             # 浏览器：「技能」设置页
+      core.ts               # 技能扫描、启停策略、创建/导入/回收站
   tests/                    # vitest：color、skins、sample、config、tuning
 ```
 
@@ -102,9 +114,10 @@ dsh plugin --profile web add link:$(pwd)
 # 完成后刷新 DSH Web 界面
 ```
 
-刷新后打开「设置」，侧边栏会出现「外观」和「上下文与压缩」两个条目。在「外观」里点
+刷新后打开「设置」，侧边栏会出现「外观」「上下文与压缩」「技能」三个条目。在「外观」里点
 「选择图片 / 视频」设置壁纸，先「预览」（预览中所有更改立即生效），满意再「保存」；
-「恢复默认」会清除全部设置。在「上下文与压缩」里调整模型窗口与压缩参数后点「保存」。
+「恢复默认」会清除全部设置。在「上下文与压缩」里调整模型窗口与压缩参数后点「保存」。在「技能」页打开「其他 Agent」页签，
+可以查看其他 Agent 的技能，并把需要的同步到 DSH。
 
 卸载：
 
@@ -156,4 +169,14 @@ pnpm watch       # 开发时监听重建
 - 当前安装的 SDK 未发布 renderer 的 `SlotRegistry` 和 theme 服务类型，因此
   `src/client/dsh-env.ts` 声明了精简的结构化接口，并把 `settings.section` 增强
   进 `SlotMap`。若未来公共 SDK 扩展，可替换为真实导入。
-- 许可证：[MIT](LICENSE)。
+- 技能路由（`/api/dsh-custom-center/skills/*`）沿用原插件的校验：只接受 loopback
+  或 DSH 信任的 Host，拒绝跨站请求；写接口还要求 `x-dsh-custom-center-skills`
+  标记头与 JSON。技能状态保存在 `$DSH_HOME/skills-manager/`，与原插件共用，
+  从 dsh-skills-manager 迁移过来不会丢失启停和分类记录。
+- 没有同步过的技能 DSH 看不到。从 dsh-skills-manager 迁移过来后，原先只存在于其他
+  Agent 目录里的技能需要同步一次才能继续使用。同步记录保存在
+  `$DSH_HOME/skills-manager/sync-records.json`。
+- 不要和 `@michengai/dsh-skills-manager` 同时启用技能页：两者会各注册一个技能
+  provider 和 `create_skill` 工具。保留原插件时，把本插件的 `skills` 设为关闭。
+- 许可证：[MIT](LICENSE)。`src/skills/` 移植自 dsh-skills-manager，遵循
+  [Apache-2.0](LICENSE-skills-manager)。
