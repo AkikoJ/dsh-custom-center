@@ -2,7 +2,7 @@
   "name": "dsh-custom-center",
   "version": "0.1.0",
   "private": true,
-  "description": "个性化中心：在设置侧边栏新增「外观」和「上下文与压缩」两个独立页面，提供自定义图片 / 视频壁纸，以及模型上下文窗口与自动压缩阈值设置。",
+  "description": "个性化中心：在设置侧边栏新增「外观」「上下文与压缩」「技能」三个独立页面，提供自定义图片 / 视频壁纸、模型上下文窗口与自动压缩阈值设置，以及本机与项目 Agent Skills 管理。",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
@@ -32,8 +32,10 @@
       "immediately": true,
       "inject": [
         "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-locale",
         "@deepseek-ai/dsh-client-runtime",
         "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-primitives",
         "@deepseek-ai/dsh-client-ui-slots",
         "@deepseek-ai/dsh-client-ui-theme"
       ]
@@ -69,7 +71,11 @@
     "cordis.patch.yml",
     "README.md",
     "README.zh.md",
-    "LICENSE"
+    "LICENSE",
+    "LICENSE-skills-manager"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "fflate": "0.8.3"
+  }
 }
