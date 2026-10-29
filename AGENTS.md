@@ -36,3 +36,17 @@ pnpm typecheck
 pnpm test
 pnpm build
 ```
+
+## Agent skills
+
+### Issue tracker
+
+任务与规格存放在本地 `.scratch/`。操作任务前，读取 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+使用五个默认分诊状态。分诊任务前，读取 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+采用 single-context 布局：根目录 `GLOSSARY.md` 和 `docs/adr/`。探索代码前，读取 `docs/agents/domain.md`。
