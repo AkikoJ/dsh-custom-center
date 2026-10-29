@@ -1,0 +1,553 @@
+{
+  "css": {
+    "baselineSha256": "72bf68a6bd43001357861694a947856b1af49bade766b20f452de308a9527403",
+    "finalSha256": "72bf68a6bd43001357861694a947856b1af49bade766b20f452de308a9527403",
+    "bytes": 15240
+  },
+  "compared": [
+    {
+      "before": "src/client/AppearancePage.tsx",
+      "after": "src/appearance/client/AppearancePage.tsx",
+      "declarations": 2,
+      "sha256": "b73ed66227a86f416b215ab076d5fa0cab3e505a7ccc72106f6b9a37a602cd18"
+    },
+    {
+      "before": "src/client/LibraryPicker.tsx",
+      "after": "src/appearance/client/LibraryPicker.tsx",
+      "declarations": 4,
+      "sha256": "89b7c9ff9d828c6ea5cd692d91885cf2cac20378bc207f123c8ebb348bed682f"
+    },
+    {
+      "before": "src/client/Select.tsx",
+      "after": "src/tuning/client/Select.tsx",
+      "declarations": 5,
+      "sha256": "9ca22ec0cd529e90e2f6595fa8bd80220aa4f94ef2021452307ee65cda005efc"
+    },
+    {
+      "before": "src/client/TuningPanel.tsx",
+      "after": "src/tuning/client/TuningPanel.tsx",
+      "declarations": 11,
+      "sha256": "2fcb6e83f693c2aa9f5ee8b772dcdddec102454f1ece27f01cd851f3b30ac040"
+    },
+    {
+      "before": "src/client/controller.ts",
+      "after": "src/appearance/client/controller.ts",
+      "declarations": 12,
+      "sha256": "c3a7cafe15ebcc9151fecf217917b529c469d410f153b2c0eea114c5fdb7a31c"
+    },
+    {
+      "before": "src/client/dsh-env.ts",
+      "after": "src/shared/browser-env.ts",
+      "declarations": 7,
+      "sha256": "d902c1bc97f761976e94d1bd5bf0a2f0a8d55dc7ab968aa2e9f014c5b5f88bbb"
+    },
+    {
+      "before": "src/client/index.ts",
+      "after": "src/client/index.ts",
+      "declarations": 5,
+      "sha256": "ee480db28ba23eedd2627aa55def3140c0eb21991e2937ab78c54ab782aad96e"
+    },
+    {
+      "before": "src/client/library.ts",
+      "after": "src/appearance/client/library.ts",
+      "declarations": 10,
+      "sha256": "9cb23b46bfaac6cd3ca6395e382e3e22a4e839be34751b16f9eafbb086428a44"
+    },
+    {
+      "before": "src/client/styles.ts",
+      "after": "src/shared/styles.ts",
+      "declarations": 2,
+      "sha256": "48455cc45e2e3b8bca2d64613b6f4e2ff4b73f710d5f83314ec6ecfac07c8160"
+    },
+    {
+      "before": "src/client/tuning.ts",
+      "after": "src/tuning/client/tuning.ts",
+      "declarations": 8,
+      "sha256": "740acc2dae7e7cbd812fac825641c78c7622d0081bb0682ef47a0e7449e3f505"
+    },
+    {
+      "before": "src/client/wallpaper.ts",
+      "after": "src/appearance/client/wallpaper.ts",
+      "declarations": 29,
+      "sha256": "d3b8e2ae8a010671dd5e7ff4cdbb0b43e282da08a9edc9e8d093ccca3efdd694"
+    },
+    {
+      "before": "src/core/color.ts",
+      "after": "src/appearance/color.ts",
+      "declarations": 21,
+      "sha256": "4cdcb181ab5033936f1a779e65bfd9190748e8aa76b559ed815f8571291fb7d3"
+    },
+    {
+      "before": "src/core/config.ts",
+      "after": "src/shared/config.ts",
+      "declarations": 3,
+      "sha256": "60440a38a97ffc251c04f7f6eda4e57c2a0ceb66b67e0fad79859cf5188fd4fe"
+    },
+    {
+      "before": "src/core/media.ts",
+      "after": "src/appearance/media.ts",
+      "declarations": 16,
+      "sha256": "aad746482e2f2c5f349e0295746f67f0dce41d1aa7f737056a347acfd4f6c5f9"
+    },
+    {
+      "before": "src/core/sample.ts",
+      "after": "src/appearance/sample.ts",
+      "declarations": 5,
+      "sha256": "942d6a90a7aae4b80db6694d2df18c517a6a3b250a0217df3f8755d7bbc32a73"
+    },
+    {
+      "before": "src/core/skins.ts",
+      "after": "src/appearance/skins.ts",
+      "declarations": 7,
+      "sha256": "c6bfd4ee305c5949c8df26ee1403499e5884da92123b9bd090340ff57e2ed278"
+    },
+    {
+      "before": "src/core/tone.ts",
+      "after": "src/appearance/tone.ts",
+      "declarations": 9,
+      "sha256": "1a7d4df014e8a86d750fd754a10cfd91ec33ab1d89d176850f4c0181be833fe7"
+    },
+    {
+      "before": "src/core/tuning.ts",
+      "after": "src/tuning/tuning.ts",
+      "declarations": 46,
+      "sha256": "24a6d07ae1a881e87225009fa7f77fb36396b1f982b606294d046e2425227d6e"
+    },
+    {
+      "before": "src/host/env.ts",
+      "after": "src/shared/host-env.ts",
+      "declarations": 11,
+      "sha256": "33fd9aecdfdfe29630dd471c0ed6d5ea8421b70302060fb224bae2cbb21f7b2c"
+    },
+    {
+      "before": "src/host/library.ts",
+      "after": "src/appearance/server/library.ts",
+      "declarations": 15,
+      "sha256": "3c57561dedb20cd35f1ffd35e05662da9980c91eaf15d317603b3760b1b38218"
+    },
+    {
+      "before": "src/host/tuning.ts",
+      "after": "src/tuning/server/tuning.ts",
+      "declarations": 26,
+      "sha256": "605970370d94ca14d91e0e6b83f19c5d9c6ed58f3c7fa146e12f6a16d911e230"
+    },
+    {
+      "before": "src/index.ts",
+      "after": "src/index.ts",
+      "declarations": 5,
+      "sha256": "0cf987d420bee3d35045e60d2cfe7646058c8c85cd53453ba11013defc333d41"
+    },
+    {
+      "before": "src/skills/client/api-client.ts",
+      "after": "src/skills/client/api-client.ts",
+      "declarations": 7,
+      "sha256": "46799e3079909b53029c2bcf3ea9a7369415af05429f111ee335ce5d7f1e6f82"
+    },
+    {
+      "before": "src/skills/client/category-dialogs.tsx",
+      "after": "src/skills/client/category-dialogs.tsx",
+      "declarations": 2,
+      "sha256": "d2150be2ab3b966672d8a2b0687ab85fb334a4c6a5fde8ea17844570e2161a0c"
+    },
+    {
+      "before": "src/skills/client/controls.tsx",
+      "after": "src/skills/client/controls.tsx",
+      "declarations": 18,
+      "sha256": "badaa326c09dd84a999db4717a41d495e5a42cc4be7606ff436e6b70e4e485ed"
+    },
+    {
+      "before": "src/skills/client/editor-dialogs.tsx",
+      "after": "src/skills/client/editor-dialogs.tsx",
+      "declarations": 2,
+      "sha256": "ca9905af3ef313ecef20967a7594ed047cf6a61132dcf02d566f00a73f573a85"
+    },
+    {
+      "before": "src/skills/client/icons.tsx",
+      "after": "src/skills/client/icons.tsx",
+      "declarations": 19,
+      "sha256": "411292da3de388834addd72b888e310928557da533474c823e9b5901d588688e"
+    },
+    {
+      "before": "src/skills/client/locales/en.ts",
+      "after": "src/skills/client/locales/en.ts",
+      "declarations": 1,
+      "sha256": "288472d15019941f5f1c96bcb252461a5f6e69a2723b32c53885165b3a398f87"
+    },
+    {
+      "before": "src/skills/client/locales/zh.ts",
+      "after": "src/skills/client/locales/zh.ts",
+      "declarations": 1,
+      "sha256": "b801fe91c0b7f59312a2f98ff8e7cdfb270123c57d77c80fa23c5d06bdc73eb0"
+    },
+    {
+      "before": "src/skills/client/manager-page.tsx",
+      "after": "src/skills/client/manager-page.tsx",
+      "declarations": 4,
+      "sha256": "1dec5a8ae82990a7064a5d8d65644bd2875400a208127b9e93969eb47c4ea7ae"
+    },
+    {
+      "before": "src/skills/client/messages.ts",
+      "after": "src/skills/client/messages.ts",
+      "declarations": 16,
+      "sha256": "6269b52a4ed1818a1585f23ae5790c8acde463e786a590f45b5fb646045237e8"
+    },
+    {
+      "before": "src/skills/client/scope-panels.tsx",
+      "after": "src/skills/client/scope-panels.tsx",
+      "declarations": 2,
+      "sha256": "310c152dcf949198ff4c21a27eded6b345f7202bae408156e70f829e08e4bbd2"
+    },
+    {
+      "before": "src/skills/client/selectors.ts",
+      "after": "src/skills/client/selectors.ts",
+      "declarations": 12,
+      "sha256": "69f48904c42013deef1c8bc5694b6b070c9e39a971ecf41431f86c60aa8807e8"
+    },
+    {
+      "before": "src/skills/client/skill-dialogs.tsx",
+      "after": "src/skills/client/skill-dialogs.tsx",
+      "declarations": 2,
+      "sha256": "17774c28921db235ed5231041c838cd432d08a3db5fc5accb12f360f29b1de42"
+    },
+    {
+      "before": "src/skills/client/skill-rows.tsx",
+      "after": "src/skills/client/skill-rows.tsx",
+      "declarations": 2,
+      "sha256": "32388a406889c8e8b9b5a220a8baa195db7b971dcc044c368ac69b71b33addc3"
+    },
+    {
+      "before": "src/skills/client/source-tree.tsx",
+      "after": "src/skills/client/source-tree.tsx",
+      "declarations": 2,
+      "sha256": "ffb5baf70cb129c80ffde853373ce2020ef817c23a7f07dc9eaf759716de99ba"
+    },
+    {
+      "before": "src/skills/client/styles.ts",
+      "after": "src/skills/client/styles.ts",
+      "declarations": 2,
+      "sha256": "85d3198362b2c10dacb5242a811544b4753909d5d50d8b7fba9d166289a17eb3"
+    },
+    {
+      "before": "src/skills/client/uploads.ts",
+      "after": "src/skills/client/uploads.ts",
+      "declarations": 11,
+      "sha256": "a71b20f86e91c0927c48dbf70db5b7b6d2adee713d4e123e0639e81339beed2a"
+    },
+    {
+      "before": "src/skills/client/useSkillManager.ts",
+      "after": "src/skills/client/useSkillManager.ts",
+      "declarations": 1,
+      "sha256": "e58ff22ab6f8af2c320c544db76a0dda7955a19abf46cbbdac3161a81ece3881"
+    },
+    {
+      "before": "src/skills/client/useWorkspaceCatalog.ts",
+      "after": "src/skills/client/useWorkspaceCatalog.ts",
+      "declarations": 1,
+      "sha256": "0a59a90fc6166547c03d8cea1889ae80d73ec192033419360d8af7a4b732375c"
+    },
+    {
+      "before": "src/skills/client-types.ts",
+      "after": "src/skills/client-types.ts",
+      "declarations": 19,
+      "sha256": "acc0352f976c9caffaf035739caa1f448eba1c9d1b8477c65fe810fed9ecda5b"
+    },
+    {
+      "before": "src/skills/client.ts",
+      "after": "src/skills/client.ts",
+      "declarations": 3,
+      "sha256": "9d8c8d00f869fb55a0d616c29b50006437d16431adda93509e8a0a53d32d2a42"
+    },
+    {
+      "before": "src/skills/core.ts",
+      "after": "src/skills/core.ts",
+      "declarations": 6,
+      "sha256": "1b51d47bc1fa3a18d9942baf3fc1c58d6e13eb6ad195e62d0243a34c2945fffb"
+    },
+    {
+      "before": "src/skills/destination-picker.ts",
+      "after": "src/skills/destination-picker.ts",
+      "declarations": 15,
+      "sha256": "8b10d27f3ae88757ad0b8db311e3b8383f32dbbbecbb228096f300cf8d5eddbb"
+    },
+    {
+      "before": "src/skills/host-types.ts",
+      "after": "src/skills/host-types.ts",
+      "declarations": 11,
+      "sha256": "f6af118e3ea38b50e814da21bd1ddb3a288778e50c5dd83daea35a51fe36b3bd"
+    },
+    {
+      "before": "src/skills/index.ts",
+      "after": "src/skills/index.ts",
+      "declarations": 12,
+      "sha256": "ba88370fced9fb532e1ba51c9b45a14d6ea19a582231061cdf1ffcc28779eea7"
+    },
+    {
+      "before": "src/skills/primitives.d.ts",
+      "after": "src/skills/primitives.d.ts",
+      "declarations": 1,
+      "sha256": "0683d5addb99777a13ee096049b6136a5b0e5d1f1b55a04759bbb0fbb0c806b2"
+    },
+    {
+      "before": "src/skills/readonly-discovery.ts",
+      "after": "src/skills/readonly-discovery.ts",
+      "declarations": 6,
+      "sha256": "d28794e8a6a9ca4b4122a70392332b23ea30da5d9aa459a1dc5b07ec8275160d"
+    },
+    {
+      "before": "src/skills/server/categories.ts",
+      "after": "src/skills/server/categories.ts",
+      "declarations": 9,
+      "sha256": "db874382e1f1c57648db08c9c3bf933b24dc54e7e753302741f403efdcbe2b25"
+    },
+    {
+      "before": "src/skills/server/entry-access.ts",
+      "after": "src/skills/server/entry-access.ts",
+      "declarations": 5,
+      "sha256": "41768ec331f89662cd073b671fe67d9d6c843116ff1c336937d7a6241c52932d"
+    },
+    {
+      "before": "src/skills/server/file-operations.ts",
+      "after": "src/skills/server/file-operations.ts",
+      "declarations": 28,
+      "sha256": "1bbc884bd08b5cd14772ccbf258c81c957324473ffcf4e34271c64690eaa4a34"
+    },
+    {
+      "before": "src/skills/server/policy-store.ts",
+      "after": "src/skills/server/policy-store.ts",
+      "declarations": 17,
+      "sha256": "a0ca72f5245be18549d4c50c2e4930805113aff04216ac1bbacef2ef2d673117"
+    },
+    {
+      "before": "src/skills/server/policy.ts",
+      "after": "src/skills/server/policy.ts",
+      "declarations": 12,
+      "sha256": "a2a3d59546dc099ec90b32e2c9ea73a1697f395e41d7174a82ac7eba304b2ced"
+    },
+    {
+      "before": "src/skills/server/root-access.ts",
+      "after": "src/skills/server/root-access.ts",
+      "declarations": 9,
+      "sha256": "03d863496c1e4a01fb8068ec1f3ee6c80baad9bdbc340bf948e3bf133fb3f105"
+    },
+    {
+      "before": "src/skills/server/router.ts",
+      "after": "src/skills/server/router.ts",
+      "declarations": 15,
+      "sha256": "30a1324d8d9c6d871d0183779dddaf0d48a2f096a1e55b29d46f226774d0600c"
+    },
+    {
+      "before": "src/skills/server/skill-document.ts",
+      "after": "src/skills/server/skill-document.ts",
+      "declarations": 11,
+      "sha256": "742a4896149c349aa50ab330efee3c810c495d5200524d33a4aae98fd2559ef8"
+    },
+    {
+      "before": "src/skills/server/skill-import.ts",
+      "after": "src/skills/server/skill-import.ts",
+      "declarations": 6,
+      "sha256": "cce82eb50d5b63a477b0e6a249b54fae5b7e99ca1d423e83ae7ae01f20131b62"
+    },
+    {
+      "before": "src/skills/server/skill-scan.ts",
+      "after": "src/skills/server/skill-scan.ts",
+      "declarations": 8,
+      "sha256": "2f7793377f2f8c3c00036cd3af655482cdb3b72ec9929b4fec3bec5ca8b94b8d"
+    },
+    {
+      "before": "src/skills/server/skill-sync.ts",
+      "after": "src/skills/server/skill-sync.ts",
+      "declarations": 13,
+      "sha256": "3aeef5587d42ea7000e21aa35aafa2c599d67435a7e458645d5fa6061609bf7b"
+    },
+    {
+      "before": "src/skills/server/source-roots.ts",
+      "after": "src/skills/server/source-roots.ts",
+      "declarations": 18,
+      "sha256": "ee2c60143662efa5f0882e4b08e2a468e03608e62015481e714ea3c3772cf77c"
+    },
+    {
+      "before": "src/skills/server/trash.ts",
+      "after": "src/skills/server/trash.ts",
+      "declarations": 9,
+      "sha256": "3a13ac1e1d1e043f00177306cac3ac8bdc4699c288c8dda156b99faa6a5ce455"
+    },
+    {
+      "before": "src/skills/server/upload-import.ts",
+      "after": "src/skills/server/upload-import.ts",
+      "declarations": 12,
+      "sha256": "e639aa3eb030dddc6701a91f24b973ec63c3f79040b9ce767031b695dbc1e4f6"
+    },
+    {
+      "before": "src/skills/server/workspaces.ts",
+      "after": "src/skills/server/workspaces.ts",
+      "declarations": 8,
+      "sha256": "1389f0f7ce2d89d145d172dfbaebaf52cfca64fef14b4104576eb7baee045149"
+    },
+    {
+      "before": "src/skills/settings-nav-icon.ts",
+      "after": "src/skills/settings-nav-icon.ts",
+      "declarations": 13,
+      "sha256": "c2a0df8b29b7da4e368911808aceafbfeb4ee24eabdfc67706fb4b784888d156"
+    },
+    {
+      "before": "src/skills/sidebar-entry.ts",
+      "after": "src/skills/sidebar-entry.ts",
+      "declarations": 14,
+      "sha256": "050c798449a9583c286e3c1668778eb75a564188eaed0c8d7a0f7a9cf5d86b42"
+    },
+    {
+      "before": "src/skills/source-select.ts",
+      "after": "src/skills/source-select.ts",
+      "declarations": 3,
+      "sha256": "450ee199b4598d667f90fc536379b1b4ab0b6f638ab877dbf4d78b3779264936"
+    },
+    {
+      "before": "src/skills/types.ts",
+      "after": "src/skills/types.ts",
+      "declarations": 43,
+      "sha256": "9cd763f92927801a21688e52cef8d53ea4ea15745d726bc04811532cd3b6f235"
+    },
+    {
+      "before": "tests/color.spec.ts",
+      "after": "tests/color.spec.ts",
+      "declarations": 3,
+      "sha256": "744e71369c371c2aa5b2a7ae486427f46f03f388d985f072daaae22aa459c22e"
+    },
+    {
+      "before": "tests/config.spec.ts",
+      "after": "tests/config.spec.ts",
+      "declarations": 1,
+      "sha256": "e86b192b89aec9c8c77dabbf1b875c1939590619b0b0d09d93289f99328a3e65"
+    },
+    {
+      "before": "tests/host-tuning.spec.ts",
+      "after": "tests/host-tuning.spec.ts",
+      "declarations": 8,
+      "sha256": "410a880b059db88e0aebbf1d8c8771036d937bb20237957752f2d1ba5f28acb6"
+    },
+    {
+      "before": "tests/library.spec.ts",
+      "after": "tests/library.spec.ts",
+      "declarations": 15,
+      "sha256": "d6a8e4721349ae976e08841fb3943708172a75d57208053dfd7779128e5c1c46"
+    },
+    {
+      "before": "tests/media.spec.ts",
+      "after": "tests/media.spec.ts",
+      "declarations": 6,
+      "sha256": "cd7b7c31776f2d39133adcf822293474603f2b3d79f1c0bc8271e139450cda12"
+    },
+    {
+      "before": "tests/sample.spec.ts",
+      "after": "tests/sample.spec.ts",
+      "declarations": 2,
+      "sha256": "bab70bd64ebff53e6959a62f967186ab0e83ee9fc6f528eac9fcf5408deb3d0e"
+    },
+    {
+      "before": "tests/skills-client-data.spec.ts",
+      "after": "tests/skills-client-data.spec.ts",
+      "declarations": 4,
+      "sha256": "0176be4d797d4c772b11278a9d910504f5cac823237407ca692b5a908fc60bdb"
+    },
+    {
+      "before": "tests/skills-client-lifecycle.spec.ts",
+      "after": "tests/skills-client-lifecycle.spec.ts",
+      "declarations": 17,
+      "sha256": "6b7c034e98308a86bfa29af8e08746ac6737639f41b956c16f83c19a03a8d2e4"
+    },
+    {
+      "before": "tests/skills-files.spec.ts",
+      "after": "tests/skills-files.spec.ts",
+      "declarations": 8,
+      "sha256": "8329afa40b43f5fd58e88f676e55c91168a11df23632c3276028a028ebd63f21"
+    },
+    {
+      "before": "tests/skills-routes.spec.ts",
+      "after": "tests/skills-routes.spec.ts",
+      "declarations": 10,
+      "sha256": "226329c5907d54cc503cb5fa47ee36182d9ed0452bd32a0b823857bf5aa01602"
+    },
+    {
+      "before": "tests/skills-state.spec.ts",
+      "after": "tests/skills-state.spec.ts",
+      "declarations": 7,
+      "sha256": "93fb9313ff50c22e51d988ae3a8f9cf8d148006742429d4a8e00de543e6e3004"
+    },
+    {
+      "before": "tests/skills-sync.spec.ts",
+      "after": "tests/skills-sync.spec.ts",
+      "declarations": 10,
+      "sha256": "cfcce9e303e34bd503d2f7711710a2a0879d97d51bfa24a237e39c078e6ad366"
+    },
+    {
+      "before": "tests/skins.spec.ts",
+      "after": "tests/skins.spec.ts",
+      "declarations": 1,
+      "sha256": "c0d97da15c885fa71990dabd8b62a172d0fae548d8c219d041b3908f7abfeb1d"
+    },
+    {
+      "before": "tests/tuning.spec.ts",
+      "after": "tests/tuning.spec.ts",
+      "declarations": 8,
+      "sha256": "25b6bee15caedf959866ffdf2d75a0732f08f226daaf93ef2d279976270de682"
+    }
+  ],
+  "unchangedFiles": [
+    "src/skills/client/api-client.ts",
+    "src/skills/client/category-dialogs.tsx",
+    "src/skills/client/controls.tsx",
+    "src/skills/client/editor-dialogs.tsx",
+    "src/skills/client/icons.tsx",
+    "src/skills/client/locales/en.ts",
+    "src/skills/client/locales/zh.ts",
+    "src/skills/client/manager-page.tsx",
+    "src/skills/client/messages.ts",
+    "src/skills/client/scope-panels.tsx",
+    "src/skills/client/selectors.ts",
+    "src/skills/client/skill-dialogs.tsx",
+    "src/skills/client/skill-rows.tsx",
+    "src/skills/client/source-tree.tsx",
+    "src/skills/client/styles.ts",
+    "src/skills/client/uploads.ts",
+    "src/skills/client/useSkillManager.ts",
+    "src/skills/client/useWorkspaceCatalog.ts",
+    "src/skills/client-types.ts",
+    "src/skills/client.ts",
+    "src/skills/core.ts",
+    "src/skills/destination-picker.ts",
+    "src/skills/host-types.ts",
+    "src/skills/index.ts",
+    "src/skills/primitives.d.ts",
+    "src/skills/readonly-discovery.ts",
+    "src/skills/server/categories.ts",
+    "src/skills/server/entry-access.ts",
+    "src/skills/server/file-operations.ts",
+    "src/skills/server/policy-store.ts",
+    "src/skills/server/policy.ts",
+    "src/skills/server/root-access.ts",
+    "src/skills/server/router.ts",
+    "src/skills/server/skill-document.ts",
+    "src/skills/server/skill-import.ts",
+    "src/skills/server/skill-scan.ts",
+    "src/skills/server/skill-sync.ts",
+    "src/skills/server/source-roots.ts",
+    "src/skills/server/trash.ts",
+    "src/skills/server/upload-import.ts",
+    "src/skills/server/workspaces.ts",
+    "src/skills/settings-nav-icon.ts",
+    "src/skills/sidebar-entry.ts",
+    "src/skills/source-select.ts",
+    "src/skills/types.ts",
+    "tsdown.config.ts",
+    "vitest.config.ts",
+    "package.json",
+    "tsconfig.build.json",
+    "tsconfig.json",
+    "cordis.patch.yml",
+    "pnpm-lock.yaml",
+    "LICENSE",
+    "LICENSE-skills-manager"
+  ],
+  "artifactFiles": 163,
+  "errors": []
+}

@@ -1,0 +1,444 @@
+{
+  "counting": "Physical lines include imports, declarations, comments and blank lines; a final newline does not add an empty line.",
+  "handwritten_files": 84,
+  "root_tsconfig_json_files": 2,
+  "total_files": 86,
+  "maximum": {
+    "file": "src/skills/client/useSkillManager.ts",
+    "lines": 634,
+    "sha256": "2fb3bfc0641f858c7cbc9d306b282259b6235897303dbbdb1d46d67542371a30"
+  },
+  "over_800": [],
+  "files": [
+    {
+      "file": "src/appearance/client/AppearancePage.tsx",
+      "lines": 259,
+      "sha256": "85cbfe30e38710c4c9522dc773962c117f15bd0e04cc24d8fe6d312ce791c788"
+    },
+    {
+      "file": "src/appearance/client/LibraryPicker.tsx",
+      "lines": 222,
+      "sha256": "27a43852a8f4bc73a5ec17db10d7fbd64f4a68d37c2c75f131059094bc32d8c5"
+    },
+    {
+      "file": "src/appearance/client/controller.ts",
+      "lines": 470,
+      "sha256": "c3a692689c9a9c37289f2731166a49c5221d26f75b1a9dbfcb4a9a8ab2c176d5"
+    },
+    {
+      "file": "src/appearance/client/library.ts",
+      "lines": 109,
+      "sha256": "b355777673ee460a3998fb998a27ae6a09ad130996085f00cb4bc0882d2a7854"
+    },
+    {
+      "file": "src/appearance/client/wallpaper.ts",
+      "lines": 366,
+      "sha256": "3a4b53db7f84eefab49f1a6a78960b4a27b454cd63bcf9cce2f3f7b183c29630"
+    },
+    {
+      "file": "src/appearance/color.ts",
+      "lines": 259,
+      "sha256": "6d88486887ba9f63e01ca18f2fd0ca3091b56d8bfd8f832f7fdd520e3da00cfb"
+    },
+    {
+      "file": "src/appearance/media.ts",
+      "lines": 159,
+      "sha256": "89b2e769a85d99c9dfe899fa8c5f4c24da455f4786e3044b0079aff6c2a461be"
+    },
+    {
+      "file": "src/appearance/sample.ts",
+      "lines": 139,
+      "sha256": "51b32e974b38fa0082928504e5ac3865f51a97b2de82d331646e623190800f67"
+    },
+    {
+      "file": "src/appearance/server/library.ts",
+      "lines": 281,
+      "sha256": "cd24fca135087e36b9acc9adc2661766eb1f2abecd76f23a2baa08f7e09df659"
+    },
+    {
+      "file": "src/appearance/skins.ts",
+      "lines": 366,
+      "sha256": "4bd3bca4af9caecf5873c7594b523fe976e16650808fae59014ed65384f5af7a"
+    },
+    {
+      "file": "src/appearance/tone.ts",
+      "lines": 103,
+      "sha256": "cb7afa52d6f86eb171dee2a8784dd8a1270ee28ae643bba360cdc01ad2368e54"
+    },
+    {
+      "file": "src/client/index.ts",
+      "lines": 128,
+      "sha256": "67dac88863898fa8bd1c62fe3f91eabce692baf7d04a624b004f12d29a8496ec"
+    },
+    {
+      "file": "src/index.ts",
+      "lines": 86,
+      "sha256": "03eb6ec87e8a15504d6fa000f688c24121c7fb4ac402febeed2b37d3877cc703"
+    },
+    {
+      "file": "src/shared/browser-env.ts",
+      "lines": 86,
+      "sha256": "94b39bf3da83f198b25e2f67514aeac13da7dc31eb09ec2a9011a64b4dc0b16c"
+    },
+    {
+      "file": "src/shared/config.ts",
+      "lines": 37,
+      "sha256": "2ddd137dc6c591159ea953c9a2b15538ccf51055ed91a00f06fadcd742aec218"
+    },
+    {
+      "file": "src/shared/host-env.ts",
+      "lines": 106,
+      "sha256": "dcfbb153704fb8ee2c788281629162f79aee1ed5d228e296eec2a5033dbc4f93"
+    },
+    {
+      "file": "src/shared/request.ts",
+      "lines": 12,
+      "sha256": "014d0d123c7fb628dbb39ec25740af5d13e19fb1e5711323086426cf9ae39627"
+    },
+    {
+      "file": "src/shared/styles.ts",
+      "lines": 163,
+      "sha256": "1f24b751d9b320114852781829553ab72225fe09393981b58a7682f8e4915fd9"
+    },
+    {
+      "file": "src/skills/client/api-client.ts",
+      "lines": 72,
+      "sha256": "3f5ccac3771bfb289ac01fe721368886ab2a3183d6bd22e9341c441d4827ef71"
+    },
+    {
+      "file": "src/skills/client/category-dialogs.tsx",
+      "lines": 288,
+      "sha256": "983963ec31823cd5696166c5f1d46555b94108514066cf727e59bbb20d7fe596"
+    },
+    {
+      "file": "src/skills/client/controls.tsx",
+      "lines": 247,
+      "sha256": "d071355dda284e6af688dc43e0f46fb777d074153fea558e525e8e9529ff62ae"
+    },
+    {
+      "file": "src/skills/client/editor-dialogs.tsx",
+      "lines": 336,
+      "sha256": "69f13efaedd1c577971eea84cb2c4578bdecd7d2b8ef7f08f2a991a81c619932"
+    },
+    {
+      "file": "src/skills/client/icons.tsx",
+      "lines": 296,
+      "sha256": "8289dbb898a7304e58a0a5ee61c5ddf2be26e253a05d150f41417dd2b324fd14"
+    },
+    {
+      "file": "src/skills/client/locales/en.ts",
+      "lines": 280,
+      "sha256": "c71e1acee12d64ff78a56bc3446460b26ef2dbd85f2364ee85a229f4742b3069"
+    },
+    {
+      "file": "src/skills/client/locales/zh.ts",
+      "lines": 280,
+      "sha256": "c40e3dadddd5cbf657a9171524b5a4d5b60490203acf127017b7809f1bc66dba"
+    },
+    {
+      "file": "src/skills/client/manager-page.tsx",
+      "lines": 301,
+      "sha256": "ff1bf69289c34ed2566fa96c36856138ac07ce9ff02807d6feca82aa7024d992"
+    },
+    {
+      "file": "src/skills/client/messages.ts",
+      "lines": 177,
+      "sha256": "7b30d146c955fceeceedee625ddb9f722038166879321471926e5b03557f3080"
+    },
+    {
+      "file": "src/skills/client/scope-panels.tsx",
+      "lines": 424,
+      "sha256": "05b019d750c92cda3b7a9bfcc288c91d3bcdae4604009a65db924c2e182cb0fb"
+    },
+    {
+      "file": "src/skills/client/selectors.ts",
+      "lines": 115,
+      "sha256": "3eaadb9b19871fd4ae54ce5e99190def5d871302991f6409d274e7ff1f8f7c2c"
+    },
+    {
+      "file": "src/skills/client/skill-dialogs.tsx",
+      "lines": 248,
+      "sha256": "82331ea0e1d7e78159e84d04b58276a9d043b03056792e740f454308c5a5fb1e"
+    },
+    {
+      "file": "src/skills/client/skill-rows.tsx",
+      "lines": 400,
+      "sha256": "4c1498e5db1058ac9b6021efc7023ef517a223c69702b3eebc8975b1e7fe5e11"
+    },
+    {
+      "file": "src/skills/client/source-tree.tsx",
+      "lines": 596,
+      "sha256": "bb601f378bbafebbbf4a433e3b3d7d5d20fa2b042f08794bcf6ee90f184c34c8"
+    },
+    {
+      "file": "src/skills/client/styles.ts",
+      "lines": 175,
+      "sha256": "e03f986cd076d82e116be595ef8f0aacd3118165a72e06da2656ee01530568a0"
+    },
+    {
+      "file": "src/skills/client/uploads.ts",
+      "lines": 184,
+      "sha256": "7568b07f998332420ef80bd0edd0cfcb0596cbf1643f503763f48648e6c925b5"
+    },
+    {
+      "file": "src/skills/client/useSkillManager.ts",
+      "lines": 634,
+      "sha256": "2fb3bfc0641f858c7cbc9d306b282259b6235897303dbbdb1d46d67542371a30"
+    },
+    {
+      "file": "src/skills/client/useWorkspaceCatalog.ts",
+      "lines": 174,
+      "sha256": "23759a08bb9c40a7316178925e501b8333f033ef5f64fcbec464fdf8c4365e28"
+    },
+    {
+      "file": "src/skills/client-types.ts",
+      "lines": 170,
+      "sha256": "75d0cba017452753f78cb4bfc01c81789f8d61a1cd75706ce8e299e1ba64069d"
+    },
+    {
+      "file": "src/skills/client.ts",
+      "lines": 75,
+      "sha256": "8bc78939675e35033764e528d16c08e7ce6df6d85daf55e704c47fd03fbf278a"
+    },
+    {
+      "file": "src/skills/core.ts",
+      "lines": 339,
+      "sha256": "bb558146b15633f4449ab88a4a2775b212e9bb00c5031bc7f2b3edd35c913a2c"
+    },
+    {
+      "file": "src/skills/destination-picker.ts",
+      "lines": 162,
+      "sha256": "9f16ae377617157b5571f3055e154cbf23698a02e51cc972ec1d8ee1e8388915"
+    },
+    {
+      "file": "src/skills/host-types.ts",
+      "lines": 127,
+      "sha256": "03d7926c827713ba44d98f76e0bd6162f5ea0d544dd07b842fb8fb6fa5f5114e"
+    },
+    {
+      "file": "src/skills/index.ts",
+      "lines": 273,
+      "sha256": "498b612311c8c80cecc44fdca5d96f1a0cda5fac8891969827ef9be089c7993c"
+    },
+    {
+      "file": "src/skills/primitives.d.ts",
+      "lines": 92,
+      "sha256": "606fb52ba29da7ff826b43855749f4cc691b3c98b19ff8515a30c7e466ac9965"
+    },
+    {
+      "file": "src/skills/readonly-discovery.ts",
+      "lines": 153,
+      "sha256": "765b3ff3b777e8eb19b32f3cfca89615a51c1baaa030d4772c639c20e7213e1d"
+    },
+    {
+      "file": "src/skills/server/categories.ts",
+      "lines": 188,
+      "sha256": "aea5729286f59f56704e1c7c2ae879c602f650d6a8f16f0ddbb2821833d78924"
+    },
+    {
+      "file": "src/skills/server/entry-access.ts",
+      "lines": 298,
+      "sha256": "4326d61dd3f82618851e80d93049a6959c8eb009eefcefeac257435c2cb51f8e"
+    },
+    {
+      "file": "src/skills/server/file-operations.ts",
+      "lines": 380,
+      "sha256": "0a009174418be130a1d1bbdb3e90338c9eac81675dc7d655fd127441cca4463a"
+    },
+    {
+      "file": "src/skills/server/policy-store.ts",
+      "lines": 281,
+      "sha256": "d191217967b47c543d35c46aabab79ca6457603dfde343691e3b047290e2524e"
+    },
+    {
+      "file": "src/skills/server/policy.ts",
+      "lines": 238,
+      "sha256": "67b86f7f43dda4e7cd8fdcdb63eae5c4463926faf6f076f76e0cd19eb13538b2"
+    },
+    {
+      "file": "src/skills/server/root-access.ts",
+      "lines": 171,
+      "sha256": "c4f43186f19a011a9fdce19ed7e677d85d36c5b61536657037ed4433be0d3234"
+    },
+    {
+      "file": "src/skills/server/router.ts",
+      "lines": 405,
+      "sha256": "b63dab4bc3b753cc87bf514d6d9b4583533b8a2fd0580bafa82cb07dc494264a"
+    },
+    {
+      "file": "src/skills/server/skill-document.ts",
+      "lines": 200,
+      "sha256": "f41782d3789e2e4b2ab171b7ecd6acad700c9c88ee2859260f16231cca2b652b"
+    },
+    {
+      "file": "src/skills/server/skill-import.ts",
+      "lines": 432,
+      "sha256": "0b88733c234861fe60c6dd757a4c69c7d54de7ee0cdcbd4948c822629fcbd527"
+    },
+    {
+      "file": "src/skills/server/skill-scan.ts",
+      "lines": 165,
+      "sha256": "e5c4344614754f8b09fbae05f6d326f91f660f630fe863dcaffc045bc1956513"
+    },
+    {
+      "file": "src/skills/server/skill-sync.ts",
+      "lines": 216,
+      "sha256": "247b61f6047aaf9ba716e6332404198eaef1a8d334bf4e40557b03b360b8b87d"
+    },
+    {
+      "file": "src/skills/server/source-roots.ts",
+      "lines": 332,
+      "sha256": "72eedc4c3aa6d63299feab44d91da4d058e74f455ee0e4e503fe3d0685d70db1"
+    },
+    {
+      "file": "src/skills/server/trash.ts",
+      "lines": 334,
+      "sha256": "9c75e12de175977d118512f2616ffe660b88d1994b196272d94b56128c4eac90"
+    },
+    {
+      "file": "src/skills/server/upload-import.ts",
+      "lines": 255,
+      "sha256": "629bb5e77ea292310465f674230e9a7eedd3f95920225e0ba5deb1252df5d472"
+    },
+    {
+      "file": "src/skills/server/workspaces.ts",
+      "lines": 241,
+      "sha256": "986f7c62e8515dc846fe2de151a85aea8821740174b589efb47fe7229cff5f28"
+    },
+    {
+      "file": "src/skills/settings-nav-icon.ts",
+      "lines": 115,
+      "sha256": "b0c9011c276c6c65f7f289690690a9c1f0e083cd41feee997b71198a4d290893"
+    },
+    {
+      "file": "src/skills/sidebar-entry.ts",
+      "lines": 283,
+      "sha256": "22ccaefde5ac255829639a05ac1a60bf1a2fe9c89b6feb49b15d28d16e6740fb"
+    },
+    {
+      "file": "src/skills/source-select.ts",
+      "lines": 130,
+      "sha256": "83ea533d9faa71427877533ae77d349fa841dc4525d7f27ff2d0c05e41e906d1"
+    },
+    {
+      "file": "src/skills/types.ts",
+      "lines": 325,
+      "sha256": "85551de819bda5782fa726c3e00ac4b11136595aed58319fc6faa88b5730535f"
+    },
+    {
+      "file": "src/tuning/client/Select.tsx",
+      "lines": 197,
+      "sha256": "8172f6dec92a3cfe445eefaf99370efddca10ab91a52138b7cd5d2d7af95de86"
+    },
+    {
+      "file": "src/tuning/client/TuningPanel.tsx",
+      "lines": 606,
+      "sha256": "451cbf7514df07919d6d5dc6192313a426f773690f2a3dd4ce5e82ddb576c25a"
+    },
+    {
+      "file": "src/tuning/client/tuning.ts",
+      "lines": 93,
+      "sha256": "c3d86f07ecef9c7a23cd59cb53d9fcbdf1616a32564b8ee42bdb2dda73851513"
+    },
+    {
+      "file": "src/tuning/server/tuning.ts",
+      "lines": 546,
+      "sha256": "ad8390ba2da70163a12a85fceaaf7c9090f354130ebd1fa79a65c43dc8707ded"
+    },
+    {
+      "file": "src/tuning/tuning.ts",
+      "lines": 564,
+      "sha256": "989c1bca136895e36613b76c3b5d8b126bf2a25b89d7adc95cd8899b5dff9de4"
+    },
+    {
+      "file": "tests/color.spec.ts",
+      "lines": 91,
+      "sha256": "ce80d135a3676293ec932d2af527207ac54a956c8a42142ec87925443a0bf764"
+    },
+    {
+      "file": "tests/config.spec.ts",
+      "lines": 21,
+      "sha256": "b74716594a8f7a064ca449f0420ddfb26bb88ef46aaff427a432f1425044b957"
+    },
+    {
+      "file": "tests/host-tuning.spec.ts",
+      "lines": 291,
+      "sha256": "80bc5372f0bc5210b3b2c0c45a6c538d22503f947721c83e99019f021d28355f"
+    },
+    {
+      "file": "tests/library.spec.ts",
+      "lines": 165,
+      "sha256": "53fbd7a9a86be0a9c913abfb082a959c3eecb00809145cd9dba24a78b4531fcf"
+    },
+    {
+      "file": "tests/media.spec.ts",
+      "lines": 133,
+      "sha256": "b1bac948a05eb87f06bb795be0197b716ccbd70eb79896b42a2656e878ca88f6"
+    },
+    {
+      "file": "tests/sample.spec.ts",
+      "lines": 46,
+      "sha256": "2d12c37a679b6a69957a8e1a5c93bf85265da13371f8519f9ccdc0269a58dedf"
+    },
+    {
+      "file": "tests/skills-client-data.spec.ts",
+      "lines": 94,
+      "sha256": "8c49e96a46e45d733870dfccf6e4552381aa978b26eaabd8a426e8eef229f488"
+    },
+    {
+      "file": "tests/skills-client-lifecycle.spec.ts",
+      "lines": 195,
+      "sha256": "3d9ea068e1fef24af479b2fc1a68992c8c19a804eb369a1699df403d006bcb08"
+    },
+    {
+      "file": "tests/skills-files.spec.ts",
+      "lines": 127,
+      "sha256": "dfd0fb2fa9d5385d3e62fa2dcb5cdc54781b50efb46271e3002d7987fd7b7157"
+    },
+    {
+      "file": "tests/skills-routes.spec.ts",
+      "lines": 155,
+      "sha256": "bb35bf2fe89ad71ffe95c62977df86fe2db86e31263cd47f3554752ac756c6e0"
+    },
+    {
+      "file": "tests/skills-state.spec.ts",
+      "lines": 118,
+      "sha256": "f2fcd059536e789b799ed5a8d48f8f4056e55bdbe2e55443b914be9e4dc245a0"
+    },
+    {
+      "file": "tests/skills-sync.spec.ts",
+      "lines": 155,
+      "sha256": "c4f6efba70580b08d7c999cf977d60dd8acef0d1682e8ffc149de2d93b12e844"
+    },
+    {
+      "file": "tests/skins.spec.ts",
+      "lines": 71,
+      "sha256": "8295894d93e0e57cc156d4f5df461741de9eb56fa8187c1857d355fca99ee396"
+    },
+    {
+      "file": "tests/tuning.spec.ts",
+      "lines": 317,
+      "sha256": "41b359af4878472e1198468436c69b15211c3652aa09248ef106da3e16f748e4"
+    },
+    {
+      "file": "tsconfig.build.json",
+      "lines": 14,
+      "sha256": "3f9b8a15ca5fe321e15e98fca6d08f9e300faa26d926c961b786397952dd9772"
+    },
+    {
+      "file": "tsconfig.json",
+      "lines": 28,
+      "sha256": "07c08afd7898bd0257304707cf7e06c9545baeac667057f902e94e7e904ba48e"
+    },
+    {
+      "file": "tsdown.config.ts",
+      "lines": 73,
+      "sha256": "2c25824603502f863d0dbfa755ff319070cbea0440a11168150c61b0fc6e71ee"
+    },
+    {
+      "file": "vitest.config.ts",
+      "lines": 8,
+      "sha256": "8a1f6babd39c1812925782586413846c85c1e83b645e84e20a0422a043dfba29"
+    }
+  ]
+}

@@ -1,0 +1,1802 @@
+{
+  "sourceModules": 68,
+  "runtimeEdges": 241,
+  "typeEdges": 85,
+  "browserModules": [
+    "src/appearance/client/AppearancePage.tsx",
+    "src/appearance/client/LibraryPicker.tsx",
+    "src/appearance/client/controller.ts",
+    "src/appearance/client/library.ts",
+    "src/appearance/client/wallpaper.ts",
+    "src/appearance/color.ts",
+    "src/appearance/media.ts",
+    "src/appearance/sample.ts",
+    "src/appearance/skins.ts",
+    "src/appearance/tone.ts",
+    "src/client/index.ts",
+    "src/shared/request.ts",
+    "src/shared/styles.ts",
+    "src/skills/client.ts",
+    "src/skills/client/api-client.ts",
+    "src/skills/client/category-dialogs.tsx",
+    "src/skills/client/controls.tsx",
+    "src/skills/client/editor-dialogs.tsx",
+    "src/skills/client/icons.tsx",
+    "src/skills/client/locales/en.ts",
+    "src/skills/client/locales/zh.ts",
+    "src/skills/client/manager-page.tsx",
+    "src/skills/client/messages.ts",
+    "src/skills/client/scope-panels.tsx",
+    "src/skills/client/selectors.ts",
+    "src/skills/client/skill-dialogs.tsx",
+    "src/skills/client/skill-rows.tsx",
+    "src/skills/client/source-tree.tsx",
+    "src/skills/client/styles.ts",
+    "src/skills/client/uploads.ts",
+    "src/skills/client/useSkillManager.ts",
+    "src/skills/client/useWorkspaceCatalog.ts",
+    "src/skills/destination-picker.ts",
+    "src/skills/settings-nav-icon.ts",
+    "src/skills/sidebar-entry.ts",
+    "src/skills/source-select.ts",
+    "src/tuning/client/Select.tsx",
+    "src/tuning/client/TuningPanel.tsx",
+    "src/tuning/client/tuning.ts",
+    "src/tuning/tuning.ts"
+  ],
+  "browserExternals": [
+    "@deepseek-ai/dsh-client-ui-primitives",
+    "react"
+  ],
+  "runtime": {
+    "src/appearance/client/AppearancePage.tsx": [
+      {
+        "from": "src/appearance/client/AppearancePage.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/AppearancePage.tsx",
+        "to": "src/appearance/client/LibraryPicker.tsx",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/client/LibraryPicker.tsx": [
+      {
+        "from": "src/appearance/client/LibraryPicker.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/LibraryPicker.tsx",
+        "to": "src/appearance/client/library.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/LibraryPicker.tsx",
+        "to": "src/appearance/client/wallpaper.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/client/controller.ts": [
+      {
+        "from": "src/appearance/client/controller.ts",
+        "to": "src/appearance/skins.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/controller.ts",
+        "to": "src/appearance/color.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/controller.ts",
+        "to": "src/appearance/tone.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/controller.ts",
+        "to": "src/appearance/client/wallpaper.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/client/library.ts": [
+      {
+        "from": "src/appearance/client/library.ts",
+        "to": "src/appearance/media.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/library.ts",
+        "to": "src/shared/request.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/client/wallpaper.ts": [
+      {
+        "from": "src/appearance/client/wallpaper.ts",
+        "to": "src/appearance/sample.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/client/wallpaper.ts",
+        "to": "src/appearance/tone.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/color.ts": [],
+    "src/appearance/media.ts": [],
+    "src/appearance/sample.ts": [
+      {
+        "from": "src/appearance/sample.ts",
+        "to": "src/appearance/color.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/sample.ts",
+        "to": "src/appearance/tone.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/sample.ts",
+        "to": "src/appearance/skins.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/server/library.ts": [
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "node:fs/promises",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "node:os",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "node:stream/promises",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "src/appearance/media.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/appearance/server/library.ts",
+        "to": "src/shared/request.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/skins.ts": [
+      {
+        "from": "src/appearance/skins.ts",
+        "to": "src/appearance/color.ts",
+        "kind": "import"
+      }
+    ],
+    "src/appearance/tone.ts": [
+      {
+        "from": "src/appearance/tone.ts",
+        "to": "src/appearance/color.ts",
+        "kind": "import"
+      }
+    ],
+    "src/client/index.ts": [
+      {
+        "from": "src/client/index.ts",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/client/index.ts",
+        "to": "src/shared/styles.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/client/index.ts",
+        "to": "src/appearance/client/controller.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/client/index.ts",
+        "to": "src/appearance/client/AppearancePage.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/client/index.ts",
+        "to": "src/tuning/client/TuningPanel.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/client/index.ts",
+        "to": "src/skills/client.ts",
+        "kind": "import"
+      }
+    ],
+    "src/index.ts": [
+      {
+        "from": "src/index.ts",
+        "to": "@deepseek-ai/schemastery",
+        "kind": "import"
+      },
+      {
+        "from": "src/index.ts",
+        "to": "src/shared/config.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/index.ts",
+        "to": "src/appearance/server/library.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/index.ts",
+        "to": "src/tuning/server/tuning.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/index.ts",
+        "to": "src/skills/index.ts",
+        "kind": "import"
+      }
+    ],
+    "src/shared/browser-env.ts": [],
+    "src/shared/config.ts": [],
+    "src/shared/host-env.ts": [],
+    "src/shared/request.ts": [],
+    "src/shared/styles.ts": [],
+    "src/skills/client/api-client.ts": [],
+    "src/skills/client/category-dialogs.tsx": [
+      {
+        "from": "src/skills/client/category-dialogs.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/category-dialogs.tsx",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/controls.tsx": [
+      {
+        "from": "src/skills/client/controls.tsx",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/controls.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/controls.tsx",
+        "to": "src/skills/destination-picker.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/controls.tsx",
+        "to": "src/skills/source-select.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/controls.tsx",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/editor-dialogs.tsx": [
+      {
+        "from": "src/skills/client/editor-dialogs.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/editor-dialogs.tsx",
+        "to": "src/skills/destination-picker.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/editor-dialogs.tsx",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/editor-dialogs.tsx",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/editor-dialogs.tsx",
+        "to": "src/skills/client/uploads.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/icons.tsx": [],
+    "src/skills/client/locales/en.ts": [],
+    "src/skills/client/locales/zh.ts": [],
+    "src/skills/client/manager-page.tsx": [
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/category-dialogs.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/editor-dialogs.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/scope-panels.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/skill-dialogs.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/skill-rows.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/source-tree.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/styles.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/manager-page.tsx",
+        "to": "src/skills/client/useSkillManager.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/messages.ts": [
+      {
+        "from": "src/skills/client/messages.ts",
+        "to": "src/skills/destination-picker.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/messages.ts",
+        "to": "src/skills/sidebar-entry.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/messages.ts",
+        "to": "src/skills/client/locales/en.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/messages.ts",
+        "to": "src/skills/client/locales/zh.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/scope-panels.tsx": [
+      {
+        "from": "src/skills/client/scope-panels.tsx",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/scope-panels.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/scope-panels.tsx",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/scope-panels.tsx",
+        "to": "src/skills/client/icons.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/scope-panels.tsx",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/selectors.ts": [],
+    "src/skills/client/skill-dialogs.tsx": [
+      {
+        "from": "src/skills/client/skill-dialogs.tsx",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-dialogs.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-dialogs.tsx",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/skill-rows.tsx": [
+      {
+        "from": "src/skills/client/skill-rows.tsx",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-rows.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-rows.tsx",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-rows.tsx",
+        "to": "src/skills/client/icons.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-rows.tsx",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/skill-rows.tsx",
+        "to": "src/skills/client/selectors.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/source-tree.tsx": [
+      {
+        "from": "src/skills/client/source-tree.tsx",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/source-tree.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/source-tree.tsx",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/source-tree.tsx",
+        "to": "src/skills/client/icons.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/source-tree.tsx",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/source-tree.tsx",
+        "to": "src/skills/client/selectors.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/styles.ts": [
+      {
+        "from": "src/skills/client/styles.ts",
+        "to": "src/skills/destination-picker.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/styles.ts",
+        "to": "src/skills/sidebar-entry.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/uploads.ts": [],
+    "src/skills/client/useSkillManager.ts": [
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "src/skills/destination-picker.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "src/skills/client/api-client.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "src/skills/client/selectors.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "src/skills/client/uploads.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useSkillManager.ts",
+        "to": "src/skills/client/useWorkspaceCatalog.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client/useWorkspaceCatalog.ts": [
+      {
+        "from": "src/skills/client/useWorkspaceCatalog.ts",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useWorkspaceCatalog.ts",
+        "to": "src/skills/client/api-client.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client/useWorkspaceCatalog.ts",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/client-types.ts": [],
+    "src/skills/client.ts": [
+      {
+        "from": "src/skills/client.ts",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/client/api-client.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/client/controls.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/client/manager-page.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/client/messages.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/client/selectors.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/client/uploads.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/settings-nav-icon.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/client.ts",
+        "to": "src/skills/sidebar-entry.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/core.ts": [
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/policy-store.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-scan.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/policy.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/entry-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/trash.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-sync.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/entry-access.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-scan.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/policy-store.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/policy.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/categories.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/trash.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-import.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/upload-import.ts",
+        "kind": "export"
+      },
+      {
+        "from": "src/skills/core.ts",
+        "to": "src/skills/server/skill-sync.ts",
+        "kind": "export"
+      }
+    ],
+    "src/skills/destination-picker.ts": [],
+    "src/skills/host-types.ts": [],
+    "src/skills/index.ts": [
+      {
+        "from": "src/skills/index.ts",
+        "to": "src/skills/server/router.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/index.ts",
+        "to": "node:fs/promises",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/index.ts",
+        "to": "src/skills/core.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/primitives.d.ts": [],
+    "src/skills/readonly-discovery.ts": [
+      {
+        "from": "src/skills/readonly-discovery.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/readonly-discovery.ts",
+        "to": "node:path",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/categories.ts": [
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "src/skills/server/policy-store.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "src/skills/server/entry-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "src/skills/server/skill-scan.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "src/skills/server/policy.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/categories.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/entry-access.ts": [
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "src/skills/server/skill-scan.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "node:os",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "src/skills/readonly-discovery.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/entry-access.ts",
+        "to": "node:child_process",
+        "kind": "dynamic"
+      }
+    ],
+    "src/skills/server/file-operations.ts": [
+      {
+        "from": "src/skills/server/file-operations.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/file-operations.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/file-operations.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/policy-store.ts": [
+      {
+        "from": "src/skills/server/policy-store.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy-store.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy-store.ts",
+        "to": "src/skills/readonly-discovery.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy-store.ts",
+        "to": "node:fs",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/policy.ts": [
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "src/skills/server/policy-store.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "src/skills/server/entry-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/policy.ts",
+        "to": "node:fs",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/root-access.ts": [
+      {
+        "from": "src/skills/server/root-access.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/root-access.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/root-access.ts",
+        "to": "node:path",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/router.ts": [
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/categories.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/entry-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/policy-store.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/policy.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/skill-import.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/skill-sync.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/trash.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/upload-import.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/router.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/skill-document.ts": [
+      {
+        "from": "src/skills/server/skill-document.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/skill-import.ts": [
+      {
+        "from": "src/skills/server/skill-import.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-import.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-import.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-import.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-import.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-import.ts",
+        "to": "node:path",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/skill-scan.ts": [
+      {
+        "from": "src/skills/server/skill-scan.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-scan.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-scan.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-scan.ts",
+        "to": "src/skills/readonly-discovery.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-scan.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-scan.ts",
+        "to": "node:path",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/skill-sync.ts": [
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/upload-import.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/skill-scan.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "src/skills/server/trash.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/skill-sync.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/source-roots.ts": [
+      {
+        "from": "src/skills/server/source-roots.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/source-roots.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/source-roots.ts",
+        "to": "node:os",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/source-roots.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/trash.ts": [
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "src/skills/server/workspaces.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "src/skills/server/entry-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "src/skills/server/policy-store.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/trash.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/upload-import.ts": [
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "src/skills/server/skill-document.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "src/skills/server/skill-import.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "node:fs",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "fflate",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/upload-import.ts",
+        "to": "node:crypto",
+        "kind": "import"
+      }
+    ],
+    "src/skills/server/workspaces.ts": [
+      {
+        "from": "src/skills/server/workspaces.ts",
+        "to": "src/skills/server/file-operations.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/workspaces.ts",
+        "to": "src/skills/server/source-roots.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/workspaces.ts",
+        "to": "src/skills/server/root-access.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/workspaces.ts",
+        "to": "src/skills/server/skill-scan.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/workspaces.ts",
+        "to": "node:path",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/server/workspaces.ts",
+        "to": "node:fs",
+        "kind": "import"
+      }
+    ],
+    "src/skills/settings-nav-icon.ts": [],
+    "src/skills/sidebar-entry.ts": [
+      {
+        "from": "src/skills/sidebar-entry.ts",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/sidebar-entry.ts",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      },
+      {
+        "from": "src/skills/sidebar-entry.ts",
+        "to": "src/skills/settings-nav-icon.ts",
+        "kind": "import"
+      }
+    ],
+    "src/skills/source-select.ts": [
+      {
+        "from": "src/skills/source-select.ts",
+        "to": "@deepseek-ai/dsh-client-ui-primitives",
+        "kind": "import"
+      }
+    ],
+    "src/skills/types.ts": [],
+    "src/tuning/client/Select.tsx": [
+      {
+        "from": "src/tuning/client/Select.tsx",
+        "to": "react",
+        "kind": "import"
+      }
+    ],
+    "src/tuning/client/TuningPanel.tsx": [
+      {
+        "from": "src/tuning/client/TuningPanel.tsx",
+        "to": "react",
+        "kind": "import"
+      },
+      {
+        "from": "src/tuning/client/TuningPanel.tsx",
+        "to": "src/tuning/tuning.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/tuning/client/TuningPanel.tsx",
+        "to": "src/tuning/client/Select.tsx",
+        "kind": "import"
+      },
+      {
+        "from": "src/tuning/client/TuningPanel.tsx",
+        "to": "src/tuning/client/tuning.ts",
+        "kind": "import"
+      }
+    ],
+    "src/tuning/client/tuning.ts": [
+      {
+        "from": "src/tuning/client/tuning.ts",
+        "to": "src/shared/request.ts",
+        "kind": "import"
+      }
+    ],
+    "src/tuning/server/tuning.ts": [
+      {
+        "from": "src/tuning/server/tuning.ts",
+        "to": "src/tuning/tuning.ts",
+        "kind": "import"
+      },
+      {
+        "from": "src/tuning/server/tuning.ts",
+        "to": "src/shared/request.ts",
+        "kind": "import"
+      }
+    ],
+    "src/tuning/tuning.ts": []
+  },
+  "types": [
+    {
+      "from": "src/appearance/client/AppearancePage.tsx",
+      "to": "src/appearance/client/controller.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/client/AppearancePage.tsx",
+      "to": "src/shared/browser-env.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/client/LibraryPicker.tsx",
+      "to": "src/appearance/media.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/client/LibraryPicker.tsx",
+      "to": "src/appearance/client/controller.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/client/controller.ts",
+      "to": "src/shared/browser-env.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/client/wallpaper.ts",
+      "to": "src/appearance/sample.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/server/library.ts",
+      "to": "node:http",
+      "kind": "import"
+    },
+    {
+      "from": "src/appearance/server/library.ts",
+      "to": "src/shared/host-env.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/client/index.ts",
+      "to": "@deepseek-ai/cordis",
+      "kind": "import"
+    },
+    {
+      "from": "src/client/index.ts",
+      "to": "src/shared/browser-env.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/index.ts",
+      "to": "@deepseek-ai/cordis",
+      "kind": "import"
+    },
+    {
+      "from": "src/index.ts",
+      "to": "src/shared/host-env.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/shared/browser-env.ts",
+      "to": "react",
+      "kind": "import"
+    },
+    {
+      "from": "src/shared/browser-env.ts",
+      "to": "@deepseek-ai/dsh-client-ui-slots",
+      "kind": "import"
+    },
+    {
+      "from": "src/shared/host-env.ts",
+      "to": "node:http",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/api-client.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/api-client.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/category-dialogs.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/controls.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/editor-dialogs.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/editor-dialogs.tsx",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/manager-page.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/messages.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/messages.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/scope-panels.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/scope-panels.tsx",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/scope-panels.tsx",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/selectors.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/skill-dialogs.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/skill-rows.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/skill-rows.tsx",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/source-tree.tsx",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/source-tree.tsx",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/uploads.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/useSkillManager.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/useSkillManager.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/useSkillManager.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/useWorkspaceCatalog.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client/useWorkspaceCatalog.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client-types.ts",
+      "to": "react",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client-types.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/client-types.ts",
+      "to": "src/skills/types.ts",
+      "kind": "export"
+    },
+    {
+      "from": "src/skills/client.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/core.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/core.ts",
+      "to": "src/skills/types.ts",
+      "kind": "export"
+    },
+    {
+      "from": "src/skills/destination-picker.ts",
+      "to": "react",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/destination-picker.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/destination-picker.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/destination-picker.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/host-types.ts",
+      "to": "node:http",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/host-types.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/host-types.ts",
+      "to": "src/skills/core.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/index.ts",
+      "to": "src/skills/core.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/index.ts",
+      "to": "src/skills/host-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/index.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/primitives.d.ts",
+      "to": "react",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/primitives.d.ts",
+      "to": "react",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/readonly-discovery.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/readonly-discovery.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/categories.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/entry-access.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/file-operations.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/policy-store.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/policy.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/root-access.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/router.ts",
+      "to": "node:http",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/router.ts",
+      "to": "src/skills/core.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/router.ts",
+      "to": "src/skills/host-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/router.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/skill-document.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/skill-import.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/skill-scan.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/skill-sync.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/source-roots.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/trash.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/trash.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/upload-import.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/workspaces.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/server/workspaces.ts",
+      "to": "src/skills/types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/sidebar-entry.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/source-select.ts",
+      "to": "react",
+      "kind": "import"
+    },
+    {
+      "from": "src/skills/source-select.ts",
+      "to": "src/skills/client-types.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/tuning/client/tuning.ts",
+      "to": "src/tuning/tuning.ts",
+      "kind": "import"
+    },
+    {
+      "from": "src/tuning/server/tuning.ts",
+      "to": "node:http",
+      "kind": "import"
+    },
+    {
+      "from": "src/tuning/server/tuning.ts",
+      "to": "src/shared/host-env.ts",
+      "kind": "import"
+    }
+  ],
+  "errors": []
+}

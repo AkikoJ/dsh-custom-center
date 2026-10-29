@@ -1,0 +1,547 @@
+{
+  "date": "2026-10-29",
+  "head": "b5431b6707471abfc2ccff02c96e25de2980bf04",
+  "branch": "main",
+  "git_status": " M AGENTS.md\n?? .scratch/\n?? docs/adr/0002-feature-oriented-organization.md\n?? docs/agents/\n?? docs/feature-organization-plan.md\n",
+  "user_diff": "diff --git a/AGENTS.md b/AGENTS.md\nindex 7af8c37..18c71d2 100644\n--- a/AGENTS.md\n+++ b/AGENTS.md\n@@ -36,3 +36,17 @@ pnpm typecheck\n pnpm test\n pnpm build\n ```\n+\n+## Agent skills\n+\n+### Issue tracker\n+\n+任务与规格存放在本地 `.scratch/`。操作任务前，读取 `docs/agents/issue-tracker.md`。\n+\n+### Triage labels\n+\n+使用五个默认分诊状态。分诊任务前，读取 `docs/agents/triage-labels.md`。\n+\n+### Domain docs\n+\n+采用 single-context 布局：根目录 `GLOSSARY.md` 和 `docs/adr/`。探索代码前，读取 `docs/agents/domain.md`。\n",
+  "files": {
+    "src/client/AppearancePage.tsx": {
+      "sha256": "f9d4c67614c3e879f11b983b114898ecd6cb9f0e836a8cd6b323c62793175590",
+      "lines": 259
+    },
+    "src/client/LibraryPicker.tsx": {
+      "sha256": "96605e5c63dc55863b21d479759a7d61918d8e34c3310945d5aba655f6d79f35",
+      "lines": 222
+    },
+    "src/client/Select.tsx": {
+      "sha256": "8172f6dec92a3cfe445eefaf99370efddca10ab91a52138b7cd5d2d7af95de86",
+      "lines": 197
+    },
+    "src/client/TuningPanel.tsx": {
+      "sha256": "5e2a36dc8a270c1a21ffa825cda79a0dbc31e5cf1af389975a564daa6089aafd",
+      "lines": 606
+    },
+    "src/client/controller.ts": {
+      "sha256": "cb1a8c82e69145327be4c215b630eebf5f750bc4b69cdcfcc4c4155844181ef5",
+      "lines": 470
+    },
+    "src/client/dsh-env.ts": {
+      "sha256": "94b39bf3da83f198b25e2f67514aeac13da7dc31eb09ec2a9011a64b4dc0b16c",
+      "lines": 86
+    },
+    "src/client/index.ts": {
+      "sha256": "6edab54c5251b55ac7ba8f6555d2219f0da04a535f43380b5a936608e23c1d7d",
+      "lines": 128
+    },
+    "src/client/library.ts": {
+      "sha256": "2ecad0c0ed6ba31c2e76a1c8022cc431781482bf8f91a96631ebf99543979ae2",
+      "lines": 108
+    },
+    "src/client/styles.ts": {
+      "sha256": "1f24b751d9b320114852781829553ab72225fe09393981b58a7682f8e4915fd9",
+      "lines": 163
+    },
+    "src/client/tuning.ts": {
+      "sha256": "1c085eb28e38af8da92c12277255033405e085effec790503506c502a8de0380",
+      "lines": 93
+    },
+    "src/client/wallpaper.ts": {
+      "sha256": "5837a9e0a559ee68fc2a15a2e47f5d9bab6324e05b24523ee2c35005940ed7d0",
+      "lines": 366
+    },
+    "src/core/color.ts": {
+      "sha256": "6d88486887ba9f63e01ca18f2fd0ca3091b56d8bfd8f832f7fdd520e3da00cfb",
+      "lines": 259
+    },
+    "src/core/config.ts": {
+      "sha256": "2ddd137dc6c591159ea953c9a2b15538ccf51055ed91a00f06fadcd742aec218",
+      "lines": 37
+    },
+    "src/core/media.ts": {
+      "sha256": "65169d7705169fcaf4f6633e27363d0561cc35ef197b32fc62a4bc260101fc5c",
+      "lines": 172
+    },
+    "src/core/sample.ts": {
+      "sha256": "51b32e974b38fa0082928504e5ac3865f51a97b2de82d331646e623190800f67",
+      "lines": 139
+    },
+    "src/core/skins.ts": {
+      "sha256": "4bd3bca4af9caecf5873c7594b523fe976e16650808fae59014ed65384f5af7a",
+      "lines": 366
+    },
+    "src/core/tone.ts": {
+      "sha256": "cb7afa52d6f86eb171dee2a8784dd8a1270ee28ae643bba360cdc01ad2368e54",
+      "lines": 103
+    },
+    "src/core/tuning.ts": {
+      "sha256": "989c1bca136895e36613b76c3b5d8b126bf2a25b89d7adc95cd8899b5dff9de4",
+      "lines": 564
+    },
+    "src/host/env.ts": {
+      "sha256": "dcfbb153704fb8ee2c788281629162f79aee1ed5d228e296eec2a5033dbc4f93",
+      "lines": 106
+    },
+    "src/host/library.ts": {
+      "sha256": "2bbb2a8333f1a91461daa1a5c8f3f97d699f53eef965472e0eed351448d6e0fe",
+      "lines": 282
+    },
+    "src/host/tuning.ts": {
+      "sha256": "feb326db42965dfe501cd30119c581ff13ff2d32caf724922b68991d863d5a55",
+      "lines": 546
+    },
+    "src/index.ts": {
+      "sha256": "2f219160f7a361cba3e7fc0167f42174c86ead4fe893bbcd02b1de2671975c82",
+      "lines": 86
+    },
+    "src/skills/client/api-client.ts": {
+      "sha256": "3f5ccac3771bfb289ac01fe721368886ab2a3183d6bd22e9341c441d4827ef71",
+      "lines": 72
+    },
+    "src/skills/client/category-dialogs.tsx": {
+      "sha256": "983963ec31823cd5696166c5f1d46555b94108514066cf727e59bbb20d7fe596",
+      "lines": 288
+    },
+    "src/skills/client/controls.tsx": {
+      "sha256": "d071355dda284e6af688dc43e0f46fb777d074153fea558e525e8e9529ff62ae",
+      "lines": 247
+    },
+    "src/skills/client/editor-dialogs.tsx": {
+      "sha256": "69f13efaedd1c577971eea84cb2c4578bdecd7d2b8ef7f08f2a991a81c619932",
+      "lines": 336
+    },
+    "src/skills/client/icons.tsx": {
+      "sha256": "8289dbb898a7304e58a0a5ee61c5ddf2be26e253a05d150f41417dd2b324fd14",
+      "lines": 296
+    },
+    "src/skills/client/locales/en.ts": {
+      "sha256": "c71e1acee12d64ff78a56bc3446460b26ef2dbd85f2364ee85a229f4742b3069",
+      "lines": 280
+    },
+    "src/skills/client/locales/zh.ts": {
+      "sha256": "c40e3dadddd5cbf657a9171524b5a4d5b60490203acf127017b7809f1bc66dba",
+      "lines": 280
+    },
+    "src/skills/client/manager-page.tsx": {
+      "sha256": "ff1bf69289c34ed2566fa96c36856138ac07ce9ff02807d6feca82aa7024d992",
+      "lines": 301
+    },
+    "src/skills/client/messages.ts": {
+      "sha256": "7b30d146c955fceeceedee625ddb9f722038166879321471926e5b03557f3080",
+      "lines": 177
+    },
+    "src/skills/client/scope-panels.tsx": {
+      "sha256": "05b019d750c92cda3b7a9bfcc288c91d3bcdae4604009a65db924c2e182cb0fb",
+      "lines": 424
+    },
+    "src/skills/client/selectors.ts": {
+      "sha256": "3eaadb9b19871fd4ae54ce5e99190def5d871302991f6409d274e7ff1f8f7c2c",
+      "lines": 115
+    },
+    "src/skills/client/skill-dialogs.tsx": {
+      "sha256": "82331ea0e1d7e78159e84d04b58276a9d043b03056792e740f454308c5a5fb1e",
+      "lines": 248
+    },
+    "src/skills/client/skill-rows.tsx": {
+      "sha256": "4c1498e5db1058ac9b6021efc7023ef517a223c69702b3eebc8975b1e7fe5e11",
+      "lines": 400
+    },
+    "src/skills/client/source-tree.tsx": {
+      "sha256": "bb601f378bbafebbbf4a433e3b3d7d5d20fa2b042f08794bcf6ee90f184c34c8",
+      "lines": 596
+    },
+    "src/skills/client/styles.ts": {
+      "sha256": "e03f986cd076d82e116be595ef8f0aacd3118165a72e06da2656ee01530568a0",
+      "lines": 175
+    },
+    "src/skills/client/uploads.ts": {
+      "sha256": "7568b07f998332420ef80bd0edd0cfcb0596cbf1643f503763f48648e6c925b5",
+      "lines": 184
+    },
+    "src/skills/client/useSkillManager.ts": {
+      "sha256": "2fb3bfc0641f858c7cbc9d306b282259b6235897303dbbdb1d46d67542371a30",
+      "lines": 634
+    },
+    "src/skills/client/useWorkspaceCatalog.ts": {
+      "sha256": "23759a08bb9c40a7316178925e501b8333f033ef5f64fcbec464fdf8c4365e28",
+      "lines": 174
+    },
+    "src/skills/client-types.ts": {
+      "sha256": "75d0cba017452753f78cb4bfc01c81789f8d61a1cd75706ce8e299e1ba64069d",
+      "lines": 170
+    },
+    "src/skills/client.ts": {
+      "sha256": "8bc78939675e35033764e528d16c08e7ce6df6d85daf55e704c47fd03fbf278a",
+      "lines": 75
+    },
+    "src/skills/core.ts": {
+      "sha256": "bb558146b15633f4449ab88a4a2775b212e9bb00c5031bc7f2b3edd35c913a2c",
+      "lines": 339
+    },
+    "src/skills/destination-picker.ts": {
+      "sha256": "9f16ae377617157b5571f3055e154cbf23698a02e51cc972ec1d8ee1e8388915",
+      "lines": 162
+    },
+    "src/skills/host-types.ts": {
+      "sha256": "03d7926c827713ba44d98f76e0bd6162f5ea0d544dd07b842fb8fb6fa5f5114e",
+      "lines": 127
+    },
+    "src/skills/index.ts": {
+      "sha256": "498b612311c8c80cecc44fdca5d96f1a0cda5fac8891969827ef9be089c7993c",
+      "lines": 273
+    },
+    "src/skills/primitives.d.ts": {
+      "sha256": "606fb52ba29da7ff826b43855749f4cc691b3c98b19ff8515a30c7e466ac9965",
+      "lines": 92
+    },
+    "src/skills/readonly-discovery.ts": {
+      "sha256": "765b3ff3b777e8eb19b32f3cfca89615a51c1baaa030d4772c639c20e7213e1d",
+      "lines": 153
+    },
+    "src/skills/server/categories.ts": {
+      "sha256": "aea5729286f59f56704e1c7c2ae879c602f650d6a8f16f0ddbb2821833d78924",
+      "lines": 188
+    },
+    "src/skills/server/entry-access.ts": {
+      "sha256": "4326d61dd3f82618851e80d93049a6959c8eb009eefcefeac257435c2cb51f8e",
+      "lines": 298
+    },
+    "src/skills/server/file-operations.ts": {
+      "sha256": "0a009174418be130a1d1bbdb3e90338c9eac81675dc7d655fd127441cca4463a",
+      "lines": 380
+    },
+    "src/skills/server/policy-store.ts": {
+      "sha256": "d191217967b47c543d35c46aabab79ca6457603dfde343691e3b047290e2524e",
+      "lines": 281
+    },
+    "src/skills/server/policy.ts": {
+      "sha256": "67b86f7f43dda4e7cd8fdcdb63eae5c4463926faf6f076f76e0cd19eb13538b2",
+      "lines": 238
+    },
+    "src/skills/server/root-access.ts": {
+      "sha256": "c4f43186f19a011a9fdce19ed7e677d85d36c5b61536657037ed4433be0d3234",
+      "lines": 171
+    },
+    "src/skills/server/router.ts": {
+      "sha256": "b63dab4bc3b753cc87bf514d6d9b4583533b8a2fd0580bafa82cb07dc494264a",
+      "lines": 405
+    },
+    "src/skills/server/skill-document.ts": {
+      "sha256": "f41782d3789e2e4b2ab171b7ecd6acad700c9c88ee2859260f16231cca2b652b",
+      "lines": 200
+    },
+    "src/skills/server/skill-import.ts": {
+      "sha256": "0b88733c234861fe60c6dd757a4c69c7d54de7ee0cdcbd4948c822629fcbd527",
+      "lines": 432
+    },
+    "src/skills/server/skill-scan.ts": {
+      "sha256": "e5c4344614754f8b09fbae05f6d326f91f660f630fe863dcaffc045bc1956513",
+      "lines": 165
+    },
+    "src/skills/server/skill-sync.ts": {
+      "sha256": "247b61f6047aaf9ba716e6332404198eaef1a8d334bf4e40557b03b360b8b87d",
+      "lines": 216
+    },
+    "src/skills/server/source-roots.ts": {
+      "sha256": "72eedc4c3aa6d63299feab44d91da4d058e74f455ee0e4e503fe3d0685d70db1",
+      "lines": 332
+    },
+    "src/skills/server/trash.ts": {
+      "sha256": "9c75e12de175977d118512f2616ffe660b88d1994b196272d94b56128c4eac90",
+      "lines": 334
+    },
+    "src/skills/server/upload-import.ts": {
+      "sha256": "629bb5e77ea292310465f674230e9a7eedd3f95920225e0ba5deb1252df5d472",
+      "lines": 255
+    },
+    "src/skills/server/workspaces.ts": {
+      "sha256": "986f7c62e8515dc846fe2de151a85aea8821740174b589efb47fe7229cff5f28",
+      "lines": 241
+    },
+    "src/skills/settings-nav-icon.ts": {
+      "sha256": "b0c9011c276c6c65f7f289690690a9c1f0e083cd41feee997b71198a4d290893",
+      "lines": 115
+    },
+    "src/skills/sidebar-entry.ts": {
+      "sha256": "22ccaefde5ac255829639a05ac1a60bf1a2fe9c89b6feb49b15d28d16e6740fb",
+      "lines": 283
+    },
+    "src/skills/source-select.ts": {
+      "sha256": "83ea533d9faa71427877533ae77d349fa841dc4525d7f27ff2d0c05e41e906d1",
+      "lines": 130
+    },
+    "src/skills/types.ts": {
+      "sha256": "85551de819bda5782fa726c3e00ac4b11136595aed58319fc6faa88b5730535f",
+      "lines": 325
+    },
+    "tests/color.spec.ts": {
+      "sha256": "d64f05544efd16f87f04541afea578ffdf87bd651d59e7b1342e707ab620f739",
+      "lines": 91
+    },
+    "tests/config.spec.ts": {
+      "sha256": "84e21d383f77b336fea9186c3aeed00492a8f8cc184b328eefc5c49bb8328e83",
+      "lines": 21
+    },
+    "tests/host-tuning.spec.ts": {
+      "sha256": "8da8b174ba5132c41a5b8675a7f91dc830f7644280816efd5ef165291aec3005",
+      "lines": 291
+    },
+    "tests/library.spec.ts": {
+      "sha256": "bac5a73df87fb94ed2a157a2a6988025dd3a6a8a526b4cb7a2a3d80bfc40a7e8",
+      "lines": 165
+    },
+    "tests/media.spec.ts": {
+      "sha256": "59301e4c5760fa300030c0e6aadab24f66f3621fd2d761855db8f64b7f4c4110",
+      "lines": 133
+    },
+    "tests/sample.spec.ts": {
+      "sha256": "63336819b0c661b41a70425b949fda9a7bec60ee7005e2c27f807007d7229309",
+      "lines": 46
+    },
+    "tests/skills-client-data.spec.ts": {
+      "sha256": "8c49e96a46e45d733870dfccf6e4552381aa978b26eaabd8a426e8eef229f488",
+      "lines": 94
+    },
+    "tests/skills-client-lifecycle.spec.ts": {
+      "sha256": "3d9ea068e1fef24af479b2fc1a68992c8c19a804eb369a1699df403d006bcb08",
+      "lines": 195
+    },
+    "tests/skills-files.spec.ts": {
+      "sha256": "dfd0fb2fa9d5385d3e62fa2dcb5cdc54781b50efb46271e3002d7987fd7b7157",
+      "lines": 127
+    },
+    "tests/skills-routes.spec.ts": {
+      "sha256": "bb35bf2fe89ad71ffe95c62977df86fe2db86e31263cd47f3554752ac756c6e0",
+      "lines": 155
+    },
+    "tests/skills-state.spec.ts": {
+      "sha256": "f2fcd059536e789b799ed5a8d48f8f4056e55bdbe2e55443b914be9e4dc245a0",
+      "lines": 118
+    },
+    "tests/skills-sync.spec.ts": {
+      "sha256": "c4f6efba70580b08d7c999cf977d60dd8acef0d1682e8ffc149de2d93b12e844",
+      "lines": 155
+    },
+    "tests/skins.spec.ts": {
+      "sha256": "564eaebf39c0c9bb522193906113ab87b63a2fc5c6f2b76b89fff3bce04e2a9a",
+      "lines": 71
+    },
+    "tests/tuning.spec.ts": {
+      "sha256": "bc740c588c11bb2c83afef97f956b7c2b17be0bdd3819556cf516aa0d373c590",
+      "lines": 317
+    },
+    "tsdown.config.ts": {
+      "sha256": "2c25824603502f863d0dbfa755ff319070cbea0440a11168150c61b0fc6e71ee",
+      "lines": 73
+    },
+    "vitest.config.ts": {
+      "sha256": "8a1f6babd39c1812925782586413846c85c1e83b645e84e20a0422a043dfba29",
+      "lines": 8
+    },
+    "package.json": {
+      "sha256": "0d795af7d6c2d98fbbc639b60c080132e78235806a1deeb988bfbdbf2c0ee925",
+      "lines": 81
+    },
+    "tsconfig.build.json": {
+      "sha256": "3f9b8a15ca5fe321e15e98fca6d08f9e300faa26d926c961b786397952dd9772",
+      "lines": 14
+    },
+    "tsconfig.json": {
+      "sha256": "07c08afd7898bd0257304707cf7e06c9545baeac667057f902e94e7e904ba48e",
+      "lines": 28
+    },
+    "AGENTS.md": {
+      "sha256": "832e061cfe3250c12e160a194b1cead0c9c6dd4364db4b85296f5e0dc4d95013",
+      "lines": 52
+    },
+    "README.md": {
+      "sha256": "e9f1b5e9aeaf3e277ea8c3c08a04d72c130247ddd57145bcf96ee992b9f9a9b6",
+      "lines": 235
+    },
+    "README.zh.md": {
+      "sha256": "2222ecc3ebde9bf606155fb73604946b774ba230e07ea8608022fe1752b64815",
+      "lines": 182
+    },
+    "cordis.patch.yml": {
+      "sha256": "f0160cf700dd8007dc3c36249e356a65e2e1335800ba4608285a125d148a9cb0",
+      "lines": 6
+    },
+    "pnpm-lock.yaml": {
+      "sha256": "33f4047558f2b8eecd58e9eb54aa7494438ca317b60aca02d99dd073f454f5c1",
+      "lines": 1338
+    },
+    "LICENSE": {
+      "sha256": "f8187e3ab475f5fd8ad6cf6a0b2735fa2c43bae2ffdc46cb041779fa4bb73348",
+      "lines": 21
+    },
+    "LICENSE-skills-manager": {
+      "sha256": "50e6751797c50dedd75ef1b8a0d9e42f5f8472e9fbce91f34718e9f97b0c780a",
+      "lines": 201
+    }
+  },
+  "artifacts": {
+    "lib/client.js": "0cff8737329e4da0e979c7c4ee4ee795521821f2071fe67078ae81f2dd7fe2a0",
+    "lib/client.js.map": "b9032331e6ea8b86ac284cf919aad4b4627b83d7cd7197ba0cdb7e9acf7a5dbc",
+    "lib/index.js": "8dc70e55b2fd0dcf036644876418c14295c8f013c0e5a0075d25165312d41464",
+    "lib/types/index.d.ts": "cb09fbb99d958dc57109412e18af7953b33aae58e255298b0d283dfa10e02c81",
+    "lib/types/client.d.ts": "5d65f14648102b73612bd38f0f631370c4ca4a6ae2ad6996a8a208d63cd5c0ba",
+    "lib/types/core/color.d.ts": "3f061a16d36c7be8df55dc993160d5a20f729744b3446ce61aad93dfeb03428a",
+    "lib/types/core/state.d.ts": "408a7eb4023e55178c2bd0c825f2e82c6527ff1a0ddd1a05c29a4c00519e93fc",
+    "lib/types/core/types.d.ts": "f804ad2ba5566cf2dea11fc58998307d4fc12460180729be2d26fe93595cbf2b",
+    "lib/types/core/range.d.ts": "e94eb32f3241a84452fa01c409ee6769e69cbc1a7479f54a629e3acb385a83f6",
+    "lib/types/core/config.d.ts": "6911686505033e8eb323d6a08af136ca35ad10042b1e620df10fab9698524de0",
+    "lib/types/core/tone.d.ts": "ccf2a1a2b95f336dbec9e8989c2e0dad777a8a06735f60730ec26e0fe8475c39",
+    "lib/types/core/media.d.ts": "e281eb9545b7696e47309e56b32e69c3fc0482f6023fb21ca259a015c18ad69e",
+    "lib/types/core/skins.d.ts": "47f22e65f5350f52301222993b466fc6135091ced064d5d3d9fa3f0cb3c94fcd",
+    "lib/types/core/sample.d.ts": "ff9e5f791a5e77f34f17dad681a18eadce50ee7a207ccfbf74b2a1d85b1b65b4",
+    "lib/types/core/tuning.d.ts": "a269ad292fb8e525c568babdd72d8ba4e52693ada56111b62b2fa3bf1b8bf065",
+    "lib/types/host/mount-once.d.ts": "f60909da233bc641cd95728deacffb68b733a5421bf789fbefd6a2b94137feff",
+    "lib/types/host/service.d.ts": "490bd4d0a891fbd0d9e72ff2f16b4007b61e25273697b9703cdc6d26985ed15e",
+    "lib/types/host/env.d.ts": "951e571e62c2000faefb7324ba6b9470b53c455ac593fc4c2ec202b51841d578",
+    "lib/types/host/http.d.ts": "93e82b6a24d5ff5e294c92647898089de16643f538ece9e5bdd71877a53ccc88",
+    "lib/types/host/paths.d.ts": "2ee3b50581246ac0a6afc9431aa7c1048727a54e508c2260a302d5d281703a05",
+    "lib/types/host/loopback.d.ts": "bc5b6366c1b34ed9153db7dd8f0547857c5020956f3afea8814a177bbb48a982",
+    "lib/types/host/library.d.ts": "68f50b2f4f663354c40a26523c4f3caf21e400d52f018abd01c32b11ebfccecb",
+    "lib/types/host/state-store.d.ts": "ee02851f13f1d5085cad682de485af35eece02d43a28f8b591509a0d91f8d03e",
+    "lib/types/host/asset.d.ts": "27feffde2028ec2cd3da029e6299316f633662d8fd007799df84c938778e4323",
+    "lib/types/host/dsh-home.d.ts": "ae20788740d04775097106490d1327409f24155f20bc07279a30b9f45df316dc",
+    "lib/types/host/routes.d.ts": "42f71a711dd4741065c476c0a453fc894a7cfe16b8400dc4544edd56989ac79b",
+    "lib/types/host/tuning.d.ts": "4524491a5496cef293e51ac79d66653e4442a81a8235a9f0da0c7ff805d09aae",
+    "lib/types/features/appearance/core/color.d.ts": "3f061a16d36c7be8df55dc993160d5a20f729744b3446ce61aad93dfeb03428a",
+    "lib/types/features/appearance/core/tone.d.ts": "ccf2a1a2b95f336dbec9e8989c2e0dad777a8a06735f60730ec26e0fe8475c39",
+    "lib/types/features/appearance/core/media.d.ts": "e281eb9545b7696e47309e56b32e69c3fc0482f6023fb21ca259a015c18ad69e",
+    "lib/types/features/appearance/core/skins.d.ts": "47f22e65f5350f52301222993b466fc6135091ced064d5d3d9fa3f0cb3c94fcd",
+    "lib/types/features/appearance/core/sample.d.ts": "ff9e5f791a5e77f34f17dad681a18eadce50ee7a207ccfbf74b2a1d85b1b65b4",
+    "lib/types/features/appearance/host/library.d.ts": "38055d107a4ba2c9643c39fb7ae453dfad7635bf0a633d59e07457221bb2a73e",
+    "lib/types/features/appearance/client/LibraryPicker.d.ts": "57d38a05a2512bbdde2a929eb8d8130c0abb047a4dc3e63ce9ebd5cedc98a407",
+    "lib/types/features/appearance/client/controller.d.ts": "58e43f268ee186aaafff3baca995a093032e1ab2cf975ecd98a57234f96502c0",
+    "lib/types/features/appearance/client/library.d.ts": "48859af3f3b9f16e62b6fead2f8f3932addb8a7e489119b622a6525be64e5a7b",
+    "lib/types/features/appearance/client/index.d.ts": "309654e1a236568b325c592fc15e776c23a3d59beae6bbc1969772aec5a6fc8b",
+    "lib/types/features/appearance/client/AppearancePage.d.ts": "7452892fd1c8c012b8d82116118f952903b75e7a3b64896dea96489d46e0dbe8",
+    "lib/types/features/appearance/client/wallpaper.d.ts": "706fc51c2f94b1092ac77264101111f058b0296c2fce3a51de53942454b777a9",
+    "lib/types/features/tuning/core/protocol.d.ts": "3b59a26526ee53899bd74d55c91720606c087e4901b58717756ada9f0dfa6bd8",
+    "lib/types/features/tuning/core/tuning.d.ts": "0d3aa9c486eec62ee3248dffe1a12435f91a4616f0978816b4d59c7995298d73",
+    "lib/types/features/tuning/host/routes.d.ts": "36d1e47a71b3f5fdf534d04bcdecfb37e8b167340b3f3cdd378eaadb6a8cc05a",
+    "lib/types/features/tuning/client/TuningPanel.d.ts": "0168b2a684577d5a39c557e3b865df10beb4a4c3d448d781cdd9a14ba9156ffe",
+    "lib/types/features/tuning/client/api.d.ts": "2d2c3c3bfbb34c034258baed9f5350d308ee76a42d1405c403e507df98569982",
+    "lib/types/features/tuning/client/useTuningForm.d.ts": "05da034d2c161ad0d38a47a383c62f4ee7b5efcbcd8d57097510a2a2c2977ee6",
+    "lib/types/features/tuning/client/index.d.ts": "d6dd21bc83fc5f6896d3f191e6567006ade57d5b798a5965e6757d1de80e260e",
+    "lib/types/features/tuning/client/TuningPage.d.ts": "495ee471d97cc1974eb56785a07b8a89c1f65af4a19055719645fba5b82f3658",
+    "lib/types/features/tuning/client/Select.d.ts": "09c2ba8183b30c827591748ebc52b096f8882572f1119d2438f5ffc16ebcd994",
+    "lib/types/features/skills/types.d.ts": "5e370ae2ce0ff6e0d5752a8acfe4043da1351466808c9624a5d8d26e2008eec9",
+    "lib/types/features/skills/core/categories.d.ts": "42caa7f3847836682a1072770946f0a60a27393a289997363e0b3379c9dc8126",
+    "lib/types/features/skills/core/policy.d.ts": "dfa161285650274921505ec3557de8a9377f45d3f85f80876e5a6d8911c8b10f",
+    "lib/types/features/skills/core/sources.d.ts": "98fce4215c529c95d6414e001462a9b3b04a19301e092b6f0ab2bd3e1542e9a8",
+    "lib/types/features/skills/core/state.d.ts": "4b23b995cc995042d27c7646d62d0266c9c1fa6c514a5d6a1f2aa9ea0cc5d8b5",
+    "lib/types/features/skills/core/import.d.ts": "0d6edfced456a4f5e9824fb0fd79ffa77fa7ba2ba16e569d0001d47f221a614f",
+    "lib/types/features/skills/core/snapshot.d.ts": "5054845bc85bec136b979c2074a0bb13091f14b8c83fc5651bd151d4f1a7dbf2",
+    "lib/types/features/skills/core/sync.d.ts": "84ffba1401886374e7bac112a2b3a7c26f5ccc89b580cf15ef9e86d442f033cc",
+    "lib/types/features/skills/core/workspaces.d.ts": "fe766c74d343270ab618ff2f6a2cbc1392df4b7cc9fb4f96d1c6c3ff469fb12f",
+    "lib/types/features/skills/core/trash.d.ts": "add872425812a0423f84957f8e1e0c997a3078f5661cff82120775da8800c840",
+    "lib/types/features/skills/core/skill-doc.d.ts": "02c89778df53dea68971d60f570ee097c761f38123723fa20108858e2657042e",
+    "lib/types/features/skills/core/scan.d.ts": "c06fe54b8e64abe9067bf9ed89dc89f99a76d3a7155f3f853bdca90cd0df05fb",
+    "lib/types/features/skills/core/fs-utils.d.ts": "1c104b169bd9b48230d2af24504bdea500e4c1d7d993543f6ccb13e21d69220d",
+    "lib/types/features/skills/core/skills.d.ts": "28cef309e536c6dff9931759b08dcdc65686c9caff4d40450d5304fef06d0170",
+    "lib/types/features/skills/host/log.d.ts": "06c4becf0de5b4cb0bcc35205811110e016561a92330c0574f14d4b29f53ad63",
+    "lib/types/features/skills/host/providers.d.ts": "8307327aa9b154a8bee076a24cb48ddc49da92d080a49289dc69cb56aa71d47f",
+    "lib/types/features/skills/host/open-folder.d.ts": "5b1733c6f82c7f926e6cba92bf9df4715e06a2e23b26bd49338831bf5fca5326",
+    "lib/types/features/skills/host/index.d.ts": "d98062160f242b63e8195d6e257185b83ba0c6b410a5dd177c9664c2216ddce7",
+    "lib/types/features/skills/host/state-view.d.ts": "effb88a8d8c45548b6e88c52a5ff5e676ec9c2a74664d740815156cd279514f7",
+    "lib/types/features/skills/host/routes.d.ts": "02ddbb7837c6a45e66f318de09311d0f76b1ef8adc0ad0b594020a634938d8ea",
+    "lib/types/features/skills/client/model.d.ts": "65b19eb3a773589d5e8ad88118cc67b37399d9af8070ea33d6f5882acb5014d2",
+    "lib/types/features/skills/client/CreateModal.d.ts": "f63d249aebb8a191fb33dabea0345068b970a8e98033dd9a5b1b287797832f48",
+    "lib/types/features/skills/client/upload-selection.d.ts": "64792cc0d5fabe0c2cbeac53721fac38d286ef33626149272f5c389096de582d",
+    "lib/types/features/skills/client/state.d.ts": "9994278580a92ad396a057a3fef7f71ae6bad3886336dd4380b3cb8a0d0a33f7",
+    "lib/types/features/skills/client/DetailModal.d.ts": "2dee7c7b34898f15ee135bd13aa96551f219e6d2a68314d1831b17969e56086f",
+    "lib/types/features/skills/client/api.d.ts": "485a450ff3e18a4cb64cc5e13ed2bd1d2de8d677d61573dded7d1474053bad56",
+    "lib/types/features/skills/client/TrashModal.d.ts": "9411d81e49852e4c31fbf7d11c25a4f688a3fa14dc60242446e6802dd16e29e7",
+    "lib/types/features/skills/client/Modal.d.ts": "259e8be9d70fe05ca4aa1ca7c3c0d7be106e94f1ae24d0780ba18aeed68cece2",
+    "lib/types/features/skills/client/icons.d.ts": "ecf007f9b76f9e9376819611942407d7a9d851102d4ea98164e08336ab41bf8a",
+    "lib/types/features/skills/client/SkillList.d.ts": "66ead2f6b730a60555a490f150f8251c7fd820e5e5332f3de0bd58cc62b42ae7",
+    "lib/types/features/skills/client/SkillsPage.d.ts": "25c8da042cc551b595da079e85584c1351da1e34389f35775e4b7954a2ebdf89",
+    "lib/types/features/skills/client/styles.d.ts": "bae3af4aad540e83538df44466aa94816ed190b3e6074daf2b1c96a40dac1597",
+    "lib/types/features/skills/client/index.d.ts": "afdd66176e154ca19343012991cbc331be67dad7d2652c90363b2d46d6461946",
+    "lib/types/features/skills/client/text.d.ts": "1fbe3a66e65d64b2af44bdc03982485fedef68d2e3c8b45aac7ba9c77cadb09b",
+    "lib/types/features/skills/client/ImportModal.d.ts": "58ab3965d6961ce1501586daab4f5e3907fde4bfc593571b0b74ceaa309d1730",
+    "lib/types/utils/host/http.d.ts": "2736d6aa7843b0c056c0931f1d20ccedfed13c74c1bf6bbec5b142b5340b1cb4",
+    "lib/types/utils/host/storage.d.ts": "abdefd97b98912f6af2d6bac71e569919cf895c0cd1b4da165f974ff883ff4eb",
+    "lib/types/utils/shared/result.d.ts": "6a452f3f83d1a0acc16f5e2350f45afd687b1090fc679385fe43140c070dc01a",
+    "lib/types/utils/shared/guards.d.ts": "e41c3d5439c07b2277028c6a6d734b38a63af00d56eace5e5a3fe9c3f5396e06",
+    "lib/types/utils/shared/protocol.d.ts": "a6461ef18770b6c6cce477697097880cdb79a634acf0f7176c28ecb07108992c",
+    "lib/types/utils/client/nav-marker.d.ts": "786d2005f890f128068afc7e53268c322ab66b05daf4d7c83a06241e6375f9ca",
+    "lib/types/utils/client/api.d.ts": "8ee47f920dde16e901b6b986ebb5380da35b9456ac6f18cc680de1e7bd8437be",
+    "lib/types/utils/client/style.d.ts": "d82ef271a009d8f7c5c0838e8867eefc1b99ceb89fd631d15eeca0b636999626",
+    "lib/types/skills/skills-sh-catalog.d.ts": "8855e797a388061473069643bc0990d0456099fdaf2432543b2680b1e7609a14",
+    "lib/types/skills/plugin-ui.d.ts": "0804cf9332ff3b1a9945924dc35024d020b5d5c93cc27e1c305fe58369fcb423",
+    "lib/types/skills/repository-ui.d.ts": "b488f06a12938e2f1be42dc4d1aafcffbf20cf4d90518c46b69c1ed6336a8ad1",
+    "lib/types/skills/clawhub-catalog.d.ts": "d898e2b6a87854c7c76648c250ecd9e9dce6e86b5d07eb85da14acadc4e72a39",
+    "lib/types/skills/host-types.d.ts": "2940f12c1bd48d4eec4ec799988129be51902f56ae312f6e19aa0e6fa51dd1ac",
+    "lib/types/skills/types.d.ts": "e8e402879d1a7780e5a4c97a2ad984482c7c41e5a80902aaaa3361c5150587c9",
+    "lib/types/skills/sidebar-entry.d.ts": "f5931e27822d6d7f7c46196da648a37a35bcf1c8e53ca784b8ecb2eebca62c9b",
+    "lib/types/skills/destination-types.d.ts": "847e36641fb3ec6f58bd8f3cba282ae117fb819294aa206507a0f49e8a432a73",
+    "lib/types/skills/readonly-discovery.d.ts": "2dbdb1a4a8b4363ee16aa11130e2c505822a794768308117af9a0d211cde2337",
+    "lib/types/skills/api-base.d.ts": "7b5bcc0a23e19571ea27ee0e2ad59c29c6d20a973b4fe5bc802a16e8213f57fe",
+    "lib/types/skills/repositories.d.ts": "ae5eee54c07b140f5d3d851cff6b13adef9f0cc42d491ad167e56a746bafa81f",
+    "lib/types/skills/repository-updates.d.ts": "7cf74cbe2cd7a3e922f41e272d83fbb79eac8aa5c16c1a66de234432152c6fd4",
+    "lib/types/skills/catalog-skill.d.ts": "3d73955f676705dac5260e5744150764fff74c13e848116aacf45a19795bec0e",
+    "lib/types/skills/core.d.ts": "f3b96c1394654ba5dfa61cff10278c19ab897a129ecf706e6f7790033646c421",
+    "lib/types/skills/settings-nav-icon.d.ts": "bf250c9a20e348941f59b0b9ccbc786919fcbf9a6229c5e636d0bb577ab723b1",
+    "lib/types/skills/source-select.d.ts": "8702d9a881e597413e564a3f613e05154c3bebc6a59908518b62106f38f63a83",
+    "lib/types/skills/index.d.ts": "d5738fa9b453e51118222e4dcf8da7b3d242282324a89366b200f8979aa115c0",
+    "lib/types/skills/client-types.d.ts": "c6c26482ebe87b0b2ecc0a9982f204842bb65a9481c7ac10680044e6fbab24e3",
+    "lib/types/skills/destination-picker.d.ts": "deca1700e7e2dbe39d81cd12346c8417353e7af690f5635d3b67d020ab4fd0c0",
+    "lib/types/skills/source-select-model.d.ts": "4cbac20ac3e6225797d2e9d3ab3a6b51d714d9e99d01c58c88ecee1b16bdc9d3",
+    "lib/types/skills/client.d.ts": "18aefa844168211005372e6917fddf6447f416c8ce712ec8b9a03e0f3ed9b220",
+    "lib/types/skills/server/categories.d.ts": "1bd89fa8b4cdb320234630e56d584e410e21a5d0d67ac8e90d5ee6fa7606daf2",
+    "lib/types/skills/server/policy.d.ts": "7f6cc791651f74cfd56fdcff3a955d98c5b54aa4c43ee0811e6529ea9c77d0c5",
+    "lib/types/skills/server/skill-sync.d.ts": "1845bbfc898c6332d5e20c6832053b1db1b72360fc211711de30fcb662c8c17e",
+    "lib/types/skills/server/upload-import.d.ts": "98da9d94a58715c9a0a0f49ed98438b59861f30f0a55e5ebb48699eae16b0563",
+    "lib/types/skills/server/skill-document.d.ts": "256183cb888b69ca065ae0d617ff94082e64fc346e25e32fa442695beff0ae82",
+    "lib/types/skills/server/skill-import.d.ts": "8cf8d64280ed9e56de36dbc7794d1016e10c12ba98cd77f8125f5c5cb5bd0d4b",
+    "lib/types/skills/server/source-roots.d.ts": "4c88a405dd7c5d15908210fa3df154da3f20bacb7b9cf647058a6449f91642b7",
+    "lib/types/skills/server/workspaces.d.ts": "9e7698b99b962837ec1b7568fa551ed8ec345888a2ec74db7e06de65f3701070",
+    "lib/types/skills/server/file-operations.d.ts": "7e12a95230983eba03360f647a89ea3cde1aa78e8ec661f303c31736b9f1fc68",
+    "lib/types/skills/server/root-access.d.ts": "cd27349ac384808829bc97b053a1a43feffb719f74afafb933910c6c371e35d7",
+    "lib/types/skills/server/policy-store.d.ts": "f7fdd3fd3d8e849e5dfed14fd01e99f226f2c3d4c24d76cfd719c2f0136ce078",
+    "lib/types/skills/server/trash.d.ts": "70b820f3c17b55f2abc7f0a5067623b22742345e24069d525e0a4087fdc9a92d",
+    "lib/types/skills/server/skill-scan.d.ts": "e793bf5f64c6d171a6874303930bc1ddc4da5baf4534cb5472057e1488754be4",
+    "lib/types/skills/server/router.d.ts": "76998c72cc22ecf67d21dddca1e5dbdba12a2942a722e751b81e8271fbc982c7",
+    "lib/types/skills/server/entry-access.d.ts": "4326b483ad4cb62a72722544eb9ce9f3e207fa5a91f81b9b70c9b87ec9b52e70",
+    "lib/types/skills/client/controls.d.ts": "8b21b8e3ac5802b75ece1e86c642c676075e32fdb945eb59fc482245edff3e1a",
+    "lib/types/skills/client/source-tree.d.ts": "992138148f4935e74aa323a32ea05274b4dd66a71342e0af8976665443db6240",
+    "lib/types/skills/client/scope-panels.d.ts": "b0a1855efde1f68a508fa07abcea4df26dc74fb23314cf0a08350646a5166362",
+    "lib/types/skills/client/icons.d.ts": "37a8dd5c8c2496e8e9cef22673bbb1d01515a90ecb76a1327e289e99a2e1ee69",
+    "lib/types/skills/client/selectors.d.ts": "3b4c4080a0363b833140d2aafb7e45e168f1b226ac079a8e03a7c350b50a5686",
+    "lib/types/skills/client/editor-dialogs.d.ts": "1d80f7e0d6c30a3bc6fab2baacde0a27a85977499ebdcacf02152c993309128f",
+    "lib/types/skills/client/skill-dialogs.d.ts": "6e51d4bc4577f2bcbfb3faae6b395a07f8f8e236caa4c48a2e763b50083308f2",
+    "lib/types/skills/client/messages.d.ts": "9b479f8ac1b15e23de2f81e72031a311ed776bf0f7551743579b9a8858b05e86",
+    "lib/types/skills/client/category-dialogs.d.ts": "f6ac4e08728698f26f1d56b3a123451969eeef7c7cfa6ee77fdce90e18bca43f",
+    "lib/types/skills/client/skill-rows.d.ts": "7e0f6a8bc1c4a011999add9c381243a7323741e245d8947eda98bee4ff1b2885",
+    "lib/types/skills/client/useWorkspaceCatalog.d.ts": "4352355b44e9cf5a744da1bd6877c18a2ae88ea5daca059c0c7e92f190c12576",
+    "lib/types/skills/client/useSkillManager.d.ts": "dc718db1c88096d68ab489af755cdbcf070928adacd2cc35bcd6e5b27756e97c",
+    "lib/types/skills/client/styles.d.ts": "28291204592962421e197688ba50fe588b6a6d4aba264555bacdb57e3403eac8",
+    "lib/types/skills/client/uploads.d.ts": "2c37e767e22ae36b2090e025b802441657f6eb78e61d6edf1afdf3e9fe5a7c8d",
+    "lib/types/skills/client/manager-page.d.ts": "8336ff70b60e506646432504ccca5693ea5137fe530ce9746330d351e6ec38f0",
+    "lib/types/skills/client/api-client.d.ts": "95f6eeb6b1815481a69e8b1b54bda5ff3c5446029a828324ca524840216f766e",
+    "lib/types/skills/client/locales/zh.d.ts": "3a6f19a9730168e7383bfdc3e8179689faf48d752366fdc226e2c4b9679d2fa2",
+    "lib/types/skills/client/locales/en.d.ts": "369a5dd76918272c276531ff6632bbd0c5868d0ee5fa83c1e9852d06c327329e",
+    "lib/types/client/TuningPanel.d.ts": "d23e3b45598d11eaa912a5cf7617b73432f6ed9bd537658b1e50542175ccceeb",
+    "lib/types/client/runtime.d.ts": "c900f96e29c2d37fc447e8e56d14ef77e6c95cf6d6f891e6adfc05618d719f51",
+    "lib/types/client/LibraryPicker.d.ts": "26903ca28b70d85ab78071258465439a5171def4cdfab9866f4cb62826ced7c4",
+    "lib/types/client/locales.d.ts": "3f734a98814545e9bf7cbf3533cd599573ee8a5340c6068dc95235bd15573718",
+    "lib/types/client/controller.d.ts": "725de29fb0d037956529c10811a957eff15bf2a3a07b1ad7c507a5d717fbf37e",
+    "lib/types/client/locale.d.ts": "6f48bc125500014f8def4a9ff27a2b11a7cab9539b43cceecf4cd660d375e310",
+    "lib/types/client/dsh-env.d.ts": "727695a28ad9923573b2f3eea2c7f80bb86dd370db982cbffd0195ae21b749d2",
+    "lib/types/client/CustomCenterSection.d.ts": "91b0371cd3e5ce648779707f93459d666ce81fbb51f5cdeecb937eeb5ffa441c",
+    "lib/types/client/library.d.ts": "ed5768ead6091b60936007ada4be60bf58fccffb20b56e51216d15490af52200",
+    "lib/types/client/styles.d.ts": "98cbe8353d103976ac54ec258f3ce218e48a11cfd85d22162ab806ecd288a0c5",
+    "lib/types/client/index.d.ts": "8dcc03f5ee793ff43b15d1a3a59d53893b9596717843990c3ab76fe264fd51bf",
+    "lib/types/client/format.d.ts": "ca07a45e1540f8fcd889dd136a0db1d31941458f517f4a10942f81b7428baff9",
+    "lib/types/client/text.d.ts": "1545e370bef1e9decbf19ad1be0de7265ca942a8b8b6fb2aec1ce2778e3677ef",
+    "lib/types/client/AppearancePage.d.ts": "f36d702ac1e9833c5203be732add5ee1959c8f75ab67b28c74c405f36a67003a",
+    "lib/types/client/TuningPage.d.ts": "495ee471d97cc1974eb56785a07b8a89c1f65af4a19055719645fba5b82f3658",
+    "lib/types/client/Select.d.ts": "09c2ba8183b30c827591748ebc52b096f8882572f1119d2438f5ffc16ebcd994",
+    "lib/types/client/tuning.d.ts": "de83ffa1b91594a711b1769887cba73f52fc1de1b44e577151ef8dc3a3ebd999",
+    "lib/types/client/wallpaper.d.ts": "8340ae95fbc671094f03f05a4376d718258041a9252ace3fba982a847fe84b24"
+  },
+  "snapshot_directory": "/private/tmp/dsh-feature-organization-20261029-a_lw_xhn"
+}
