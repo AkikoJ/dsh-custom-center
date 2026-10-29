@@ -37,9 +37,6 @@ export const MEDIA_FOLDERS: Readonly<Record<MediaKind, string>> = { image: 'imag
 /** Upload size ceiling per class, in bytes. */
 export const MAX_BYTES: Readonly<Record<MediaKind, number>> = { image: 50 * MIB, video: 512 * MIB }
 
-/** Value of the marker header the browser half sends with every library request. */
-export const MARKER_HEADER = 'x-dsh-custom-center'
-
 /**
  * Lower-case extension of a file name, without the dot.
  * @param name - a file name.
@@ -127,16 +124,6 @@ export function parseRange(header: string | undefined, size: number): ByteRange 
   if (start >= size) return 'unsatisfiable'
   const end = match[2] === '' ? size - 1 : Math.min(Number(match[2]), size - 1)
   return end < start ? undefined : { start, end }
-}
-
-/**
- * Whether a socket's remote address is the local machine.
- * @param address - `socket.remoteAddress`.
- */
-export function isLoopbackAddress(address: string | undefined): boolean {
-  if (!address) return false
-  const plain = address.startsWith('::ffff:') ? address.slice(7) : address
-  return plain === '::1' || /^127(\.\d{1,3}){3}$/.test(plain)
 }
 
 /** Number of leading bytes {@link matchesSignature} needs. */

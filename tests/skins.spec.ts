@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { contrast } from '../src/core/color.ts'
-import { TOKEN_NAMES, deriveTokens } from '../src/core/skins.ts'
+import { contrast } from '../src/appearance/color.ts'
+import { TOKEN_NAMES, deriveTokens } from '../src/appearance/skins.ts'
 
 describe('token derivation', () => {
   const seeds = { accent: '#4d6bfe', secondary: '#6e8bff', surface: '#0e1420', text: '#e8edf7' }

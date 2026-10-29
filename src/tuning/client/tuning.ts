@@ -5,13 +5,13 @@
  * header the host requires. The host validates and persists through the
  * profile configuration editor, so this client only sends numbers.
  */
-import { MARKER_HEADER } from '../core/media.ts'
+import { MARKER_HEADER } from '../../shared/request.ts'
 import type {
   CompactionValues,
   ModelTarget,
   ModelWindowValues,
   TuningSnapshot,
-} from '../core/tuning.ts'
+} from '../tuning.ts'
 
 /** Failure of a tuning request, with the host's stable error code. */
 export class TuningClientError extends Error {

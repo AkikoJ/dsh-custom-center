@@ -4,8 +4,8 @@ import type { AddressInfo } from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { MARKER_HEADER } from '../src/core/media.ts'
-import { createLibraryRoutes } from '../src/host/library.ts'
+import { MARKER_HEADER } from '../src/shared/request.ts'
+import { createLibraryRoutes } from '../src/appearance/server/library.ts'
 
 const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(64, 7)])
 const MP4 = Buffer.concat([Buffer.from([0, 0, 0, 0x20, 0x66, 0x74, 0x79, 0x70]), Buffer.alloc(64, 9)])

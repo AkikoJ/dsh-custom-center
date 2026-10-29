@@ -25,13 +25,11 @@ import os from 'node:os'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import {
-  MARKER_HEADER,
   MAX_BYTES,
   MEDIA_FOLDERS,
   SIGNATURE_BYTES,
   contentTypeOf,
   extensionOf,
-  isLoopbackAddress,
   kindOfName,
   matchesSignature,
   parseRange,
@@ -39,8 +37,9 @@ import {
   uniqueName,
   type MediaItem,
   type MediaKind,
-} from '../core/media.ts'
-import type { WebRoute } from './env.ts'
+} from '../media.ts'
+import { MARKER_HEADER, isLoopbackAddress } from '../../shared/request.ts'
+import type { WebRoute } from '../../shared/host-env.ts'
 
 /** Path prefix of the library routes. */
 export const ROUTE_PREFIX = '/custom-center'

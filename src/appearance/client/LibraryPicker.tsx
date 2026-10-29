@@ -5,7 +5,7 @@
  * the result to the controller as the draft wallpaper.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { MediaItem, MediaKind } from '../core/media.ts'
+import type { MediaItem, MediaKind } from '../media.ts'
 import type { SkinController } from './controller.ts'
 import { LibraryError, fileUrl, listLibrary, loadLibraryFile, uploadToLibrary } from './library.ts'
 import { processImage, processVideo } from './wallpaper.ts'

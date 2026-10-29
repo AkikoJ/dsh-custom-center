@@ -13,7 +13,7 @@ import {
   rgba,
   rgbToHex,
   rgbToHsl,
-} from '../src/core/color.ts'
+} from '../src/appearance/color.ts'
 
 describe('color conversions', () => {
   it('round-trips hex and rgb', () => {

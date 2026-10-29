@@ -54,9 +54,10 @@
 | --- | --- |
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
 | Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center` |
-| Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/host/library.ts`）+ 上下文/压缩路由（`src/host/tuning.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
+| Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/appearance/server/library.ts`）+ 上下文/压缩路由（`src/tuning/server/tuning.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
 | 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」两个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
-| 共享逻辑 | `src/core/*`（配色、皮肤、取色、壁纸库规则）及其单测 |
+| 功能逻辑 | `src/appearance/`（配色、皮肤、取色、媒体规则）、`src/tuning/`（模型窗口与压缩）及既有测试 |
+| 共享边界 | `src/shared/`：插件配置、整份共用样式、浏览器/宿主适配、请求标记与回环判断 |
 | 构建 | `tsc` 声明 + `tsdown` host/client 产物 |
 
 浏览器半区注册到 `settings.section` 插槽（带独立导航条目的完整设置页），
@@ -71,35 +72,43 @@ dsh-custom-center/
   icon.svg                  # 插件图标（展示元数据）
   src/
     index.ts                # host 半区（Node / Cordis）
-    host/
-      library.ts            # 回环路由：list、upload、file
-      tuning.ts             # 回环路由：读取/写入上下文与压缩配置
-      env.ts                # 精简的 host 服务类型
     client/
       index.ts              # 浏览器半区：settings.section 装配
-      dsh-env.ts            # 精简的 DSH 服务类型 + SlotMap 增强
-      controller.ts         # 命令式皮肤引擎（token、壁纸、持久化）
-      wallpaper.ts          # DOM/localStorage/IndexedDB + 图片/视频解码
-      AppearancePage.tsx    # 外观页（壁纸、遮罩、预览与保存）
-      TuningPage.tsx        # 上下文与压缩页（页头 + 表单）
-      TuningPanel.tsx       # 上下文与压缩表单
-      Select.tsx            # 自绘下拉框（替代原生 select）
-      LibraryPicker.tsx     # 图片/视频标签、上传、缩略图
-      library.ts            # 壁纸库路由的浏览器端客户端
-      tuning.ts             # 上下文/压缩路由的浏览器端客户端
-      styles.ts             # 注入的样式表
-    core/
+    appearance/
+      client/
+        AppearancePage.tsx  # 外观页（壁纸、遮罩、预览与保存）
+        LibraryPicker.tsx   # 图片/视频标签、上传、缩略图
+        controller.ts       # 皮肤引擎（token、壁纸、持久化）
+        wallpaper.ts        # DOM/localStorage/IndexedDB + 图片/视频解码
+        library.ts          # 壁纸库路由的浏览器端客户端
+      server/
+        library.ts          # 回环路由：list、upload、file
       color.ts              # 纯配色数学
       skins.ts              # 种子色 -> token 映射
       sample.ts             # 从像素网格纯取色
+      tone.ts               # 壁纸明暗分布与外观
       media.ts              # 文件类别、命名规则、Range 解析
-      config.ts             # 共享 host 配置默认值
+    tuning/
+      client/
+        TuningPanel.tsx     # 上下文与压缩页和表单（内含 TuningPage）
+        Select.tsx          # 调优专用自绘下拉框
+        tuning.ts           # 上下文/压缩路由的浏览器端客户端
+      server/
+        tuning.ts           # 回环路由：读取/写入上下文与压缩配置
       tuning.ts             # 校验、压缩预算公式、profile 配置变换
+    shared/
+      config.ts             # 共享 host 配置默认值
+      styles.ts             # 整份注入样式表
+      browser-env.ts        # 精简的 DSH 服务类型 + SlotMap 增强
+      host-env.ts           # 精简的 host 服务类型
+      request.ts            # 请求标记与回环判断
     skills/                 # 技能管理（移植自 dsh-skills-manager，Apache-2.0）
       index.ts              # host：/api/dsh-custom-center/skills 路由、技能 provider、create_skill
       client.ts             # 浏览器：「技能」设置页
-      core.ts               # 技能扫描、启停策略、创建/导入/回收站
-  tests/                    # vitest：color、skins、sample、config、tuning
+      core.ts               # 技能扫描、启停策略、同步、创建/导入/回收站
+      server/               # 宿主职责模块（策略、文件、同步与路由等）
+      client/               # TSX 界面、状态与生命周期、样式和词典
+  tests/                    # vitest：功能逻辑、宿主接口与 Skills 回归
 ```
 
 ## 开发安装
@@ -167,7 +176,7 @@ pnpm watch       # 开发时监听重建
 - 皮肤是叠加在宿主外观之上的正交层：不调用 `theme.setTheme`（浅色/深色由
   ui-theme 管理），并在每次 `theme/change` 后重新写回 token。
 - 当前安装的 SDK 未发布 renderer 的 `SlotRegistry` 和 theme 服务类型，因此
-  `src/client/dsh-env.ts` 声明了精简的结构化接口，并把 `settings.section` 增强
+  `src/shared/browser-env.ts` 声明了精简的结构化接口，并把 `settings.section` 增强
   进 `SlotMap`。若未来公共 SDK 扩展，可替换为真实导入。
 - 技能路由（`/api/dsh-custom-center/skills/*`）沿用原插件的校验：只接受 loopback
   或 DSH 信任的 Host，拒绝跨站请求；写接口还要求 `x-dsh-custom-center-skills`

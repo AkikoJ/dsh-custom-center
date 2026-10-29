@@ -9,7 +9,10 @@ directory; they do not override system, developer or direct user instructions.
   filesystem writes and agent tools.
 - `src/client/index.ts` — browser half. Loaded through
   `window.__ModuleLoader__`; owns UI seats and reads host data.
-- `src/core/` — pure logic shared by both halves and tests.
+- `src/appearance/` — appearance logic, browser UI and host library routes.
+- `src/tuning/` — context/compaction logic, browser UI and host routes.
+- `src/skills/` — Skills feature; retain its existing internal boundaries.
+- `src/shared/` — cross-feature config, styles, environment adapters and request conventions.
 
 ## Rules
 

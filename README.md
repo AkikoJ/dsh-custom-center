@@ -91,9 +91,10 @@ Legibility over a photo is checked rather than assumed:
 | --- | --- |
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
 | Loader row | `ui-custom-center` -> package `dsh-custom-center` |
-| Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/host/library.ts`), the context/compaction routes (`src/host/tuning.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
+| Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/appearance/server/library.ts`), the context/compaction routes (`src/tuning/server/tuning.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
 | Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
-| Shared logic | `src/core/*` (colour, palette, sampling, library rules) with unit tests |
+| Feature logic | `src/appearance/` (colour, palette, sampling, media rules), `src/tuning/` (model window and compaction), and existing tests |
+| Shared boundary | `src/shared/`: plugin config, complete shared stylesheet, browser/host adapters, request marker and loopback check |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
 
 The browser half registers into the `settings.section` slot (full settings
@@ -109,35 +110,43 @@ dsh-custom-center/
   icon.svg                  # plugin icon (display metadata)
   src/
     index.ts                # host half (Node / Cordis)
-    host/
-      library.ts            # loopback routes: list, upload, file
-      tuning.ts             # loopback routes: read/write context + compaction
-      env.ts                # narrow host service typings
     client/
       index.ts              # browser half: settings.section wiring
-      dsh-env.ts            # narrow DSH service typings + SlotMap augmentation
-      controller.ts         # imperative skin engine (tokens, wallpaper, persistence)
-      wallpaper.ts          # DOM/localStorage/IndexedDB + image/video decode
-      AppearancePage.tsx    # appearance page (wallpaper, veils, preview/save)
-      TuningPage.tsx        # context/compaction page (frame + form)
-      TuningPanel.tsx       # context/compaction form
-      Select.tsx            # themed dropdown (replaces native select)
-      LibraryPicker.tsx     # image/video tabs, upload, thumbnails
-      library.ts            # browser client of the library routes
-      tuning.ts             # browser client of the tuning routes
-      styles.ts             # injected stylesheet
-    core/
+    appearance/
+      client/
+        AppearancePage.tsx  # appearance page (wallpaper, veils, preview/save)
+        LibraryPicker.tsx   # image/video tabs, upload, thumbnails
+        controller.ts       # skin engine (tokens, wallpaper, persistence)
+        wallpaper.ts        # DOM/localStorage/IndexedDB + image/video decode
+        library.ts          # browser client of the library routes
+      server/
+        library.ts          # loopback routes: list, upload, file
       color.ts              # pure colour maths
       skins.ts              # seeds -> token map
       sample.ts             # pure colour sampling from a pixel grid
+      tone.ts               # wallpaper lightness profile and appearance
       media.ts              # file classes, name rules, range parsing
-      config.ts             # shared host config defaults
+    tuning/
+      client/
+        TuningPanel.tsx     # context/compaction page and form (includes TuningPage)
+        Select.tsx          # tuning-only themed dropdown
+        tuning.ts           # browser client of the tuning routes
+      server/
+        tuning.ts           # loopback routes: read/write context + compaction
       tuning.ts             # validation, budget formula, profile config transforms
+    shared/
+      config.ts             # shared host config defaults
+      styles.ts             # complete injected stylesheet
+      browser-env.ts        # narrow DSH service typings + SlotMap augmentation
+      host-env.ts           # narrow host service typings
+      request.ts            # request marker and loopback check
     skills/                 # skills management (ported from dsh-skills-manager, Apache-2.0)
       index.ts              # host: /api/dsh-custom-center/skills routes, skill provider, create_skill
       client.ts             # browser: Skills settings page
       core.ts               # skill scanning, toggle policy, sync from other agents, create/import/trash
-  tests/                    # vitest: color, skins, sample, config, tuning
+      server/               # host responsibilities (policy, files, sync, routes)
+      client/               # TSX UI, state and lifecycle, styles and messages
+  tests/                    # vitest: feature logic, host interfaces and Skills regressions
 ```
 
 ## Install for development
@@ -216,7 +225,7 @@ pnpm watch       # rebuild bundles while developing
   `theme.setTheme` (ui-theme owns light/dark); it re-applies its tokens after
   every `theme/change`.
 - The installed SDK does not publish the renderer `SlotRegistry` or theme
-  service types, so `src/client/dsh-env.ts` declares narrow structural faces
+  service types, so `src/shared/browser-env.ts` declares narrow structural faces
   and augments `SlotMap` with `settings.section`. Replace these with real
   imports if the public SDK widens.
 - The skills routes (`/api/dsh-custom-center/skills/*`) keep the original

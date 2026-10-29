@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
   contentTypeOf,
-  isLoopbackAddress,
   kindOfName,
   matchesSignature,
   parseRange,
   sanitizeFileName,
   uniqueName,
-} from '../src/core/media.ts'
+} from '../src/appearance/media.ts'
+import { isLoopbackAddress } from '../src/shared/request.ts'
 
 describe('classification', () => {
   it('sorts files into image and video classes by extension', () => {

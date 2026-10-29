@@ -3,12 +3,12 @@
  * image/video decode + colour-sampling bridge.
  *
  * Everything that touches the DOM, localStorage or IndexedDB lives here; the
- * palette maths stays in src/core. Custom wallpapers never leave the machine:
+ * palette maths stays in src/appearance. Custom wallpapers never leave the machine:
  * images persist in localStorage, videos in IndexedDB.
  */
-import { IMAGE_VEIL, VIDEO_VEIL, sampleSeeds } from '../core/sample.ts'
-import type { SampleResult } from '../core/sample.ts'
-import { toneHistogram } from '../core/tone.ts'
+import { IMAGE_VEIL, VIDEO_VEIL, sampleSeeds } from '../sample.ts'
+import type { SampleResult } from '../sample.ts'
+import { toneHistogram } from '../tone.ts'
 
 /** localStorage / IndexedDB keys owned by this plugin. */
 export const LS_ACTIVE = 'dsh-custom-center.active'

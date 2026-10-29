@@ -22,7 +22,7 @@ import {
   type ModelEntryView,
   type PresetTuningView,
   type TuningSnapshot,
-} from '../core/tuning.ts'
+} from '../tuning.ts'
 import { Select } from './Select.tsx'
 import { loadTuning, saveTuning, type TuningSaveBody } from './tuning.ts'
 

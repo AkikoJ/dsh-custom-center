@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_CUSTOM_CENTER_CONFIG,
   resolveCustomCenterConfig,
-} from '../src/core/config.ts'
+} from '../src/shared/config.ts'
 
 describe('custom center configuration', () => {
   it('configuration defaults to enabled when no value is supplied', () => {

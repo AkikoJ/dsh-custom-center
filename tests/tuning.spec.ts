@@ -22,7 +22,7 @@ import {
   validateModelWindow,
   writeCompactionValues,
   type CompactionValues,
-} from '../src/core/tuning.ts'
+} from '../src/tuning/tuning.ts'
 
 const plugins = [
   { id: 'persona', name: '@deepseek-ai/dsh-persona', config: { prefix: 'hi' } },

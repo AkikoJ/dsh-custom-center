@@ -5,7 +5,8 @@
  * base URI, like the DSH connection does) and carry the marker header the host
  * requires. Nothing here ever sends a file path; files are named by library id.
  */
-import { MARKER_HEADER, kindOfName, type MediaItem } from '../core/media.ts'
+import { kindOfName, type MediaItem } from '../media.ts'
+import { MARKER_HEADER } from '../../shared/request.ts'
 
 /** The library listing. */
 export interface LibraryListing {

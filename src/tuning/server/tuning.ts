@@ -33,13 +33,13 @@ import {
   type ModelTarget,
   type PresetTuningView,
   type TuningSnapshot,
-} from '../core/tuning.ts'
-import { MARKER_HEADER, isLoopbackAddress } from '../core/media.ts'
+} from '../tuning.ts'
+import { MARKER_HEADER, isLoopbackAddress } from '../../shared/request.ts'
 import type {
   ConfigurationRow,
   TuningHostServices,
   WebRoute,
-} from './env.ts'
+} from '../../shared/host-env.ts'
 
 /** Path prefix of the wallpaper library routes. */
 export const TUNING_PATH = '/custom-center/tuning'

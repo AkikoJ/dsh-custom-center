@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { IMAGE_VEIL, VIDEO_VEIL, sampleSeeds } from '../src/core/sample.ts'
-import { hexToHsl } from '../src/core/color.ts'
+import { IMAGE_VEIL, VIDEO_VEIL, sampleSeeds } from '../src/appearance/sample.ts'
+import { hexToHsl } from '../src/appearance/color.ts'
 
 /** Build a `size x size` RGBA grid filled with one opaque colour. */
 function solidGrid(size: number, r: number, g: number, b: number): Uint8ClampedArray {

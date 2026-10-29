@@ -11,7 +11,7 @@
  */
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { DEFAULT_CUSTOM_CENTER_CONFIG } from './core/config.ts'
+import { DEFAULT_CUSTOM_CENTER_CONFIG } from './shared/config.ts'
 import type {
   AgentDefaultModelLike,
   AgentPresetsLike,
@@ -19,9 +19,9 @@ import type {
   HostServices,
   LlmServiceLike,
   TuningHostServices,
-} from './host/env.ts'
-import { createLibraryRoutes, defaultLibraryRoot } from './host/library.ts'
-import { createTuningRoutes } from './host/tuning.ts'
+} from './shared/host-env.ts'
+import { createLibraryRoutes, defaultLibraryRoot } from './appearance/server/library.ts'
+import { createTuningRoutes } from './tuning/server/tuning.ts'
 import * as skills from './skills/index.ts'
 
 /** Stable Cordis plugin name; keep it equal to the patch row id. */

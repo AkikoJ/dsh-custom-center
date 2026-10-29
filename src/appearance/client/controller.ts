@@ -17,10 +17,10 @@
  * `theme.setTheme` (ui-theme owns light/dark), it listens for `theme/change`
  * and re-applies its tokens after every host repaint.
  */
-import { TOKEN_NAMES, type Appearance, type SkinSeeds, deriveTokens } from '../core/skins.ts'
-import { luminance, readableOn } from '../core/color.ts'
-import { isToneHistogram, resolveAppearance } from '../core/tone.ts'
-import type { ThemeService } from './dsh-env.ts'
+import { TOKEN_NAMES, type Appearance, type SkinSeeds, deriveTokens } from '../skins.ts'
+import { luminance, readableOn } from '../color.ts'
+import { isToneHistogram, resolveAppearance } from '../tone.ts'
+import type { ThemeService } from '../../shared/browser-env.ts'
 import {
   LS_ACTIVE,
   LS_BG_OPACITY,

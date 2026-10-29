@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import type { SkinController } from "./controller.ts";
 import { LibraryPicker } from "./LibraryPicker.tsx";
-import type { SectionProps } from "./dsh-env.ts";
+import type { SectionProps } from "../../shared/browser-env.ts";
 
 /** Props: the composed slot props plus the shared controller. */
 export type AppearancePageProps = SectionProps & {
