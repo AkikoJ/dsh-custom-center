@@ -1,7 +1,23 @@
 import type * as React from "react";
 import type { SourceSelectProps } from "./client-types.js";
 import { Menu, Button, type MenuEntry } from "@deepseek-ai/dsh-client-ui-primitives";
-import { handleSourceMenuEscape } from "./source-select-model.js";
+
+interface SourceMenuEscapeEvent {
+  readonly key: string;
+  preventDefault(): void;
+  stopPropagation(): void;
+  stopImmediatePropagation(): void;
+}
+
+/** Keep Escape inside an open menu instead of closing its containing dialog. */
+export function handleSourceMenuEscape(event: SourceMenuEscapeEvent, close: () => void) {
+  if (event.key !== "Escape") return false;
+  event.preventDefault();
+  event.stopPropagation();
+  event.stopImmediatePropagation();
+  close();
+  return true;
+}
 
 /**
  * 宿主官方原语 Menu 规范封装的筛选与操作菜单。

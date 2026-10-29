@@ -1,9 +1,31 @@
 import type * as React from "react";
 import type { SourceSelectProps, Translate } from "./client-types.js";
-import type { WorkspaceRow } from "./core.js";
-import type { DestinationKit, DestinationValue, DestinationPickerProps, UserDestination } from "./destination-types.js";
+import type { WorkspaceRow } from "./types.js";
+import type { RepositoryDestination } from "./types.js";
 
-export type { DestinationKit, DestinationValue, UserDestination } from "./destination-types.js";
+export type DestinationScope = "user" | "workspace";
+export interface DestinationValue {
+  scope: DestinationScope;
+  location: "dsh" | "agents";
+  workspace: string;
+}
+export type UserDestination = RepositoryDestination;
+export interface DestinationPickerProps {
+  t: Translate;
+  value: DestinationValue;
+  onChange: (next: Partial<DestinationValue>) => void;
+  workspaces: readonly WorkspaceRow[];
+  userDestinations: readonly UserDestination[];
+  allowAgents: boolean;
+  disabled?: boolean;
+}
+export type DestinationPickerComponent = React.ComponentType<DestinationPickerProps>;
+export interface DestinationKit {
+  DestinationPicker: DestinationPickerComponent;
+  defaultDestination: () => DestinationValue;
+  destinationPayload: (value: DestinationValue) => { root?: "dsh" | "agents"; workspace?: string };
+  destinationReady: (value: DestinationValue, workspaces: readonly WorkspaceRow[], userDestinations?: readonly UserDestination[]) => boolean;
+}
 
 export const defaultDestination = (): DestinationValue => ({ scope: "user", location: "dsh", workspace: "" });
 

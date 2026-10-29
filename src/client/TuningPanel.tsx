@@ -589,3 +589,18 @@ export function TuningPanel(): JSX.Element {
     </div>
   )
 }
+
+/** The context / compaction settings page. */
+export function TuningPage(): JSX.Element {
+  return (
+    <div className="dsh-cc-page">
+      <header className="dsh-cc-header">
+        <h2 className="dsh-cc-heading">上下文与压缩</h2>
+        <p className="dsh-cc-intro">
+          设置当前模型的最大上下文与每个 agent preset 的自动压缩阈值；保存后写入当前 profile，最大上下文下一次请求起生效，压缩设置对之后新建的会话生效。
+        </p>
+      </header>
+      <TuningPanel />
+    </div>
+  )
+}

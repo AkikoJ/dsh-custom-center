@@ -18,7 +18,7 @@ import type { ClientCtx } from './dsh-env.ts'
 import { ensureStyle } from './styles.ts'
 import { createController } from './controller.ts'
 import { AppearancePage } from './AppearancePage.tsx'
-import { TuningPage } from './TuningPage.tsx'
+import { TuningPage } from './TuningPanel.tsx'
 import * as skills from '../skills/client.ts'
 
 /** Browser services this plugin requires before activation. */
