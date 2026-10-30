@@ -2,11 +2,12 @@
 
 [English](README.md)
 
-一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增三个独立页面：「外观」、
-「上下文与压缩」和「技能」。「外观」用自定义图片 / 视频壁纸给 DeepSeek Harness
+一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增四个独立页面：「外观」、
+「上下文与压缩」、「技能」和「抖音账号」。「外观」用自定义图片 / 视频壁纸给 DeepSeek Harness
 界面换肤，配色自动跟随画面主色调；「上下文与压缩」设置模型上下文窗口与自动压缩
 阈值；「技能」管理 DSH 自己的技能，并展示其他 Agent 的技能供你同步到 DSH（改自
 [dsh-skills-manager](https://github.com/MichengAI/dsh-skills-manager)）。
+「抖音账号」管理本机浏览器登录和宿主内部 HTTP 请求所需的凭据。
 
 与「通用设置」里插入一行不同，本插件注册自己的一级 `settings.section` 条目，
 因此它们作为独立页面出现在设置导航中（和通用、模型、插件等并列）。
@@ -55,7 +56,8 @@
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
 | Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center` |
 | Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/appearance/server/library.ts`）+ 上下文/压缩路由（`src/tuning/server/routes.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
-| 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」两个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
+| 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」「抖音账号」三个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
+| 抖音宿主 | `src/douyin/server/`：受认证路由、受管理的 Playwright Chromium、私有快照与独立 HTTP 验证 |
 | 功能逻辑 | `src/appearance/`（配色、皮肤、取色、媒体规则）、`src/tuning/`（模型窗口与压缩）及既有测试 |
 | 共享边界 | `src/shared/`：插件配置、跨功能页面/控件样式、浏览器/宿主适配、请求标记与回环判断 |
 | 构建 | `tsc` 声明 + `tsdown` host/client 产物 |
@@ -66,7 +68,7 @@
 
 ## 代码结构
 
-源码按外观（`appearance`）、调优（`tuning`）、技能（`skills`）三个功能组织。
+源码按外观（`appearance`）、调优（`tuning`）、技能（`skills`）、抖音登录（`douyin`）四个功能组织。
 每个功能内部再区分浏览器界面与交互（`client/`）、宿主服务与副作用（`server/`），
 以及不依赖运行环境的数据合同和纯规则。跨功能基础能力放在 `shared/`。
 `src/index.ts` 和 `src/client/index.ts` 是包的两个入口，只负责装配；Skills 保留独立子插件入口。
@@ -236,6 +238,16 @@ flowchart TD
 
 类型检查与测试命令见下方「常用命令」。这些检查不能替代真实宿主中的视觉、交互和生命周期验收。
 重构证据与验证限制见[职责重构验证记录](docs/responsibility-refactoring-validation.md)。
+
+## 抖音账号登录
+
+设置侧边栏新增「抖音账号」，目前仅支持 macOS 本机单账号。宿主使用 Node.js + Playwright 配套 Chromium 打开真实抖音页；用户自行扫码、手机确认或填写网页验证码。浏览器认证、内部凭据保存及独立 HTTP 验证分别展示，HTTP 临时失败保留网页登录。关闭窗口保留会话，宿主重启后需要重新验证。
+
+首次使用需在插件安装目录明确执行 `pnpm run douyin:install-browser`，准备与 Playwright 匹配的 Chromium。DSH 的第三方资源统一放在 `$DSH_HOME/vendor/`（默认 `~/.dsh/vendor/`），按工具名称划分子目录；浏览器资源（Chromium、Headless Shell、FFmpeg）使用其中的 `playwright/`，跨插件、跨 profile 共享。安装命令与宿主使用同一规则，显式设置的 `PLAYWRIGHT_BROWSERS_PATH` 仍优先，DSH 与安装命令须保持一致。修改路径后完整重启 DSH。页面和登录按钮不会自动下载，不回退到系统 Chrome。Playwright 作为宿主外部依赖随插件安装，不能只复制编译后的 JS。
+
+凭据只供宿主内部使用，不提供下载、复制、Agent 工具或对外凭据接口。资料按 DSH profile 隔离保存，默认目录为 `$DSH_PROFILE_DIR/custom-center/douyin/`；无 profile 时使用 `$DSH_HOME` 或 `~/.dsh` 下相同子目录。当前不实现私信、账号切换或清除登录。
+
+安装步骤、故障恢复及真实运行的待验收项见[登录交付与验收](docs/douyin-login-validation.md)。自动化检查不代表已完成真实扫码或独立 HTTP 同 UID 验证。
 
 ## 开发安装
 

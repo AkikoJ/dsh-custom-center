@@ -5,6 +5,7 @@ const NAV_MARKER = 'data-dsh-custom-center-nav'
 export const NAV_SECTIONS = [
   { id: 'custom-center-appearance', label: '外观', marker: 'appearance', order: 40 },
   { id: 'custom-center-tuning', label: '上下文与压缩', marker: 'tuning', order: 41 },
+  { id: 'custom-center-douyin', label: '抖音账号', marker: 'douyin', order: 43 },
 ] as const
 
 /**

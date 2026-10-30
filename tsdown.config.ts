@@ -45,6 +45,8 @@ const host: UserConfig = {
     neverBundle: [
       '@deepseek-ai/cordis',
       '@deepseek-ai/schemastery',
+      'playwright',
+      'playwright-core',
     ],
   },
 }
