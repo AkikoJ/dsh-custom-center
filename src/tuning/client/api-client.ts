@@ -6,12 +6,7 @@
  * profile configuration editor, so this client only sends numbers.
  */
 import { MARKER_HEADER } from '../../shared/request.ts'
-import type {
-  CompactionValues,
-  ModelTarget,
-  ModelWindowValues,
-  TuningSnapshot,
-} from '../tuning.ts'
+import type { CompactionValues, ModelTarget, ModelWindowValues, TuningSnapshot } from "../contracts.js";
 
 /** Failure of a tuning request, with the host's stable error code. */
 export class TuningClientError extends Error {

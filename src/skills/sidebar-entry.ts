@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Switch as PrimitiveSwitch } from "@deepseek-ai/dsh-client-ui-primitives";
-import type { ClientContext, Translate } from "./client-types.js";
+import type { ClientContext } from "./browser-host.js";
+import type { Translate } from "./client/messages.js";
 import { SKILL_PATHS } from "./settings-nav-icon.js";
 
 const h = React.createElement;

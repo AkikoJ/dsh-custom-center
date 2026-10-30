@@ -1,5 +1,5 @@
 import type * as React from "react";
-import type { SourceSelectProps } from "./client-types.js";
+import type { SourceSelectProps } from "./client/widget-types.js";
 import { Menu, Button, type MenuEntry } from "@deepseek-ai/dsh-client-ui-primitives";
 
 interface SourceMenuEscapeEvent {

@@ -1,7 +1,8 @@
 import type * as React from "react";
-import type { SourceSelectProps, Translate } from "./client-types.js";
-import type { WorkspaceRow } from "./types.js";
-import type { RepositoryDestination } from "./types.js";
+import type { SourceSelectProps } from "./client/widget-types.js";
+import type { Translate } from "./client/messages.js";
+import type { WorkspaceRow } from "./contracts.js";
+import type { RepositoryDestination } from "./contracts.js";
 
 export type DestinationScope = "user" | "workspace";
 export interface DestinationValue {

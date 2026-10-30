@@ -1,11 +1,11 @@
-import type { WorkspaceRow } from "../types.js";
+import type { WorkspaceRow } from "../contracts.js";
 import { pathIdentity, lstatOrNull } from "./file-operations.js";
 import { projectIdentity, PROJECT_SOURCES } from "./source-roots.js";
 import { projectSourceSafe, checkedWritableRootDefinition } from "./root-access.js";
 import { scanDeduplicatedRoots } from "./skill-scan.js";
 import { isAbsolute, resolve, join, dirname, basename } from "node:path";
 import { promises as fs } from "node:fs";
-import type { Diagnostic, SkillRoot, OperationError } from "../types.js";
+import type { Diagnostic, SkillRoot, OperationError } from "../model.js";
 export async function nearestProjectRoot(cwd: string) {
   if (typeof cwd !== "string" || !isAbsolute(cwd)) return null;
   let start;

@@ -1,7 +1,8 @@
 import { rootDefinition, userRoots } from "./source-roots.js";
 import { entryOf, parseSkillDoc } from "./skill-document.js";
 import { lstatOrNull, resolvedPath, linkedDirectoryBundle, entryPath, isInsideResolvedRoot, pathIdentity } from "./file-operations.js";
-import type { RootInput, Scan, SkillEntry, SkillRoot, DiscoveredEntry } from "../types.js";
+import type { RootInput } from "./types.js";
+import type { Scan, SkillEntry, SkillRoot, DiscoveredEntry } from "../model.js";
 import { discoverReadonlyEntries } from "../readonly-discovery.js";
 import { promises as fs } from "node:fs";
 import { resolve, join } from "node:path";

@@ -1,16 +1,10 @@
 import { SegmentedTabs } from "@deepseek-ai/dsh-client-ui-primitives";
 import * as React from "react";
-import {
-  type ApiRoutes,
-  type Filters,
-  type ManagerSnapshot,
-  type ModalState,
-  type Post,
-  type Translate,
-  type TrashItem,
-} from "../client-types.js";
-import type { WorkspaceRow } from "../types.js";
-import { type RootView, type SkillView } from "../types.js";
+import { type ApiRoutes, type ManagerSnapshot } from "../contracts.js";
+import { type Filters, type ConfirmModal, type Post, type TrashItem } from "./manager-types.js";
+import { type Translate } from "./messages.js";
+import type { WorkspaceRow } from "../contracts.js";
+import { type RootView, type SkillView } from "../contracts.js";
 import { filterActionButton, iconButton, Input, SourceSelect } from "./controls.js";
 import { strokeIcon } from "./icons.js";
 import { countKey, formatTrashTime, translateOrFallback } from "./messages.js";
@@ -30,7 +24,7 @@ interface createScopePanelsProps {
   data: Omit<ManagerSnapshot, "summary"> & { summary?: ManagerSnapshot["summary"]; };
   post: Post;
   busy: boolean;
-  setModal: React.Dispatch<React.SetStateAction<ModalState>>;
+  confirmDelete: (target: Extract<ConfirmModal, { type: "delete-confirm" }>) => void;
   setScope: React.Dispatch<React.SetStateAction<string>>;
   loadWorkspaces: (readSelected?: boolean, forceDetail?: boolean) => Promise<never[] | WorkspaceRow[]>;
   refresh: (silent: boolean) => Promise<void | ManagerSnapshot>;
@@ -63,7 +57,7 @@ export function createScopePanels({
   data,
   post,
   busy,
-  setModal,
+  confirmDelete,
   setScope,
   loadWorkspaces,
   refresh,
@@ -213,7 +207,7 @@ export function createScopePanels({
                   "M3.5 4.5h9M6.5 4.5V3h3v1.5M5 4.5l.7 8.5h4.6L11 4.5",
                 ),
                 function () {
-                  setModal({
+                  confirmDelete({
                     type: "delete-confirm",
                     id: item.id,
                     name: item.name,

@@ -1,14 +1,25 @@
 import * as React from "react";
-import { type Filters, type SectionProps, type SessionSnapshot, type ViewProps } from "../client-types.js";
+import { type ModalState, type Filters, type SectionProps, type SessionSnapshot, type ViewProps } from "./manager-types.js";
 import { renderCategoryDialogs } from "./category-dialogs.js";
-import { renderEditorDialogs } from "./editor-dialogs.js";
+import { renderCreateDialog } from "./create-dialog.js";
+import { renderImportDialog } from "./import-dialog.js";
 import { resolveT, translateError } from "./messages.js";
 import { createScopePanels } from "./scope-panels.js";
-import { renderSkillDialogs } from "./skill-dialogs.js";
+import { renderDetailDialog } from "./detail-dialog.js";
+import { renderSyncDialog } from "./sync-dialog.js";
+import { renderDeleteDialogs } from "./delete-dialogs.js";
 import { createSkillRows } from "./skill-rows.js";
 import { createSourceTree } from "./source-tree.js";
 import { CSS } from "./styles.js";
-import { useSkillManager } from "./useSkillManager.js";
+import { createSessionApi } from "./api-client.js";
+import { useSkillCatalog } from "./useSkillCatalog.js";
+import { useSkillCommands } from "./useSkillCommands.js";
+import { useSkillFilters } from "./useSkillFilters.js";
+import { useSkillCreate } from "./useSkillCreate.js";
+import { useSkillImport } from "./useSkillImport.js";
+import { useSkillDetail } from "./useSkillDetail.js";
+import { useSkillSync } from "./useSkillSync.js";
+import { useSkillCategories } from "./useSkillCategories.js";
 
 function currentSessionId(snapshot?: SessionSnapshot) {
   if (!snapshot) return undefined;
@@ -53,132 +64,81 @@ function SkillManagerSection(props: Partial<SectionProps>) {
   />);
 }
 function SkillManagerView(props: ViewProps) {
-  var {
-    submitSync,
-    assignCategoryBatch,
-    openFolder,
+  const t = resolveT(props && props.t);
+  const { scope, setScope, expanded, setExpanded } = props;
+  const [modal, setModal] = React.useState<ModalState>(null);
+  const sessionApi = createSessionApi(props.sessionId);
+  const catalog = useSkillCatalog(t, sessionApi, scope);
+  const workspaces = catalog.workspaces;
+  const selectedDetail = workspaces.workspaceDetails[workspaces.selectedWorkspace];
+  const commands = useSkillCommands(t, scope, sessionApi, catalog.refresh, workspaces.loadWorkspaceDetail);
+  const filtersView = useSkillFilters(t, props, catalog.allRoots, selectedDetail);
+  const destinations = { workspaceRows: workspaces.workspaceRows, userDestinations: catalog.userDestinations };
+  const create = useSkillCreate(t, commands.post, setModal, commands.setResult, workspaces.loadWorkspaces, destinations);
+  const importing = useSkillImport(t, commands.busy, commands.post, setModal, commands.setResult, workspaces.loadWorkspaces, destinations);
+  const detailFlow = useSkillDetail(t, sessionApi, setModal, commands.setResult, commands.setBusy);
+  const sync = useSkillSync(t, commands.post, setModal, commands.setResult);
+  const categories = useSkillCategories(t, sessionApi, setModal, commands, catalog.refresh, workspaces.loadWorkspaceDetail);
+  var { renderSkill, clearDragHighlights } = createSkillRows({
     t,
-    allRoots,
-    openSync,
-    busy,
-    openDetail,
-    setResult,
-    post,
-    setModal,
-    draggingRef,
-    setCategoryName,
-    expanded,
-    query,
-    filters,
-    setExpanded,
-    setAddSelection,
-    setAddSearch,
-    rows,
-    filteredRows,
-    activeSource,
-    filterKey,
-    workspaceRows,
-    scope,
-    selectedWorkspace,
-    roots,
-    workspaceList,
-    selectedDetail,
-    data,
-    setScope,
-    loadWorkspaces,
-    refresh,
-    summary,
-    options,
-    setSource,
-    updateFilter,
-    workspacePath,
-    selectWorkspace,
-    setQuery,
-    refreshWorkspaceDetails,
-    snapshot,
-    openCreate,
-    openImport,
-    modal,
-    createDestination,
-    userDestinations,
-    setCreateDestination,
-    form,
-    updateForm,
-    submitCreate,
-    pickerOpenRef,
-    setUpload,
-    importInputRef,
-    selectUploadFiles,
-    folderInputRef,
-    openNativePicker,
-    upload,
-    importDestination,
-    setImportDestination,
-    result,
-    submitImport,
-    detail,
-    setCopyState,
-    copyText,
-    copyState,
-    syncOverwrite,
-    setSyncOverwrite,
-    categoryName,
-    addSearch,
-    addSelection,
-  } = useSkillManager(props);
-  var { renderSkill, clearDragHighlights } = createSkillRows({ t, allRoots, openSync, busy, openDetail, openFolder, post, setModal, draggingRef });
+    allRoots: catalog.allRoots,
+    openSync: sync.openSync,
+    busy: commands.busy,
+    openDetail: detailFlow.openDetail,
+    openFolder: commands.openFolder,
+    post: commands.post,
+    confirmTrash: setModal,
+    draggingRef: categories.draggingRef,
+  });
   var { renderRoot } = createSourceTree({
-    busy,
-    openSync,
+    busy: commands.busy,
+    openSync: sync.openSync,
     t,
-    setCategoryName,
-    setModal,
-    post,
+    categories,
+    post: commands.post,
     expanded,
-    query,
-    filters,
-    draggingRef,
+    query: filtersView.query,
+    filters: filtersView.filters,
+    draggingRef: categories.draggingRef,
     clearDragHighlights,
     setExpanded,
-    setAddSelection,
-    setAddSearch,
     renderSkill,
-    rows,
-    filteredRows,
-    activeSource,
-    filterKey,
+    rows: filtersView.rows,
+    filteredRows: filtersView.filteredRows,
+    activeSource: filtersView.activeSource,
+    filterKey: filtersView.filterKey,
   });
   var { renderList, renderTrash, tabs, skillControls } = createScopePanels({
-    workspaceRows,
+    workspaceRows: workspaces.workspaceRows,
     t,
     scope,
-    selectedWorkspace,
-    roots,
+    selectedWorkspace: workspaces.selectedWorkspace,
+    roots: filtersView.roots,
     renderRoot,
-    query,
-    filters,
-    workspaceList,
+    query: filtersView.query,
+    filters: filtersView.filters,
+    workspaceList: workspaces.workspaceList,
     selectedDetail,
-    rows,
-    data,
-    post,
-    busy,
-    setModal,
+    rows: filtersView.rows,
+    data: catalog.data,
+    post: commands.post,
+    busy: commands.busy,
+    confirmDelete: setModal,
     setScope,
-    loadWorkspaces,
-    refresh,
-    summary,
-    activeSource,
-    options,
-    setSource,
-    updateFilter,
-    workspacePath,
-    selectWorkspace,
-    setQuery,
-    refreshWorkspaceDetails,
-    snapshot,
-    openCreate,
-    openImport,
+    loadWorkspaces: workspaces.loadWorkspaces,
+    refresh: catalog.refresh,
+    summary: filtersView.summary,
+    activeSource: filtersView.activeSource,
+    options: filtersView.options,
+    setSource: filtersView.setSource,
+    updateFilter: filtersView.updateFilter,
+    workspacePath: workspaces.workspacePath,
+    selectWorkspace: workspaces.selectWorkspace,
+    setQuery: filtersView.setQuery,
+    refreshWorkspaceDetails: workspaces.refreshWorkspaceDetails,
+    snapshot: catalog.snapshot,
+    openCreate: create.openCreate,
+    openImport: importing.openImport,
   });
   var content: React.ReactNode[] = (
     [
@@ -202,21 +162,21 @@ function SkillManagerView(props: ViewProps) {
   ).concat(
     scope === "trash" ? [] : skillControls,
     [
-      result && modal !== "import"
+      commands.result && modal !== "import"
         ? (<div
           key={"result"}
           className={"dssm-feedback" +
-            (result.warning
+            (commands.result.warning
               ? " dssm-warning"
-              : result.ok
+              : commands.result.ok
                 ? ""
                 : " dssm-error")}
         >
-          {result.text}
+          {commands.result.text}
         </div>)
         : null,
     ],
-    (data.warnings || []).map(function (warning, index) {
+    (catalog.data.warnings || []).map(function (warning, index) {
       return (<div
         key={"warning-" + index}
         className={"dssm-feedback dssm-warning"}
@@ -226,12 +186,12 @@ function SkillManagerView(props: ViewProps) {
       </div>);
     }),
     [
-      snapshot.error
+      catalog.snapshot.error
         ? (<div key={"error"} className={"dssm-feedback dssm-error"}>
-          {snapshot.error}
+          {catalog.snapshot.error}
         </div>)
         : null,
-      snapshot.loading && !snapshot.data
+      catalog.snapshot.loading && !catalog.snapshot.data
         ? (<div key={"loading"} className={"dssm-empty"}>
           {t("loading")}
         </div>)
@@ -240,58 +200,49 @@ function SkillManagerView(props: ViewProps) {
           : renderList(),
     ],
   );
-  content.push(...renderEditorDialogs({
+  content.push(...renderCreateDialog({
+    create,
     modal,
     t,
     setModal,
-    createDestination,
-    busy,
-    workspaceRows,
-    userDestinations,
-    setCreateDestination,
-    form,
-    updateForm,
-    submitCreate,
-    pickerOpenRef,
-    setUpload,
-    setResult,
-    importInputRef,
-    selectUploadFiles,
-    folderInputRef,
-    openNativePicker,
-    upload,
-    importDestination,
-    setImportDestination,
-    result,
-    submitImport,
+    busy: commands.busy,
+    workspaceRows: workspaces.workspaceRows,
+    userDestinations: catalog.userDestinations,
+  }), ...renderImportDialog({
+    importing,
+    modal,
+    t,
+    setModal,
+    busy: commands.busy,
+    workspaceRows: workspaces.workspaceRows,
+    userDestinations: catalog.userDestinations,
+    setResult: commands.setResult,
+    result: commands.result,
   }));
-  content.push(...renderSkillDialogs({
+  content.push(...renderDetailDialog({
+    detailFlow,
     modal,
-    detail,
     t,
-    setCopyState,
     setModal,
-    copyText,
-    copyState,
-    syncOverwrite,
-    setSyncOverwrite,
-    post,
-    submitSync,
-    busy,
+  }), ...renderSyncDialog({
+    sync,
+    modal,
+    t,
+    setModal,
+    busy: commands.busy,
+  }), ...renderDeleteDialogs({
+    modal,
+    t,
+    setModal,
+    post: commands.post,
+    busy: commands.busy
   }));
   content.push(...renderCategoryDialogs({
     modal,
-    categoryName,
-    busy,
-    post,
+    categories,
+    busy: commands.busy,
     setModal,
     t,
-    setCategoryName,
-    addSearch,
-    addSelection,
-    setAddSelection,
-    setAddSearch,
-    assignCategoryBatch,
   }));
   return (<section className={"dssm-section"}>
     {content}

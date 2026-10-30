@@ -1,7 +1,8 @@
 import { Button as PrimitiveButton } from "@deepseek-ai/dsh-client-ui-primitives";
 import * as React from "react";
-import { type ModalState, type Post, type Translate } from "../client-types.js";
-import { type RootView, type SkillView } from "../types.js";
+import { type ConfirmModal, type Post } from "./manager-types.js";
+import { type Translate } from "./messages.js";
+import { type RootView, type SkillView } from "../contracts.js";
 import { SourceSelect, enableSwitch } from "./controls.js";
 import { moreIcon } from "./icons.js";
 import { rootDisplayName } from "./messages.js";
@@ -15,11 +16,11 @@ interface createSkillRowsProps {
   openFolder: (root: RootView, skill: SkillView, workspacePath?: string) => void;
   openDetail: (root: RootView, skill: SkillView, workspacePath?: string) => void;
   post: Post;
-  setModal: React.Dispatch<React.SetStateAction<ModalState>>;
+  confirmTrash: (target: Extract<ConfirmModal, { type: "trash-confirm" }>) => void;
   draggingRef: React.MutableRefObject<{ root: string; name: string; currentCategoryId: string; } | null>;
 }
 
-export function createSkillRows({ t, allRoots, openSync, busy, openDetail, openFolder, post, setModal, draggingRef }: createSkillRowsProps) {
+export function createSkillRows({ t, allRoots, openSync, busy, openDetail, openFolder, post, confirmTrash, draggingRef }: createSkillRowsProps) {
   function renderLinkedNote(skill: SkillView) {
     if (skill.linked !== true) return null;
     return (<div className={"dssm-note"}>
@@ -252,7 +253,7 @@ export function createSkillRows({ t, allRoots, openSync, busy, openDetail, openF
             );
           }
           if (action === "trash")
-            setModal({
+            confirmTrash({
               type: "trash-confirm",
               root: root.key,
               name: skill.name,

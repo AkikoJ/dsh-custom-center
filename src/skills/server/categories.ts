@@ -4,7 +4,8 @@ import { projectRoots } from "./workspaces.js";
 import { resolveEntry } from "./entry-access.js";
 import { scanEntries } from "./skill-scan.js";
 import { applyPolicySkillEnabled } from "./policy.js";
-import type { OperationError, ScopeOptions, Log } from "../types.js";
+import type { OperationError } from "../model.js";
+import type { ScopeOptions, Log } from "./types.js";
 import { randomBytes } from "node:crypto";
 export function categoryError(code: string, error: string, params?: Record<string, unknown>): OperationError {
   return { ok: false, code, error, ...(params ? { params } : {}) };

@@ -91,10 +91,10 @@ Legibility over a photo is checked rather than assumed:
 | --- | --- |
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
 | Loader row | `ui-custom-center` -> package `dsh-custom-center` |
-| Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/appearance/server/library.ts`), the context/compaction routes (`src/tuning/server/tuning.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
+| Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/appearance/server/library.ts`), the context/compaction routes (`src/tuning/server/routes.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
 | Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
 | Feature logic | `src/appearance/` (colour, palette, sampling, media rules), `src/tuning/` (model window and compaction), and existing tests |
-| Shared boundary | `src/shared/`: plugin config, complete shared stylesheet, browser/host adapters, request marker and loopback check |
+| Shared boundary | `src/shared/`: plugin config, cross-feature page/control styles, browser/host adapters, request marker and loopback check |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
 
 The browser half registers into the `settings.section` slot (full settings
@@ -102,52 +102,185 @@ pages, each with its own nav entry), not `settings.general.item`. The skills
 module mounts as a separate Cordis child plugin on both halves: if the host
 lacks a service it needs, only the Skills page is missing.
 
-## Layout
+## Code structure
+
+Source is organized by feature: appearance (`appearance`), context and compaction
+(`tuning`), and skills (`skills`). Each feature separates browser UI and interaction
+(`client/`), host services and side effects (`server/`), and data contracts and pure
+rules that do not depend on either environment. Cross-feature foundations live in
+`shared/`. The package entries, `src/index.ts` and `src/client/index.ts`, only assemble
+these modules; Skills retains its own child-plugin entries.
+
+The tree shows the main files. See [Architecture](docs/architecture.md) for the
+complete file-by-file reference.
 
 ```text
 dsh-custom-center/
-  cordis.patch.yml          # profile bundle row (id ui-custom-center)
-  icon.svg                  # plugin icon (display metadata)
   src/
-    index.ts                # host half (Node / Cordis)
+    index.ts                  # Host assembly: routes + Skills child plugin
     client/
-      index.ts              # browser half: settings.section wiring
+      index.ts                # Browser assembly: pages + lifecycle
+      settings-nav.ts         # settings navigation markers
+      styles.ts               # stylesheet assembly and injection
     appearance/
       client/
-        AppearancePage.tsx  # appearance page (wallpaper, veils, preview/save)
-        LibraryPicker.tsx   # image/video tabs, upload, thumbnails
-        controller.ts       # skin engine (tokens, wallpaper, persistence)
-        wallpaper.ts        # DOM/localStorage/IndexedDB + image/video decode
-        library.ts          # browser client of the library routes
-      server/
-        library.ts          # loopback routes: list, upload, file
-      color.ts              # pure colour maths
-      skins.ts              # seeds -> token map
-      sample.ts             # pure colour sampling from a pixel grid
-      tone.ts               # wallpaper lightness profile and appearance
-      media.ts              # file classes, name rules, range parsing
+        AppearancePage.tsx    # appearance UI
+        LibraryPicker.tsx     # wallpaper library UI
+        controller.ts         # saved/draft/live state and preview lifecycle
+        model.ts              # appearance configuration and defaults
+        storage.ts            # localStorage / IndexedDB persistence
+        host-appearance.ts    # host DOM, tokens, wallpaper and URL resources
+        wallpaper.ts          # image/video decoding and sampling
+        library.ts            # wallpaper library HTTP client
+        styles.ts             # appearance and host wallpaper styles
+      server/library.ts       # wallpaper list/upload/file routes
+      color.ts                # colour and contrast maths
+      skins.ts                # seeds -> token map
+      sample.ts               # pure pixel sampling
+      tone.ts                 # lightness profile and appearance rules
+      media.ts                # media, names and Range rules
     tuning/
+      contracts.ts            # cross-end request/snapshot types
+      rules.ts                # validation, defaults and budget formula
+      config-mapping.ts       # pure profile configuration transforms
+      targets.ts              # model scope and target selection
       client/
-        TuningPanel.tsx     # context/compaction page and form (includes TuningPage)
-        Select.tsx          # tuning-only themed dropdown
-        tuning.ts           # browser client of the tuning routes
+        TuningPanel.tsx       # page and panel assembly (includes TuningPage)
+        useTuningForm.ts      # state, loading, derived values and saving
+        ModelWindowPanel.tsx  # model-window render function
+        CompactionPanel.tsx   # compaction render function
+        fields.tsx            # tuning fields
+        Select.tsx            # tuning dropdown
+        api-client.ts         # tuning HTTP client
+        styles.ts             # tuning styles
       server/
-        tuning.ts           # loopback routes: read/write context + compaction
-      tuning.ts             # validation, budget formula, profile config transforms
+        routes.ts             # HTTP protocol and guards
+        host-env.ts           # tuning host interfaces
+        model-access.ts       # host model enumeration and lookup
+        snapshot.ts           # read-side composition
+        save.ts               # ordered configuration writes
+    skills/
+      index.ts                # Host child-plugin assembly
+      client.ts               # Browser child-plugin assembly
+      model.ts                # domain types
+      contracts.ts            # cross-end data/API contracts
+      browser-host.ts         # browser host adapter types
+      host-types.ts           # Skills host adapter types
+      server/
+        router.ts             # HTTP dispatch, queueing and responses
+        http-policy.ts        # origin checks, request marker and body limits
+        request-scope.ts      # request/session project and target scope
+        commands.ts           # shared HTTP/tool queue and orchestration
+        queries.ts            # page and workspace snapshot composition
+        provider.ts           # loadable skill selection and read revalidation
+        create-skill-tool.ts  # create_skill tool registration
+        host-integration.ts   # host notifications, workspaces and adapters
+        skill-*.ts            # scan, document, create, import and sync
+        upload-import.ts      # file/directory/ZIP upload import
+        file-operations.ts    # file-tree checks and copying
+        policy-store.ts       # policy state persistence
+        policy.ts             # skill/source enablement policies
+        categories.ts         # categories, assignment and ordering
+        trash.ts              # trash, restore and permanent deletion
+      client/
+        manager-page.tsx      # page and session composition
+        useSkillCatalog.ts    # skill snapshots and refresh lifecycle
+        useWorkspaceCatalog.ts # workspace lists, details and cache
+        useSkillCommands.ts   # shared busy/inflight and request execution
+        useSkillFilters.ts    # derived filters, lists and counts
+        useSkillCreate.ts     # creation workflow
+        useSkillImport.ts     # import workflow
+        useSkillDetail.ts     # detail loading, copying and feedback
+        useSkillSync.ts       # sync workflow
+        useSkillCategories.ts # category workflows and batch operations
+        *-dialog.tsx          # create, import, detail and sync dialogs
+        *-dialogs.tsx         # category and deletion confirmation dialogs
+        source-tree.tsx       # source and category tree
+        skill-rows.tsx        # skill rows and drag/drop events
+        scope-panels.tsx      # user, project and trash panels
+        api-client.ts         # ordinary/session HTTP client
+        selectors.ts          # pure filtering and statistics
+        uploads.ts            # upload checks and request encoding
+        messages.ts           # translation and result message composition
+        locales/              # Chinese and English dictionaries
+        styles.ts             # Skills styles
     shared/
-      config.ts             # shared host config defaults
-      styles.ts             # complete injected stylesheet
-      browser-env.ts        # narrow DSH service typings + SlotMap augmentation
-      host-env.ts           # narrow host service typings
-      request.ts            # request marker and loopback check
-    skills/                 # skills management (ported from dsh-skills-manager, Apache-2.0)
-      index.ts              # host: /api/dsh-custom-center/skills routes, skill provider, create_skill
-      client.ts             # browser: Skills settings page
-      core.ts               # skill scanning, toggle policy, sync from other agents, create/import/trash
-      server/               # host responsibilities (policy, files, sync, routes)
-      client/               # TSX UI, state and lifecycle, styles and messages
-  tests/                    # vitest: feature logic, host interfaces and Skills regressions
+      config.ts               # plugin configuration and defaults
+      browser-env.ts          # browser host interfaces and slot types
+      host-env.ts             # cross-feature Host interfaces
+      request.ts              # shared appearance/tuning request conventions
+      styles.ts               # cross-feature page and control styles
+  tests/                      # feature, contract, lifecycle and architecture tests
+  docs/architecture.md        # current per-file responsibilities and boundaries
 ```
+
+### Responsibilities and call paths
+
+| Module | Responsibility and main call path |
+| --- | --- |
+| Entries and lifecycle | The Host entry mounts routes and child plugins. The Browser entry registers pages, creates the appearance controller, injects styles and disposes subscriptions. Business logic stays within each feature. |
+| Appearance state | `AppearancePage.tsx` forwards user events to `controller.ts`, which owns saved/draft/live state, preview, save, discard and reset. `storage.ts` owns persistence; `host-appearance.ts` owns DOM, tokens, wallpaper elements and URL resources; `wallpaper.ts` owns decoding and sampling. |
+| Appearance rules and library | `color.ts`, `skins.ts`, `sample.ts`, `tone.ts` and `media.ts` provide pure calculations and media rules. `LibraryPicker.tsx` calls `server/library.ts` through `client/library.ts`; wallpaper file access stays on the host. |
+| Tuning | `TuningPanel.tsx` composes the page regions. `useTuningForm.ts` owns the form and calls `server/routes.ts` through `api-client.ts`. Reads go to `snapshot.ts`, writes to `save.ts`, and host model access to `model-access.ts`. Validation and budget formulas live in `rules.ts`; configuration transforms live in `config-mapping.ts`. Both region files export ordinary render functions. |
+| Skills browser | `manager-page.tsx` composes focused hooks for catalogs, request exclusion, filters, creation, import, details, sync and categories. Dialog files own presentation, `api-client.ts` owns HTTP handling, and `selectors.ts` owns pure list derivation. |
+| Skills host | `router.ts` handles the protocol, `request-scope.ts` resolves scope, `commands.ts` orchestrates operations, and file modules perform filesystem changes. HTTP and the `create_skill` tool share one commands instance and queue. `queries.ts` composes page data; `provider.ts` handles DSH skill loading. |
+| Styles | Each feature owns its `client/styles.ts`; `shared/styles.ts` owns cross-feature foundations. `src/client/styles.ts` combines them in the established cascade order and injects them idempotently. |
+
+Appearance subscriptions, timers, asynchronous restoration and URL cleanup belong
+to the controller and host adapter. The Skills shell owns scope, saved filters and
+expansion state; the view remounted by session key owns requests, forms and dialogs.
+Ordinary operations, opening folders and category batches share request exclusion
+state, preserving the existing refresh and unlock order.
+
+### Dependency rules
+
+```mermaid
+flowchart TD
+  H["src/index.ts · Host entry"] --> HS["Feature server/ and Skills Host entry"]
+  B["src/client/index.ts · Browser entry"] --> BC["Feature client/ and Skills Browser entry"]
+  HS --> P["Feature models, data contracts and pure rules"]
+  BC --> P
+  HS --> S["shared/ · Cross-feature foundations"]
+  BC --> S
+```
+
+- Appearance, tuning and skills do not import each other. Move foundations into `shared/` only when they are actually reused across features.
+- `shared/` does not depend on features or entries, and feature implementations do not import entries at runtime. Keep the runtime dependency graph acyclic.
+- Browser runtime dependencies must not reach `server/`, Node built-ins or Host adapters. Share only data contracts, pure rules and pure types across environments; send HTTP requests through the respective client wrappers.
+- SDK types come from official `@deepseek-ai/*` npm packages. Describe unpublished host capabilities with narrow local interfaces rather than references to a DSH source checkout.
+- Pages own presentation and event wiring; hooks/controllers own state and workflows; pure rules own calculations; host adapters and storage own side effects. Place new code by responsibility without merging all workflows into one page or manager.
+
+### Where to make changes
+
+Paths below are relative to `src/`.
+
+| Change | Start here |
+| --- | --- |
+| Settings registration, enablement and disposal | `index.ts`, `client/index.ts`, `shared/config.ts` |
+| Appearance preview, save and restoration | `appearance/client/controller.ts`, `storage.ts`, `host-appearance.ts` |
+| Wallpaper colour, lightness and media rules | `appearance/color.ts`, `skins.ts`, `sample.ts`, `tone.ts`, `media.ts` |
+| Tuning validation, recommendations and budget formulas | `tuning/rules.ts`, `contracts.ts`, and `tuning/client/fields.tsx` |
+| Tuning model queries and configuration writes | `tuning/server/model-access.ts`, `snapshot.ts`, `save.ts`, and `tuning/config-mapping.ts` |
+| Skill creation, import, detail or sync interactions | The corresponding `useSkill*.ts` and dialog files in `skills/client/` |
+| Skill HTTP/tool operations | `skills/contracts.ts`, `skills/server/router.ts`, `commands.ts` and the relevant capability module; the tool entry is `create-skill-tool.ts` |
+| Skill enablement, categories or trash | `skills/server/policy.ts`, `categories.ts`, `trash.ts` |
+| Copy and styles | `skills/client/messages.ts`, `locales/`; each feature's `client/styles.ts` and `shared/styles.ts` |
+
+### Tests and architecture constraints
+
+| Coverage | Tests in `tests/` |
+| --- | --- |
+| Dependency direction, browser boundaries, cycles and the 800-line source-file limit | `architecture.spec.ts` |
+| Appearance controller, colour, sampling and media rules | `appearance-controller.spec.ts`, `color.spec.ts`, `skins.spec.ts`, `sample.spec.ts`, `media.spec.ts` |
+| Configuration and wallpaper library routes | `config.spec.ts`, `library.spec.ts` |
+| Tuning rules and host read/write contracts | `tuning.spec.ts`, `host-tuning.spec.ts` |
+| Skills browser data and session lifecycle | `skills-client-data.spec.ts`, `skills-client-lifecycle.spec.ts` |
+| Skills files, routes, policy state and sync | `skills-files.spec.ts`, `skills-routes.spec.ts`, `skills-state.spec.ts`, `skills-sync.spec.ts` |
+
+Type-check and test commands are listed under Commands below. These checks do not
+replace visual, interaction and lifecycle checks in a running host.
+See [Validation](docs/responsibility-refactoring-validation.md) for refactoring
+evidence and verification limits.
 
 ## Install for development
 

@@ -19,12 +19,9 @@ function writeCodexSkill(name: string, description: string, body?: string) {
   return dir
 }
 
-async function core() {
-  return import('../src/skills/core.ts')
-}
 
 async function codexRow(name: string) {
-  const { state } = await core()
+  const { state } = await import("../src/skills/server/queries.ts")
   const snapshot = await state()
   const root = snapshot.roots.find((item) => item.key === 'codex')
   return { snapshot, root, skill: root?.skills.find((item) => item.name === name) }
@@ -62,7 +59,7 @@ describe('skills sync', () => {
   it('copies a skill into DSH without touching the source, then reports synced', async () => {
     const source = writeCodexSkill('alpha', 'Alpha skill', 'one')
     writeFileSync(join(source, 'extra.txt'), 'extra')
-    const { syncSkills } = await core()
+    const { syncSkills } = await import("../src/skills/server/skill-sync.ts")
 
     const result = await syncSkills({ root: 'codex', names: ['alpha'] })
     expect(result.ok).not.toBe(false)
@@ -77,7 +74,7 @@ describe('skills sync', () => {
 
   it('flags a changed source as outdated and only overwrites on request', async () => {
     const source = writeCodexSkill('alpha', 'Alpha skill', 'one')
-    const { syncSkills } = await core()
+    const { syncSkills } = await import("../src/skills/server/skill-sync.ts")
     await syncSkills({ root: 'codex', names: ['alpha'] })
 
     writeFileSync(join(source, 'SKILL.md'), skillDoc('alpha', 'Alpha skill', 'two'))
@@ -104,7 +101,7 @@ describe('skills sync', () => {
     writeFileSync(join(own, 'SKILL.md'), skillDoc('alpha', 'Mine', 'my own'))
 
     expect((await codexRow('alpha')).skill?.sync?.status).toBe('exists')
-    const { syncSkills } = await core()
+    const { syncSkills } = await import("../src/skills/server/skill-sync.ts")
     const result = await syncSkills({ root: 'codex', all: true })
     expect(result.skipped).toEqual([{ name: 'alpha', reason: 'exists' }])
     expect(readFileSync(join(own, 'SKILL.md'), 'utf8')).toContain('my own')
@@ -113,7 +110,7 @@ describe('skills sync', () => {
   it('syncs everything with all and rejects unknown or DSH-owned sources', async () => {
     writeCodexSkill('alpha', 'Alpha skill')
     writeCodexSkill('beta', 'Beta skill')
-    const { syncSkills } = await core()
+    const { syncSkills } = await import("../src/skills/server/skill-sync.ts")
 
     const all = await syncSkills({ root: 'codex', all: true })
     expect(all.synced?.map((item) => item.name).sort()).toEqual(['alpha', 'beta'])
@@ -125,7 +122,7 @@ describe('skills sync', () => {
 
   it('rejects a name that is not a scanned entry', async () => {
     writeCodexSkill('alpha', 'Alpha skill')
-    const { syncSkills } = await core()
+    const { syncSkills } = await import("../src/skills/server/skill-sync.ts")
     const result = await syncSkills({ root: 'codex', names: ['../escape'] })
     expect(result.ok).toBe(false)
     expect(result.failed?.[0]?.code).toBe('error.skill.notFound')
@@ -136,7 +133,7 @@ describe('skills sync', () => {
     const source = writeCodexSkill('alpha', 'Alpha skill')
     const { symlinkSync } = await import('node:fs')
     symlinkSync(join(temp, 'dsh'), join(source, 'link'))
-    const { syncSkills } = await core()
+    const { syncSkills } = await import("../src/skills/server/skill-sync.ts")
     const result = await syncSkills({ root: 'codex', names: ['alpha'] })
     expect(result.synced ?? []).toEqual([])
     expect(existsSync(join(temp, 'dsh', 'skills', 'alpha'))).toBe(false)
@@ -147,7 +144,8 @@ describe('skills sync', () => {
     const own = join(temp, 'dsh', 'skills', 'mine')
     mkdirSync(own, { recursive: true })
     writeFileSync(join(own, 'SKILL.md'), skillDoc('mine', 'Mine'))
-    const { listProviderCandidates, setSkillEnabled } = await core()
+    const { listProviderCandidates } = await import("../src/skills/server/provider.ts")
+    const { setSkillEnabled } = await import("../src/skills/server/policy.ts")
 
     expect((await listProviderCandidates()).some((item) => item.locator.rootKey === 'codex')).toBe(false)
     expect(await setSkillEnabled('codex', 'alpha', false)).toMatchObject({ ok: false })

@@ -1,5 +1,7 @@
 # dsh-custom-center 代码拆分与 TSX 重构方案
 
+> 历史记录：以下路径和结论对应当时阶段。最新文件职责见[当前架构](architecture.md)，后续拆分见[职责重构验证记录](responsibility-refactoring-validation.md)。
+
 状态：阶段 0–7 的代码迁移已实施，自动验收通过；真实宿主界面验收尚未完成。实测结果见 [重构验证记录](refactoring-validation.md)。
 
 ## 1. 已确认的约束与设计决策

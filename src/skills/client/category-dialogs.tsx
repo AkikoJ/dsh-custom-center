@@ -1,36 +1,25 @@
+import type { SkillCategories } from "./useSkillCategories.js";
 import * as React from "react";
-import { type ConfirmModal, type ModalState, type Post, type Translate } from "../client-types.js";
+import { type ConfirmModal, type ModalState } from "./manager-types.js";
+import { type Translate } from "./messages.js";
 import { Input, Modal, hostButton } from "./controls.js";
 
 interface renderCategoryDialogsProps {
+  categories: Pick<SkillCategories, "categoryName" | "setCategoryName" | "addSearch" | "setAddSearch" | "addSelection" | "setAddSelection" | "assignCategoryBatch" | "submitCategory" | "deleteCategory">;
   modal: ModalState;
-  assignCategoryBatch: (addModal: Extract<ConfirmModal, { type: "category-add"; }>, names: string[]) => void;
-  categoryName: string;
   busy: boolean;
-  post: Post;
   setModal: React.Dispatch<React.SetStateAction<ModalState>>;
   t: Translate;
-  setCategoryName: React.Dispatch<React.SetStateAction<string>>;
-  addSearch: string;
-  addSelection: Record<string, boolean>;
-  setAddSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  setAddSearch: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function renderCategoryDialogs({
+  categories,
   modal,
-  categoryName,
   busy,
-  post,
   setModal,
   t,
-  setCategoryName,
-  addSearch,
-  addSelection,
-  setAddSelection,
-  setAddSearch,
-  assignCategoryBatch,
 }: renderCategoryDialogsProps) {
+  const { categoryName, setCategoryName, addSearch, setAddSearch, addSelection, setAddSelection, assignCategoryBatch } = categories;
   var content: React.ReactNode[] = [];
   if (
     modal &&
@@ -47,38 +36,7 @@ export function renderCategoryDialogs({
         (categoryModal as Extract<ConfirmModal, { type: "category-rename"; }>)
           .name);
     var submitCategory = function () {
-      if (busy || !canSubmit) return;
-      var request = renaming
-        ? post(
-          "/category-rename",
-          {
-            root: categoryModal.root,
-            id: (
-              categoryModal as Extract<
-                ConfirmModal,
-                { type: "category-rename"; }
-              >
-            ).id,
-            name: nameTrimmed,
-            workspace: categoryModal.workspace,
-          },
-          "category.renamed",
-        )
-        : post(
-          "/category-create",
-          {
-            root: categoryModal.root,
-            name: nameTrimmed,
-            workspace: categoryModal.workspace,
-          },
-          "category.created",
-          { name: nameTrimmed },
-        );
-      request
-        .then(function () {
-          setModal(null);
-        })
-        .catch(function () { });
+      categories.submitCategory(categoryModal, canSubmit);
     };
     content.push(
       (<Modal
@@ -253,30 +211,7 @@ export function renderCategoryDialogs({
           {hostButton(
             t("category.delete"),
             function () {
-              post(
-                "/category-delete",
-                {
-                  root: (
-                    modal as Extract<ConfirmModal, { type: "category-delete"; }>
-                  ).root,
-                  id: (
-                    modal as Extract<ConfirmModal, { type: "category-delete"; }>
-                  ).id,
-                  workspace: (
-                    modal as Extract<ConfirmModal, { type: "category-delete"; }>
-                  ).workspace,
-                },
-                "category.deleted",
-                {
-                  name: (
-                    modal as Extract<ConfirmModal, { type: "category-delete"; }>
-                  ).name,
-                },
-              )
-                .then(function () {
-                  setModal(null);
-                })
-                .catch(function () { });
+              categories.deleteCategory(modal as Extract<ConfirmModal, { type: "category-delete" }>);
             },
             "danger",
             busy,

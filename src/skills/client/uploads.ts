@@ -1,4 +1,4 @@
-import type { Diagnostic } from "../types.js";
+import type { Diagnostic } from "../model.js";
 
 type UploadFile = File & { _dssmPath?: string; };
 

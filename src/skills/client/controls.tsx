@@ -1,6 +1,6 @@
 import { Input as HostInput, Button as PrimitiveButton, Modal as PrimitiveModal } from "@deepseek-ai/dsh-client-ui-primitives";
 import * as React from "react";
-import type { ModalProps } from "../client-types.js";
+import type { ModalProps } from "./widget-types.js";
 import { createDestinationKit } from "../destination-picker.js";
 import { createSourceSelect } from "../source-select.js";
 import { translateError } from "./messages.js";

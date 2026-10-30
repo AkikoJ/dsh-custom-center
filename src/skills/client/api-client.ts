@@ -1,5 +1,5 @@
-import type { ApiRoutes } from "../client-types.js";
-import type { CodedError } from "../types.js";
+import type { ApiRoutes } from "../contracts.js";
+import type { CodedError } from "../model.js";
 
 /** Resolve plugin API paths against the page base, preserving reverse-proxy prefixes. */
 function pageBaseHref(): string | undefined {

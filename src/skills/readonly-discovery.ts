@@ -1,5 +1,5 @@
-import type { CodedError } from "./types.js";
-import type { DiscoveredEntry } from "./types.js";
+import type { CodedError } from "./model.js";
+import type { DiscoveredEntry } from "./model.js";
 // 只读技能目录发现：允许目录链接，按发现路径过滤隐藏目录，用真实祖先路径终止循环。
 import { promises as fs } from "node:fs";
 import { resolve, join, relative, sep } from "node:path";

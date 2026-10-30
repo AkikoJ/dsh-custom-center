@@ -1,149 +1,28 @@
+import type { SkillImport } from "./useSkillImport.js";
 import * as React from "react";
-import { type ModalState, type ResultMessage, type Translate } from "../client-types.js";
+import { type ModalState, type ResultMessage } from "./manager-types.js";
+import { type Translate } from "./messages.js";
 import { type DestinationValue, destinationReady } from "../destination-picker.js";
-import type { RepositoryDestination, WorkspaceRow } from "../types.js";
-import { DestinationPicker, Input, Modal, hostButton } from "./controls.js";
+import type { RepositoryDestination, WorkspaceRow } from "../contracts.js";
+import { DestinationPicker, Modal, hostButton } from "./controls.js";
 import { countKey, translateError } from "./messages.js";
-import { UploadFile, UploadSelection, droppedFiles } from "./uploads.js";
+import { droppedFiles } from "./uploads.js";
 
-interface renderEditorDialogsProps {
+interface Props {
+  importing: Pick<SkillImport, "pickerOpenRef" | "setUpload" | "importInputRef" | "selectUploadFiles" | "folderInputRef" | "openNativePicker" | "upload" | "importDestination" | "setImportDestination" | "submitImport">;
   modal: ModalState;
   t: Translate;
   setModal: React.Dispatch<React.SetStateAction<ModalState>>;
-  createDestination: DestinationValue;
   busy: boolean;
   workspaceRows: WorkspaceRow[];
   userDestinations: RepositoryDestination[];
-  setCreateDestination: React.Dispatch<React.SetStateAction<DestinationValue>>;
-  form: Record<string, string>;
-  updateForm: (key: string, value: string) => void;
-  submitCreate: () => void;
-  pickerOpenRef: React.MutableRefObject<boolean>;
-  setUpload: React.Dispatch<React.SetStateAction<UploadSelection | null>>;
   setResult: (value: ResultMessage | null) => void;
-  importInputRef: React.RefObject<HTMLInputElement>;
-  selectUploadFiles: (files: ArrayLike<UploadFile> | null) => void;
-  folderInputRef: React.RefObject<HTMLInputElement>;
-  openNativePicker: (ref: React.RefObject<HTMLInputElement>) => void;
-  upload: UploadSelection | null;
-  importDestination: DestinationValue;
-  setImportDestination: React.Dispatch<React.SetStateAction<DestinationValue>>;
   result: ResultMessage | null;
-  submitImport: () => void;
 }
 
-export function renderEditorDialogs({
-  modal,
-  t,
-  setModal,
-  createDestination,
-  busy,
-  workspaceRows,
-  userDestinations,
-  setCreateDestination,
-  form,
-  updateForm,
-  submitCreate,
-  pickerOpenRef,
-  setUpload,
-  setResult,
-  importInputRef,
-  selectUploadFiles,
-  folderInputRef,
-  openNativePicker,
-  upload,
-  importDestination,
-  setImportDestination,
-  result,
-  submitImport,
-}: renderEditorDialogsProps) {
+export function renderImportDialog({ modal, t, setModal, busy, workspaceRows, userDestinations, setResult, result, importing }: Props) {
+  const { pickerOpenRef, setUpload, importInputRef, selectUploadFiles, folderInputRef, openNativePicker, upload, importDestination, setImportDestination, submitImport } = importing;
   var content: React.ReactNode[] = [];
-  if (modal === "create")
-    content.push(
-      (<Modal
-        key={"create"}
-        title={t("create.title")}
-        closeLabel={t("btn.close")}
-        onClose={function () {
-          setModal(null);
-        }}
-      >
-        <div className={"dssm-form"}>
-          <DestinationPicker
-            t={t}
-            value={createDestination}
-            disabled={busy}
-            allowAgents={true}
-            workspaces={workspaceRows}
-            userDestinations={userDestinations}
-            onChange={function (next: Partial<DestinationValue>) {
-              setCreateDestination(Object.assign({}, createDestination, next));
-            }}
-          />
-          {[
-            ["name", "create.name", "create.name.placeholder"],
-            [
-              "description",
-              "create.description",
-              "create.description.placeholder",
-            ],
-          ].map(function (field) {
-            return (<label key={field[0]} className={"dssm-field"}>
-              <span className={"dssm-label"}>
-                {t(field[1])}
-              </span>
-              <Input
-                value={form[field[0]]}
-                placeholder={t(field[2])}
-                onChange={function (e: React.ChangeEvent<HTMLInputElement>) {
-                  updateForm(field[0], e.target.value);
-                }}
-              />
-            </label>);
-          })}
-          <label className={"dssm-field"}>
-            <span className={"dssm-label"}>
-              {t("create.body")}
-            </span>
-            <Input.TextArea
-              rows={8}
-              value={form.body}
-              placeholder={t("create.body.placeholder")}
-              onChange={function (e: React.ChangeEvent<HTMLTextAreaElement>) {
-                updateForm("body", e.target.value);
-              }}
-            />
-          </label>
-          <p className={"dssm-help"}>
-            {t("create.chat.note")}
-          </p>
-        </div>
-        <div className={"dssm-modal-actions"}>
-          {hostButton(
-            t("btn.cancel"),
-            function () {
-              setModal(null);
-            },
-            "outline",
-          )}
-          {hostButton(
-            t("btn.create.now"),
-            submitCreate,
-            "primary",
-            busy ||
-            !form.name.trim() ||
-            !form.description.trim() ||
-            !form.body.trim() ||
-            !destinationReady(
-              createDestination,
-              workspaceRows,
-              userDestinations,
-            ),
-          )}
-        </div>
-      </Modal>),
-    );
-
   if (modal === "import")
     content.push(
       (<Modal

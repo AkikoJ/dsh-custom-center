@@ -1,5 +1,5 @@
 import { MAX_ENTRY_NAME_LENGTH } from "./file-operations.js";
-import type { ParsedSkill } from "../types.js";
+import type { ParsedSkill } from "../model.js";
 export const KEBAB_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // ── 命名规整 ────────────────────────────────────────────────────────────────

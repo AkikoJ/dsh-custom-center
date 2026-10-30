@@ -1,14 +1,16 @@
+import type { Log, Serialize } from "../src/skills/server/types.ts"
 import { EventEmitter } from 'node:events'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { Readable } from 'node:stream'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { apply } from '../src/skills/index.ts'
+import { createSkillsCommands } from "../src/skills/server/commands.ts"
+import { apply } from "../src/skills/index.js";
 import type { HostContext } from '../src/skills/host-types.ts'
 import { createSkillsHandler, type RouterOptions } from '../src/skills/server/router.ts'
-import { createSkill } from '../src/skills/server/skill-import.ts'
+import { createSkill } from "../src/skills/server/skill-create.js";
 
-vi.mock('../src/skills/server/skill-import.ts', async (original) => {
-  const real = await original<typeof import('../src/skills/server/skill-import.ts')>()
+vi.mock('../src/skills/server/skill-create.ts', async (original) => {
+  const real = await original<typeof import('../src/skills/server/skill-create.ts')>()
   return { ...real, createSkill: vi.fn() }
 })
 
@@ -29,12 +31,13 @@ function response() {
 }
 function deferred<T>() {
   let resolve!: (value: T) => void
-  const promise = new Promise<T>((yes) => { resolve = yes })
-  return { promise, resolve }
+  let reject!: (reason: unknown) => void
+  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no })
+  return { promise, resolve, reject }
 }
 async function flush() { for (let i = 0; i < 16; i++) await Promise.resolve() }
 
-let options: RouterOptions
+let options: Omit<RouterOptions, "commands"> & { log: Log; enqueueMutation: Serialize; afterWrite: () => void }
 beforeEach(() => {
   options = {
     state: vi.fn().mockResolvedValue({ roots: [], label: '技能' }),
@@ -50,7 +53,7 @@ afterEach(() => vi.restoreAllMocks())
 
 async function call(method: string, action: string, body = '{}', headers: IncomingMessage['headers'] = {}) {
   const res = response()
-  await createSkillsHandler(options)(request(method, action, body, headers), res.stream)
+  await createSkillsHandler({ ...options, commands: { ...createSkillsCommands({ log: options.log, afterWrite: options.afterWrite, workspaceSkills: options.workspaceSkills, registeredWorkspaces: () => options.registeredWorkspacePaths(options.ctx) }), enqueueMutation: options.enqueueMutation } })(request(method, action, body, headers), res.stream)
   return res.record
 }
 
@@ -120,6 +123,43 @@ describe('Skills HTTP contracts', () => {
     expect(await call('POST', '/create')).toMatchObject({ status: 200 })
     expect(await call('POST', '/create', ' '.repeat((1 << 20) + 1))).toMatchObject({ status: 413 })
     expect(options.enqueueMutation).toHaveBeenCalledTimes(1)
+  })
+
+  it('queues unknown prefixed paths without treating their suffix as a valid command', async () => {
+    const req = request('POST', '/create')
+    req.url = '/api/dsh-custom-center/skillsXcreate'
+    const res = response()
+    const commands = createSkillsCommands({
+      log: options.log, afterWrite: options.afterWrite,
+      workspaceSkills: options.workspaceSkills, registeredWorkspaces: () => [],
+    })
+    const enqueueMutation = vi.spyOn(commands, 'enqueueMutation')
+    await createSkillsHandler({ ...options, commands })(req, res.stream)
+    expect(res.record.status).toBe(404)
+    expect(JSON.parse(res.record.body)).toMatchObject({ ok: false, code: 'error.proto.unknownAction' })
+    expect(enqueueMutation).toHaveBeenCalledOnce()
+    expect(createSkill).not.toHaveBeenCalled()
+  })
+
+  it('continues the shared queue after a tool failure and preserves queued HTTP responses', async () => {
+    const commands = createSkillsCommands({
+      log: options.log, afterWrite: options.afterWrite,
+      workspaceSkills: options.workspaceSkills, registeredWorkspaces: () => [],
+    })
+    const failed = deferred<Awaited<ReturnType<typeof createSkill>>>()
+    vi.mocked(createSkill).mockReturnValueOnce(failed.promise)
+    const tool = commands.create({ name: 'first', description: 'First', body: 'body' })
+    const failure = expect(tool).rejects.toThrow('write failed')
+    await flush()
+    const res = response()
+    const http = createSkillsHandler({ ...options, commands })(request('POST', '/create', '{"name":"second"}'), res.stream)
+    await flush()
+    expect(createSkill).toHaveBeenCalledTimes(1)
+    failed.reject(new Error('write failed'))
+    await Promise.all([failure, http])
+    expect(vi.mocked(createSkill).mock.calls.map(([input]) => input.name)).toEqual(['first', 'second'])
+    expect(res.record.status).toBe(200)
+    expect(options.afterWrite).toHaveBeenCalledOnce()
   })
 
   it('shares the host queue between tools and HTTP and owns registration disposal', async () => {

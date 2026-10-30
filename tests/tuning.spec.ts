@@ -1,28 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import {
-  COMPACTION_DEFAULTS,
-  RECOMMENDED,
-  buildTargetOptions,
-  modelsInScope,
-  parseTargetKey,
-  targetKeyOfModel,
-  targetKeyOfProvider,
-  validateModelTarget,
-  type ModelEntryView,
-  TuningError,
-  applyModelWindow,
-  computeCompaction,
-  hasCompactionRow,
-  modelWindowStrategy,
-  parseTuningSaveRequest,
-  readCompactionValues,
-  routeKindForProvider,
-  setPresetCompaction,
-  validateCompactionValues,
-  validateModelWindow,
-  writeCompactionValues,
-  type CompactionValues,
-} from '../src/tuning/tuning.ts'
+import { COMPACTION_DEFAULTS, RECOMMENDED, validateModelTarget, TuningError, computeCompaction, parseTuningSaveRequest, validateCompactionValues, validateModelWindow } from "../src/tuning/rules.js";
+import { buildTargetOptions, modelsInScope, parseTargetKey, targetKeyOfModel, targetKeyOfProvider } from "../src/tuning/targets.js";
+import { type ModelEntryView, type CompactionValues } from "../src/tuning/contracts.js";
+import { applyModelWindow, hasCompactionRow, modelWindowStrategy, readCompactionValues, routeKindForProvider, setPresetCompaction, writeCompactionValues } from "../src/tuning/config-mapping.js";
 
 const plugins = [
   { id: 'persona', name: '@deepseek-ai/dsh-persona', config: { prefix: 'hi' } },

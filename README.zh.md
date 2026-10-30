@@ -54,62 +54,188 @@
 | --- | --- |
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
 | Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center` |
-| Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/appearance/server/library.ts`）+ 上下文/压缩路由（`src/tuning/server/tuning.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
+| Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/appearance/server/library.ts`）+ 上下文/压缩路由（`src/tuning/server/routes.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
 | 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」两个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
 | 功能逻辑 | `src/appearance/`（配色、皮肤、取色、媒体规则）、`src/tuning/`（模型窗口与压缩）及既有测试 |
-| 共享边界 | `src/shared/`：插件配置、整份共用样式、浏览器/宿主适配、请求标记与回环判断 |
+| 共享边界 | `src/shared/`：插件配置、跨功能页面/控件样式、浏览器/宿主适配、请求标记与回环判断 |
 | 构建 | `tsc` 声明 + `tsdown` host/client 产物 |
 
 浏览器半区注册到 `settings.section` 插槽（带独立导航条目的完整设置页），
 而不是 `settings.general.item`。技能模块在两端都作为独立的 Cordis 子插件挂载：
 宿主缺少它依赖的服务时只有「技能」页不出现，其余页面不受影响。
 
-## 目录结构
+## 代码结构
+
+源码按外观（`appearance`）、调优（`tuning`）、技能（`skills`）三个功能组织。
+每个功能内部再区分浏览器界面与交互（`client/`）、宿主服务与副作用（`server/`），
+以及不依赖运行环境的数据合同和纯规则。跨功能基础能力放在 `shared/`。
+`src/index.ts` 和 `src/client/index.ts` 是包的两个入口，只负责装配；Skills 保留独立子插件入口。
+
+以下列出主要文件；完整逐文件说明见[当前架构](docs/architecture.md)。
 
 ```text
 dsh-custom-center/
-  cordis.patch.yml          # profile bundle 行（id ui-custom-center）
-  icon.svg                  # 插件图标（展示元数据）
   src/
-    index.ts                # host 半区（Node / Cordis）
+    index.ts                  # Host 装配：路由与 Skills 子插件
     client/
-      index.ts              # 浏览器半区：settings.section 装配
+      index.ts                # Browser 装配：页面与生命周期
+      settings-nav.ts         # 设置导航标记
+      styles.ts               # 样式拼接与注入
     appearance/
       client/
-        AppearancePage.tsx  # 外观页（壁纸、遮罩、预览与保存）
-        LibraryPicker.tsx   # 图片/视频标签、上传、缩略图
-        controller.ts       # 皮肤引擎（token、壁纸、持久化）
-        wallpaper.ts        # DOM/localStorage/IndexedDB + 图片/视频解码
-        library.ts          # 壁纸库路由的浏览器端客户端
-      server/
-        library.ts          # 回环路由：list、upload、file
-      color.ts              # 纯配色数学
-      skins.ts              # 种子色 -> token 映射
-      sample.ts             # 从像素网格纯取色
-      tone.ts               # 壁纸明暗分布与外观
-      media.ts              # 文件类别、命名规则、Range 解析
+        AppearancePage.tsx    # 外观界面
+        LibraryPicker.tsx     # 壁纸库界面
+        controller.ts         # saved/draft/live 与预览生命周期
+        model.ts              # 外观配置与默认参数
+        storage.ts            # localStorage / IndexedDB 持久化
+        host-appearance.ts    # 宿主 DOM、token、壁纸和 URL 资源
+        wallpaper.ts          # 图片/视频解码与采样
+        library.ts            # 壁纸库 HTTP 客户端
+        styles.ts             # 外观与宿主壁纸样式
+      server/library.ts       # 壁纸 list/upload/file 路由
+      color.ts                # 配色与对比度数学
+      skins.ts                # 种子色 -> token 映射
+      sample.ts               # 像素纯采样
+      tone.ts                 # 明暗分布与外观规则
+      media.ts                # 媒体、命名与 Range 规则
     tuning/
+      contracts.ts            # 跨端请求/快照类型
+      rules.ts                # 校验、默认值与预算公式
+      config-mapping.ts       # profile 配置的纯变换
+      targets.ts              # 模型作用域与目标选择
       client/
-        TuningPanel.tsx     # 上下文与压缩页和表单（内含 TuningPage）
-        Select.tsx          # 调优专用自绘下拉框
-        tuning.ts           # 上下文/压缩路由的浏览器端客户端
+        TuningPanel.tsx       # 页面与区域装配（内含 TuningPage）
+        useTuningForm.ts      # 状态、加载、派生值与保存
+        ModelWindowPanel.tsx  # 模型窗口区域渲染函数
+        CompactionPanel.tsx   # 压缩区域渲染函数
+        fields.tsx            # 调优字段
+        Select.tsx            # 调优下拉框
+        api-client.ts         # 调优 HTTP 客户端
+        styles.ts             # 调优样式
       server/
-        tuning.ts           # 回环路由：读取/写入上下文与压缩配置
-      tuning.ts             # 校验、压缩预算公式、profile 配置变换
+        routes.ts             # HTTP 协议与守卫
+        host-env.ts           # 调优宿主接口
+        model-access.ts       # 宿主模型枚举与定位
+        snapshot.ts           # 查询快照组合
+        save.ts               # 顺序执行配置写入
+    skills/
+      index.ts                # Host 子插件装配
+      client.ts               # Browser 子插件装配
+      model.ts                # 领域类型
+      contracts.ts            # 跨端数据/API 合同
+      browser-host.ts         # 浏览器宿主适配类型
+      host-types.ts           # Skills 宿主适配类型
+      server/
+        router.ts             # HTTP 分发、入队与响应
+        http-policy.ts        # 来源校验、请求标记与 body 限额
+        request-scope.ts      # 请求/session 的项目和目标作用域
+        commands.ts           # HTTP/工具共用队列与业务编排
+        queries.ts            # 页面与工作区快照组合
+        provider.ts           # 可加载技能筛选与读取复验
+        create-skill-tool.ts  # create_skill 工具注册
+        host-integration.ts   # 宿主通知、工作区与服务适配
+        skill-*.ts            # 扫描、文档、创建、导入、同步能力
+        upload-import.ts      # 上传文件/目录/ZIP 导入
+        file-operations.ts    # 文件树检查与复制
+        policy-store.ts       # 策略状态持久化
+        policy.ts             # 技能/来源启停策略
+        categories.ts         # 分类、分配与顺序
+        trash.ts              # 回收、恢复与永久删除
+      client/
+        manager-page.tsx      # 页面与 session 组合
+        useSkillCatalog.ts    # 技能快照与刷新生命周期
+        useWorkspaceCatalog.ts # 工作区列表、详情与缓存
+        useSkillCommands.ts   # 共用 busy/inflight 与请求执行
+        useSkillFilters.ts    # 筛选、列表与计数派生
+        useSkillCreate.ts     # 创建流程
+        useSkillImport.ts     # 导入流程
+        useSkillDetail.ts     # 详情读取、复制与反馈
+        useSkillSync.ts       # 同步流程
+        useSkillCategories.ts # 分类流程与批量操作
+        *-dialog.tsx          # 创建、导入、详情、同步弹窗
+        *-dialogs.tsx         # 分类与删除确认弹窗
+        source-tree.tsx       # 来源与分类树
+        skill-rows.tsx        # 技能行与拖放事件
+        scope-panels.tsx      # 用户、项目、回收站面板
+        api-client.ts         # 普通/session HTTP 客户端
+        selectors.ts          # 纯筛选与统计
+        uploads.ts            # 上传检查与请求编码
+        messages.ts           # 翻译和结果文案组合
+        locales/              # 中文、英文词典
+        styles.ts             # 技能样式
     shared/
-      config.ts             # 共享 host 配置默认值
-      styles.ts             # 整份注入样式表
-      browser-env.ts        # 精简的 DSH 服务类型 + SlotMap 增强
-      host-env.ts           # 精简的 host 服务类型
-      request.ts            # 请求标记与回环判断
-    skills/                 # 技能管理（移植自 dsh-skills-manager，Apache-2.0）
-      index.ts              # host：/api/dsh-custom-center/skills 路由、技能 provider、create_skill
-      client.ts             # 浏览器：「技能」设置页
-      core.ts               # 技能扫描、启停策略、同步、创建/导入/回收站
-      server/               # 宿主职责模块（策略、文件、同步与路由等）
-      client/               # TSX 界面、状态与生命周期、样式和词典
-  tests/                    # vitest：功能逻辑、宿主接口与 Skills 回归
+      config.ts               # 插件配置与默认值
+      browser-env.ts          # 浏览器宿主接口与插槽类型
+      host-env.ts             # 跨功能 Host 接口
+      request.ts              # 外观/调优共用请求约定
+      styles.ts               # 跨功能页面与控件基础样式
+  tests/                      # 功能、合同、生命周期与架构测试
+  docs/architecture.md        # 当前逐文件职责与依赖边界
 ```
+
+### 模块职责与调用关系
+
+| 模块 | 职责边界与主要调用关系 |
+| --- | --- |
+| 入口与生命周期 | Host 入口挂载路由和子插件；Browser 入口注册页面、创建外观控制器、注入样式并清理订阅。具体业务留在功能内部。 |
+| 外观状态 | `AppearancePage.tsx` 将用户事件交给 `controller.ts`；controller 管理 saved/draft/live、预览、保存、撤销和重置。`storage.ts` 负责持久化，`host-appearance.ts` 负责 DOM、token、壁纸元素与 URL 资源，`wallpaper.ts` 负责解码和采样。 |
+| 外观规则与壁纸库 | `color.ts`、`skins.ts`、`sample.ts`、`tone.ts`、`media.ts` 提供纯计算与媒体规则。`LibraryPicker.tsx` 经 `client/library.ts` 调用 `server/library.ts`，由宿主处理壁纸文件读写。 |
+| 调优 | `TuningPanel.tsx` 组合页面区域，`useTuningForm.ts` 管理表单并通过 `api-client.ts` 请求 `server/routes.ts`。查询交给 `snapshot.ts`，写入交给 `save.ts`，宿主模型访问集中在 `model-access.ts`。校验与预算公式放在 `rules.ts`，配置结构变换放在 `config-mapping.ts`。两个区域文件导出普通渲染函数。 |
+| 技能浏览器 | `manager-page.tsx` 组合各职责 hook；目录、请求互斥、筛选、创建、导入、详情、同步和分类各有独立模块。弹窗文件负责展示，HTTP 封装留在 `api-client.ts`，纯列表派生留在 `selectors.ts`。 |
+| 技能宿主 | `router.ts` 处理协议，`request-scope.ts` 解析作用域，`commands.ts` 编排具体操作，文件能力模块负责落盘。HTTP 与 `create_skill` 工具共用同一个 commands 实例和队列；页面查询由 `queries.ts` 组合，DSH 技能加载由 `provider.ts` 负责。 |
+| 样式 | 各功能的 `client/styles.ts` 拥有本功能样式，`shared/styles.ts` 拥有跨功能基础样式；最终由 `src/client/styles.ts` 按既定级联顺序拼接并幂等注入。 |
+
+外观的订阅、定时器、异步恢复和 URL 释放归控制器与宿主适配层管理。
+技能页面的 scope、已保存筛选和展开状态归壳层，按 session key 重挂载的视图持有请求、表单和弹窗状态。
+普通操作、打开目录和分类批量操作共用请求互斥状态，保持现有刷新与解锁时序。
+
+### 依赖规则
+
+```mermaid
+flowchart TD
+  H["src/index.ts · Host 入口"] --> HS["功能 server/ 与 Skills Host 入口"]
+  B["src/client/index.ts · Browser 入口"] --> BC["功能 client/ 与 Skills Browser 入口"]
+  HS --> P["本功能模型、数据合同与纯规则"]
+  BC --> P
+  HS --> S["shared/ · 跨功能基础能力"]
+  BC --> S
+```
+
+- 外观、调优、技能之间不互相导入；确有跨功能复用的基础能力才放进 `shared/`。
+- `shared/` 不反向依赖功能或入口，功能实现不在运行时导入入口；运行时依赖图保持无环。
+- 浏览器运行时依赖不能到达 `server/`、Node 内置模块或 Host 适配。跨端共享限于数据合同、纯规则和纯类型；HTTP 请求通过各自客户端封装。
+- SDK 类型来自正式的 `@deepseek-ai/*` npm 包；尚未公开的宿主能力用本地窄接口描述，不引用 DSH 源码目录。
+- 页面负责展示和事件连接，hook/controller 负责状态与流程，纯规则负责计算，宿主适配与存储模块负责副作用。新增代码按职责放置，不把所有流程重新聚合进一个页面或 manager。
+
+### 常见修改定位
+
+下表路径均相对 `src/`。
+
+| 修改内容 | 优先定位 |
+| --- | --- |
+| 设置页注册、启停和卸载清理 | `index.ts`、`client/index.ts`、`shared/config.ts` |
+| 外观预览、保存、恢复流程 | `appearance/client/controller.ts`、`storage.ts`、`host-appearance.ts` |
+| 壁纸颜色、明暗与媒体规则 | `appearance/color.ts`、`skins.ts`、`sample.ts`、`tone.ts`、`media.ts` |
+| 调优字段校验、推荐值、预算公式 | `tuning/rules.ts`、`contracts.ts`，以及 `tuning/client/fields.tsx` |
+| 调优模型查询与配置写入 | `tuning/server/model-access.ts`、`snapshot.ts`、`save.ts`，以及 `tuning/config-mapping.ts` |
+| 技能创建、导入、详情或同步交互 | `skills/client/` 中对应的 `useSkill*.ts` 与弹窗文件 |
+| 技能 HTTP/工具操作 | `skills/contracts.ts`、`skills/server/router.ts`、`commands.ts` 及对应能力文件；工具入口为 `create-skill-tool.ts` |
+| 技能启停、分类或回收站 | `skills/server/policy.ts`、`categories.ts`、`trash.ts` |
+| 文案与样式 | `skills/client/messages.ts`、`locales/`；各功能 `client/styles.ts` 与 `shared/styles.ts` |
+
+### 测试与架构约束
+
+| 检查范围 | 对应测试（位于 `tests/`） |
+| --- | --- |
+| 依赖方向、浏览器边界、循环依赖、源码单文件 800 行上限 | `architecture.spec.ts` |
+| 外观控制器与配色、采样、媒体规则 | `appearance-controller.spec.ts`、`color.spec.ts`、`skins.spec.ts`、`sample.spec.ts`、`media.spec.ts` |
+| 配置与壁纸库路由 | `config.spec.ts`、`library.spec.ts` |
+| 调优规则与宿主读写合同 | `tuning.spec.ts`、`host-tuning.spec.ts` |
+| 技能浏览器数据与 session 生命周期 | `skills-client-data.spec.ts`、`skills-client-lifecycle.spec.ts` |
+| 技能文件、路由、策略状态与同步 | `skills-files.spec.ts`、`skills-routes.spec.ts`、`skills-state.spec.ts`、`skills-sync.spec.ts` |
+
+类型检查与测试命令见下方「常用命令」。这些检查不能替代真实宿主中的视觉、交互和生命周期验收。
+重构证据与验证限制见[职责重构验证记录](docs/responsibility-refactoring-validation.md)。
 
 ## 开发安装
 

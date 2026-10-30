@@ -39,7 +39,7 @@ import {
   type MediaKind,
 } from '../media.ts'
 import { MARKER_HEADER, isLoopbackAddress } from '../../shared/request.ts'
-import type { WebRoute } from '../../shared/host-env.ts'
+import type { WebRoute } from "../../shared/host-env.js";
 
 /** Path prefix of the library routes. */
 export const ROUTE_PREFIX = '/custom-center'

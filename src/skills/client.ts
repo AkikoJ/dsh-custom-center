@@ -1,35 +1,11 @@
-// Skills 浏览器装配（移植自 dsh-skills-manager，Apache-2.0）。
 import * as react from "react";
-import type { ClientContext } from "./client-types.js";
-import { callApi, MUTATION_HEADERS, parseApiResponse, resolveApiUrl } from "./client/api-client.js";
-import { recoverModalFocus, trapModalFocus } from "./client/controls.js";
-import { currentSessionId, SkillManagerSection } from "./client/manager-page.js";
-import {
-  countKey,
-  DICT,
-  formatTrashTime,
-  NS,
-  rootDisplayName,
-  setLocaleService,
-  summarizeImportResult,
-  summarizeSyncResult,
-  translateError,
-} from "./client/messages.js";
-import {
-  agentSkillRoots,
-  canToggleSource,
-  countSkillStatuses,
-  filterSkills,
-  isSkillEnabled,
-  matchSkillQuery,
-  normalizeSkillQuery,
-  scopeSkillRoots,
-  skillStatus,
-  visibleSkillRoots,
-} from "./client/selectors.js";
-import { inspectUploadSelection } from "./client/uploads.js";
+import type { ClientContext } from "./browser-host.js";
+import { callApi, MUTATION_HEADERS } from "./client/api-client.js";
+import { SkillManagerSection } from "./client/manager-page.js";
+import { DICT, NS, setLocaleService } from "./client/messages.js";
 import { installSettingsNavIcon } from "./settings-nav-icon.js";
 import { setupSidebarEntry } from "./sidebar-entry.js";
+
 
 var inject = ["slots", "locale"];
 
@@ -69,7 +45,4 @@ function apply(ctx: ClientContext) {
   });
 }
 
-export {
-  agentSkillRoots, apply, canToggleSource, countKey, countSkillStatuses,
-  currentSessionId, DICT, filterSkills, formatTrashTime, inject, inspectUploadSelection, isSkillEnabled, matchSkillQuery, normalizeSkillQuery, parseApiResponse, recoverModalFocus, resolveApiUrl, rootDisplayName, scopeSkillRoots, setupSidebarEntry, skillStatus, summarizeImportResult, summarizeSyncResult, translateError, trapModalFocus, visibleSkillRoots
-};
+export { apply, inject };

@@ -1,7 +1,8 @@
 import { pathIdentity } from "./file-operations.js";
 import { join, resolve } from "node:path";
 import { homedir } from "node:os";
-import type { SkillRoot, RootInput } from "../types.js";
+import type { SkillRoot } from "../model.js";
+import type { RootInput } from "./types.js";
 import { createHash } from "node:crypto";
 // 项目来源集中定义，路径校验、策略身份和展示共用，避免新增目录只可见却不可加载。
 // 两种作用域共用 Agent 顺序；兼容目录紧跟主目录，不扫描项目根的普通资源目录。

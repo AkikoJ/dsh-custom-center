@@ -1,4 +1,5 @@
-import type { CodedError, Diagnostic, RenameOptions, OperationError, DiscoveredEntry } from "../types.js";
+import type { CodedError, Diagnostic, OperationError, DiscoveredEntry } from "../model.js";
+import type { RenameOptions } from "./types.js";
 import { relative, resolve, isAbsolute, sep, dirname, basename, join } from "node:path";
 import { promises as fs } from "node:fs";
 import { randomUUID } from "node:crypto";

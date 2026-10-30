@@ -4,7 +4,8 @@ import { readonlyError, checkedPolicyRootDefinition } from "./root-access.js";
 import { readManagerState, invalidManagerStateWrite, writeManagerState } from "./policy-store.js";
 import { resolveEntry } from "./entry-access.js";
 import { entryOf, parseSkillDoc, hostAcceptableSkillName } from "./skill-document.js";
-import type { ManagerState, PolicyResult, SkillRoot, SkillEntry, Policy, Log, ScopeOptions, RootInput, SkillItem, ViewItem } from "../types.js";
+import type { ManagerState, PolicyResult, SkillRoot, SkillEntry, Policy, SkillItem } from "../model.js";
+import type { Log, ScopeOptions, RootInput, ViewItem } from "./types.js";
 import { promises as fs } from "node:fs";
 export function managerSkillOverride(policy: ManagerState, rootKey: string, name: string, policyAliases: {rootKey: string; name: string}[] = []) {
   if ((policy.enabledSkills[rootKey] || []).includes(name)) return true;

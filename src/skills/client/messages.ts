@@ -1,7 +1,8 @@
-import type { ClientContext, Translate } from "../client-types.js";
+import type { ClientContext } from "../browser-host.js";
 import { destinationLocales } from "../destination-picker.js";
 import { sidebarLocales } from "../sidebar-entry.js";
-import type { CodedError, Diagnostic, ImportResult, SkillRoot, SyncResult } from "../types.js";
+import type { CodedError, Diagnostic, SkillRoot } from "../model.js";
+import type { ImportResult, SyncResult } from "../contracts.js";
 import { en } from "./locales/en.js";
 import { zh } from "./locales/zh.js";
 
@@ -175,3 +176,5 @@ function resolveT(rawT?: Translate): Translate {
 export function setLocaleService(service: ClientContext["locale"]) { localeService = service; }
 
 export { countKey, DICT, formatTrashTime, hostLocale, NS, resolveT, rootDisplayName, summarizeImportResult, summarizeSyncResult, translateError, translateOrFallback };
+
+export type Translate = (key: string, params?: object) => string;

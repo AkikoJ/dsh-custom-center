@@ -1,4 +1,5 @@
-import type { RootView, SkillRoot, SkillView } from "../types.js";
+import type { RootView, SkillView } from "../contracts.js";
+import type { SkillRoot } from "../model.js";
 
 type SearchSkill = Partial<SkillView> & {
   kindLabel?: string;

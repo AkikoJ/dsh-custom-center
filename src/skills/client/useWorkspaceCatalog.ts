@@ -1,6 +1,7 @@
 import * as React from "react";
-import type { ApiRoutes, Translate } from "../client-types.js";
-import type { RootView } from "../types.js";
+import type { ApiRoutes } from "../contracts.js";
+import type { Translate } from "./messages.js";
+import type { RootView } from "../contracts.js";
 import { callApi, MUTATION_HEADERS } from "./api-client.js";
 import { translateError } from "./messages.js";
 

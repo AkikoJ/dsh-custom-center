@@ -42,6 +42,20 @@ pnpm build
 
 ## Agent skills
 
+### DSH development (Codex)
+
+Project skills live in `.agents/skills/`, adapted from `../dsh-skills-export`.
+The copies include their references and templates and work without that sibling
+directory. Read the relevant `SKILL.md` when the task matches:
+
+- Plugin implementation or review: `.agents/skills/cordis-plugin-development/SKILL.md`.
+- Loader patches and plugin configuration: `.agents/skills/cordis-composition-reference/SKILL.md`.
+- Agent preset declarations: `.agents/skills/editing-cordis-compositions/SKILL.md`.
+- Model-facing tools, prompts and context workflows: `.agents/skills/agent-experience/SKILL.md`.
+
+Harness runtime tools mentioned in these exports may be unavailable in Codex;
+follow each skill's Codex project context and report unverified runtime behavior.
+
 ### Issue tracker
 
 任务与规格存放在本地 `.scratch/`。操作任务前，读取 `docs/agents/issue-tracker.md`。

@@ -1,5 +1,7 @@
 # 三功能源码组织验证记录
 
+> 历史记录：以下路径和结论对应当时阶段。最新文件职责见[当前架构](architecture.md)，后续拆分见[职责重构验证记录](responsibility-refactoring-validation.md)。
+
 日期：2026-10-29。对应 `.scratch/feature-organization/issues/01` 至 `04`。
 
 ## 基线

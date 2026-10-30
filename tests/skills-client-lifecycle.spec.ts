@@ -1,8 +1,11 @@
 import type * as React from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ViewProps } from '../src/skills/client-types.js'
+import type { ViewProps } from "../src/skills/client/manager-types.js";
 import { useWorkspaceCatalog } from '../src/skills/client/useWorkspaceCatalog.js'
-import { useSkillManager } from '../src/skills/client/useSkillManager.js'
+import { createSessionApi } from '../src/skills/client/api-client.js'
+import { useSkillCatalog } from '../src/skills/client/useSkillCatalog.js'
+import { useSkillCommands } from '../src/skills/client/useSkillCommands.js'
+import { useSkillCategories } from '../src/skills/client/useSkillCategories.js'
 import { currentSessionId, SkillManagerSection } from '../src/skills/client/manager-page.js'
 
 // A deterministic hook scheduler lets promises resolve in any order without a DOM or host.
@@ -141,7 +144,7 @@ describe('Skills lifecycle and concurrent requests', () => {
 
   it('holds the mutation lock until state and workspace refresh finish and preserves scope ownership', async () => {
     let input = props('project')
-    const manager = () => render(() => useSkillManager(input))
+    const manager = () => render(() => useMutationWorkflows(input))
     let view = manager(); mountEffects(); respond(0, emptyState); await flush()
     view = manager()
     const mutation = view.post('/enable', { name: 'alpha', workspace: '/a' })
@@ -162,7 +165,7 @@ describe('Skills lifecycle and concurrent requests', () => {
   })
 
   it('releases failed mutation locks and refreshes partial category batches in serial order', async () => {
-    const manager = () => render(() => useSkillManager(props('project')))
+    const manager = () => render(() => useMutationWorkflows(props('project')))
     let view = manager(); mountEffects(); respond(0, emptyState); await flush()
     const failed = view.post('/disable', {})
     requests[1].pending.reject(new Error('offline'))
@@ -193,3 +196,12 @@ describe('Skills lifecycle and concurrent requests', () => {
     expect(next.props.expanded).toBe(section.props.expanded)
   })
 })
+
+// Exercise the same catalog/command/category composition used by the session-keyed view.
+function useMutationWorkflows(props: ViewProps) {
+  const api = createSessionApi(props.sessionId)
+  const catalog = useSkillCatalog(t, api, props.scope)
+  const commands = useSkillCommands(t, props.scope, api, catalog.refresh, catalog.workspaces.loadWorkspaceDetail)
+  const categories = useSkillCategories(t, api, vi.fn(), commands, catalog.refresh, catalog.workspaces.loadWorkspaceDetail)
+  return { ...commands, assignCategoryBatch: categories.assignCategoryBatch }
+}

@@ -1,6 +1,8 @@
 import { projectSourceDefinition, rootDefinition, rootByKey, dshRootPath, projectIdentity, userRoots, PROJECT_ROOT_KEY_RE } from "./source-roots.js";
 import { lstatOrNull, comparisonPath, isSameOrDescendant } from "./file-operations.js";
-import type { SkillRoot, OperationError, RootInput, RepositoryDestination, Diagnostic, CodedError } from "../types.js";
+import type { SkillRoot, OperationError, Diagnostic, CodedError } from "../model.js";
+import type { RootInput } from "./types.js";
+import type { RepositoryDestination } from "../contracts.js";
 import { join, resolve, isAbsolute, dirname } from "node:path";
 export async function projectSourceSafe(definition: SkillRoot) {
   // 只读来源允许目录链接，但重叠来源会绕过用户根的停用策略。

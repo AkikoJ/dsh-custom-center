@@ -1,4 +1,4 @@
-import type { TrashMetadata } from "../types.js";
+import type { TrashMetadata } from "../contracts.js";
 import { entryPath, renameWithRetry, TRANSIENT_RENAME_CODES, safeExistingEntryPaths, lstatOrNull, isDirectoryLink, linkedWriteError, codedError, movePathWithFallback, isSameOrDescendant } from "./file-operations.js";
 import { trashRootPath, rootByKey } from "./source-roots.js";
 import { checkedWritableRootDefinition, readonlyError } from "./root-access.js";
@@ -7,7 +7,8 @@ import { resolveEntry } from "./entry-access.js";
 import { validStateSkillName, readManagerState, writeManagerState } from "./policy-store.js";
 import { promises as fs } from "node:fs";
 import { join, isAbsolute } from "node:path";
-import type { RenameOptions, CodedError, SkillRoot, MutationOptions, OperationError, RootInput, Log } from "../types.js";
+import type { RenameOptions, MutationOptions, RootInput, Log } from "./types.js";
+import type { CodedError, SkillRoot, OperationError } from "../model.js";
 import { randomUUID } from "node:crypto";
 export async function readTrashMetadata(id: string): Promise<TrashMetadata | null> {
   if (entryPath(trashRootPath(), id) === null) return null;

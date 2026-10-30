@@ -1,16 +1,17 @@
+import { MAX_UPLOAD_ENTRIES, MAX_UPLOAD_TOTAL_BYTES } from "./content-limits.js";
 import { codedError, MAX_SOURCE_DEPTH, MAX_ENTRY_NAME_LENGTH, WINDOWS_DEVICE_NAME_RE, attachCode, isSameOrDescendant, lstatOrNull, entryPath } from "./file-operations.js";
 import { parseSkillDoc, toKebab, KEBAB_RE } from "./skill-document.js";
 import { managerHomePath } from "./source-roots.js";
 import { importSkill } from "./skill-import.js";
-import type { CodedError, OperationError, UploadInput, Log, MutationOptions, ImportResult } from "../types.js";
+import type { CodedError, OperationError } from "../model.js";
+import type { UploadInput, ImportResult } from "../contracts.js";
+import type { Log, MutationOptions } from "./types.js";
 import { join, dirname } from "node:path";
 import { promises as fs } from "node:fs";
 import { unzipSync } from "fflate";
 import { randomUUID } from "node:crypto";
 export const MAX_UPLOAD_ARCHIVE_BYTES = 32 << 20;
 export const MAX_UPLOAD_ENTRY_BYTES = 32 << 20;
-export const MAX_UPLOAD_TOTAL_BYTES = 64 << 20;
-export const MAX_UPLOAD_ENTRIES = 1000;
 export const MAX_UPLOAD_PATH_LENGTH = 512;
 
 // ── 浏览器上传导入 ──────────────────────────────────────────────────────────

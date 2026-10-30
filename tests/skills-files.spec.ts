@@ -3,9 +3,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { strToU8, zipSync } from 'fflate'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createSkill, importSkill } from '../src/skills/server/skill-import.ts'
+import { createSkill } from "../src/skills/server/skill-create.js";
+import { importSkill } from "../src/skills/server/skill-import.js";
 import { rootByKey } from '../src/skills/server/source-roots.ts'
-import { importUploadedSkill } from '../src/skills/server/upload-import.ts'
+import { importUploadedSkill } from "../src/skills/server/upload-import.js";
 import { deleteSkill, listTrash, restoreTrash } from '../src/skills/server/trash.ts'
 
 const ENV_KEYS = ['HOME', 'USERPROFILE', 'DSH_HOME', 'DSH_AGENTS_HOME', 'DSH_CODEX_HOME'] as const

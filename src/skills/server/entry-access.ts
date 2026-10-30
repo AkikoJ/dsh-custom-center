@@ -6,7 +6,8 @@ import { parseSkillDoc, entryOf } from "./skill-document.js";
 import { homedir } from "node:os";
 import { isAbsolute, join, dirname, basename, resolve } from "node:path";
 import { promises as fs } from "node:fs";
-import type { CodedError, RootInput, DiscoveredEntry, SkillRoot, ScopeOptions } from "../types.js";
+import type { CodedError, DiscoveredEntry, SkillRoot } from "../model.js";
+import type { RootInput, ScopeOptions } from "./types.js";
 import { validDiscoveryName, discoverReadonlyEntries } from "../readonly-discovery.js";
 /**
  * 为前端内嵌目录选择器列出一个本机目录层级。

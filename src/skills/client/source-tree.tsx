@@ -1,18 +1,19 @@
+import type { SkillCategories } from "./useSkillCategories.js";
 import { Button as PrimitiveButton } from "@deepseek-ai/dsh-client-ui-primitives";
 import * as React from "react";
-import { type Filters, type ModalState, type Post, type Translate } from "../client-types.js";
-import { type RootView, type SkillView } from "../types.js";
+import { type Filters, type Post } from "./manager-types.js";
+import { type Translate } from "./messages.js";
+import { type RootView, type SkillView } from "../contracts.js";
 import { enableSwitch, foldChevron, iconButton, SkillSwitch } from "./controls.js";
 import { getRootBrandIcon, strokeIcon } from "./icons.js";
 import { countKey, rootDisplayName } from "./messages.js";
 import { canToggleSource, isSkillEnabled } from "./selectors.js";
 
 interface createSourceTreeProps {
+  categories: Pick<SkillCategories, "openCategoryCreate" | "openCategoryAdd" | "openCategoryRename" | "openCategoryDelete">;
   busy: boolean;
   openSync: (target: { root: string; label: string; names?: string[]; all?: boolean; workspace?: string; }, overwrite: boolean) => void;
   t: Translate;
-  setCategoryName: React.Dispatch<React.SetStateAction<string>>;
-  setModal: React.Dispatch<React.SetStateAction<ModalState>>;
   post: Post;
   expanded: Record<string, boolean>;
   query: string;
@@ -20,8 +21,6 @@ interface createSourceTreeProps {
   draggingRef: React.MutableRefObject<{ root: string; name: string; currentCategoryId: string; } | null>;
   clearDragHighlights: (element: HTMLElement) => void;
   setExpanded: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  setAddSelection: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  setAddSearch: React.Dispatch<React.SetStateAction<string>>;
   renderSkill: (root: RootView, skill: SkillView, workspacePath?: string) => React.JSX.Element;
   rows: { root: RootView; skill: SkillView; }[];
   filteredRows: { root: RootView; skill: SkillView; }[];
@@ -30,11 +29,10 @@ interface createSourceTreeProps {
 }
 
 export function createSourceTree({
+  categories,
   busy,
   openSync,
   t,
-  setCategoryName,
-  setModal,
   post,
   expanded,
   query,
@@ -42,8 +40,6 @@ export function createSourceTree({
   draggingRef,
   clearDragHighlights,
   setExpanded,
-  setAddSelection,
-  setAddSearch,
   renderSkill,
   rows,
   filteredRows,
@@ -117,12 +113,7 @@ export function createSourceTree({
         t("category.create"),
         strokeIcon("M8 2.5v11M2.5 8h11"),
         function () {
-          setCategoryName("");
-          setModal({
-            type: "category-create",
-            root: root.key,
-            workspace: workspacePath,
-          });
+          categories.openCategoryCreate(root, workspacePath);
         },
         false,
         busy,
@@ -313,36 +304,7 @@ export function createSourceTree({
               t("category.addSkills"),
               strokeIcon("M8 2.5v11M2.5 8h11"),
               function () {
-                var catMap: Record<string, string> = {};
-                (root.categories || []).forEach(function (c) {
-                  catMap[c.id] = c.name;
-                });
-                var sourceList = allRootRows || bucket.scope || bucket.skills;
-                var candidates = sourceList
-                  .filter(function (row) {
-                    return row.skill.categoryId !== bucket.id;
-                  })
-                  .map(function (row) {
-                    return {
-                      name: row.skill.name,
-                      declaredName: row.skill.declaredName,
-                      description: row.skill.description,
-                      currentCatName:
-                        (row.skill.categoryId &&
-                          catMap[row.skill.categoryId]) ||
-                        t("category.uncategorized"),
-                    };
-                  });
-                setAddSelection({});
-                setAddSearch("");
-                setModal({
-                  type: "category-add",
-                  root: root.key,
-                  id: bucket.id,
-                  name: bucket.name,
-                  workspace: workspacePath,
-                  skills: candidates,
-                });
+                categories.openCategoryAdd(root, bucket, workspacePath, allRootRows || bucket.scope || bucket.skills);
               },
               false,
               busy,
@@ -353,14 +315,7 @@ export function createSourceTree({
               t("category.rename"),
               strokeIcon("M9.2 2.8l4 4L6.2 13.8H2.2v-4z"),
               function () {
-                setCategoryName(bucket.name);
-                setModal({
-                  type: "category-rename",
-                  root: root.key,
-                  id: bucket.id,
-                  name: bucket.name,
-                  workspace: workspacePath,
-                });
+                categories.openCategoryRename(root, bucket, workspacePath);
               },
               false,
               busy,
@@ -373,13 +328,7 @@ export function createSourceTree({
                 "M3.5 4.5h9M6.5 4.5V3h3v1.5M5 4.5l.7 8.5h4.6L11 4.5",
               ),
               function () {
-                setModal({
-                  type: "category-delete",
-                  root: root.key,
-                  id: bucket.id,
-                  name: bucket.name,
-                  workspace: workspacePath,
-                });
+                categories.openCategoryDelete(root, bucket, workspacePath);
               },
               true,
               busy,

@@ -1,6 +1,6 @@
 import { userRoots, PROJECT_ROOT_KEY_RE, rootByKey, managerStatePath, managerHomePath } from "./source-roots.js";
 import { codedError, writeFileAtomically } from "./file-operations.js";
-import type { ManagerState, PolicyResult, CodedError } from "../types.js";
+import type { ManagerState, PolicyResult, CodedError } from "../model.js";
 import { validDiscoveryName } from "../readonly-discovery.js";
 import { promises as fs } from "node:fs";
 // ── Manager 本地策略（外部源只读，启停状态写入 DSH_HOME）────────────────────

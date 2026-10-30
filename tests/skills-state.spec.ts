@@ -2,11 +2,12 @@ import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSy
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { getProviderSkill, listProviderCandidates, workspaceSkills } from '../src/skills/core.ts'
+import { getProviderSkill, listProviderCandidates } from "../src/skills/server/provider.js";
+import { workspaceSkills } from "../src/skills/server/queries.js";
 import { assignSkillCategory, createCategory, deleteCategory, moveSkillInCategory } from '../src/skills/server/categories.ts'
 import { defaultManagerState, readManagerState, setSidebarEntry } from '../src/skills/server/policy-store.ts'
 import { setSkillEnabled } from '../src/skills/server/policy.ts'
-import { createSkill } from '../src/skills/server/skill-import.ts'
+import { createSkill } from "../src/skills/server/skill-create.js";
 import { managerStatePath, rootByKey } from '../src/skills/server/source-roots.ts'
 import { deleteSkill, permanentlyDeleteTrash } from '../src/skills/server/trash.ts'
 

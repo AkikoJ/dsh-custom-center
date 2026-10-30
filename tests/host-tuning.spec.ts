@@ -1,12 +1,8 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { describe, expect, it } from 'vitest'
 import { MARKER_HEADER } from '../src/shared/request.ts'
-import type {
-  ConfigEditorLike,
-  ConfigurationRow,
-  TuningHostServices,
-} from '../src/shared/host-env.ts'
-import { createTuningRoutes, TUNING_PATH } from '../src/tuning/server/tuning.ts'
+import type { ConfigEditorLike, ConfigurationRow, TuningHostServices } from "../src/tuning/server/host-env.js";
+import { createTuningRoutes, TUNING_PATH } from "../src/tuning/server/routes.js";
 
 function request(method: string, body?: unknown, marker = true): IncomingMessage {
   const chunks = body === undefined ? [] : [Buffer.from(JSON.stringify(body))]

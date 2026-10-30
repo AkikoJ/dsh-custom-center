@@ -12,16 +12,10 @@
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { DEFAULT_CUSTOM_CENTER_CONFIG } from './shared/config.ts'
-import type {
-  AgentDefaultModelLike,
-  AgentPresetsLike,
-  ConfigEditorLike,
-  HostServices,
-  LlmServiceLike,
-  TuningHostServices,
-} from './shared/host-env.ts'
+import type { AgentDefaultModelLike, AgentPresetsLike, ConfigEditorLike, LlmServiceLike, TuningHostServices } from "./tuning/server/host-env.js";
+import type { HostServices } from "./shared/host-env.js";
 import { createLibraryRoutes, defaultLibraryRoot } from './appearance/server/library.ts'
-import { createTuningRoutes } from './tuning/server/tuning.ts'
+import { createTuningRoutes } from "./tuning/server/routes.js";
 import * as skills from './skills/index.ts'
 
 /** Stable Cordis plugin name; keep it equal to the patch row id. */

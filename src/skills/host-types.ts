@@ -1,6 +1,8 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { CreateInput, ScopeOptions } from './types.js';
-import type { ProviderCandidate, createSkill, getProviderSkill } from './core.js';
+import type { CreateInput } from "./contracts.js";
+import type { ScopeOptions } from "./server/types.js";
+import type { ProviderCandidate, getProviderSkill } from "./server/provider.js";
+import type { createSkill } from "./server/skill-create.js";
 /** 七版宿主实际使用的最小服务契约，兼容旧版可选服务与返回值。 */
 export interface ProviderControl {
     invalidate: () => void;
@@ -109,19 +111,4 @@ export interface HostContext {
             };
         }) => () => void;
     };
-}
-export interface UpdateOptions {
-    endpoint: string;
-    packageName: string;
-    manifestUrl: URL;
-}
-export interface UpdateTarget {
-    profileName: string;
-    profileDir: string;
-    cliEntry?: string;
-    desktopPnpm?: Services['desktopPnpm'];
-    packageManager?: { command: string; args: readonly string[]; env?: NodeJS.ProcessEnv };
-    pluginManager?: { installBundle(spec: string): Promise<{ application?: string; error?: { message?: string }; packageResult?: { output?: string } }> };
-    officialDesktop: boolean;
-    canAutoUpdate: boolean;
 }

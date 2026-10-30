@@ -37,3 +37,6 @@ Thumbs.db
 !.vscode/settings.json
 *.swp
 *~
+
+.agents/*
+reverse-docs/*
