@@ -2,14 +2,13 @@
 
 [中文](README.zh.md)
 
-A standalone **DSH Web GUI plugin** that adds four dedicated pages to the
-Settings sidebar: **Appearance**, **Context & Compaction**, **Skills** and **Douyin Account**.
+A standalone **DSH Web GUI plugin** that adds three dedicated pages to the
+Settings sidebar: **Appearance**, **Context & Compaction** and **Skills**.
 Appearance reskins the DeepSeek Harness UI with a custom image/video wallpaper
 whose palette is sampled from the picture; Context & Compaction sets the model
 context window and the automatic compaction policy; Skills manages DSH's own
 skills and shows other agents' skills so you can sync them into DSH (derived
 from [dsh-skills-manager](https://github.com/MichengAI/dsh-skills-manager)).
-Douyin Account manages a local browser login and credentials for internal host HTTP requests.
 
 Unlike a General-settings row, the plugin registers its own first-level
 `settings.section` entries, so they appear as separate pages in the settings
@@ -93,8 +92,7 @@ Legibility over a photo is checked rather than assumed:
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
 | Loader row | `ui-custom-center` -> package `dsh-custom-center` |
 | Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/appearance/server/library.ts`), the context/compaction routes (`src/tuning/server/routes.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
-| Browser half | `src/client/index.ts`: registers the Appearance, Context & Compaction and Douyin Account `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
-| Douyin host | `src/douyin/server/`: authenticated routes, managed Playwright Chromium, private snapshots and independent HTTP verification |
+| Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
 | Feature logic | `src/appearance/` (colour, palette, sampling, media rules), `src/tuning/` (model window and compaction), and existing tests |
 | Shared boundary | `src/shared/`: plugin config, cross-feature page/control styles, browser/host adapters, request marker and loopback check |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
@@ -107,7 +105,7 @@ lacks a service it needs, only the Skills page is missing.
 ## Code structure
 
 Source is organized by feature: appearance (`appearance`), context and compaction
-(`tuning`), skills (`skills`) and Douyin login (`douyin`). Each feature separates browser UI and interaction
+(`tuning`), and skills (`skills`). Each feature separates browser UI and interaction
 (`client/`), host services and side effects (`server/`), and data contracts and pure
 rules that do not depend on either environment. Cross-feature foundations live in
 `shared/`. The package entries, `src/index.ts` and `src/client/index.ts`, only assemble
@@ -284,16 +282,6 @@ replace visual, interaction and lifecycle checks in a running host.
 See [Validation](docs/responsibility-refactoring-validation.md) for refactoring
 evidence and verification limits.
 
-## Douyin account login
-
-Settings includes a Douyin account page for one account on local macOS. The host uses Node.js and Playwright's matching Chromium to open the real website; users complete QR, mobile, SMS or CAPTCHA verification there. Browser identity, private credential storage and independent HTTP verification have separate states. Temporary HTTP failures preserve browser login. Closing the window preserves the session; restarting the host requires current validity to be checked again.
-
-Before first use, explicitly run `pnpm run douyin:install-browser` in the plugin installation directory. Third-party resources use tool-specific directories under `$DSH_HOME/vendor/` (default `~/.dsh/vendor/`). Chromium, Headless Shell and FFmpeg use its `playwright/` directory, shared across plugins and profiles. The installer and host follow the same convention; an explicit `PLAYWRIGHT_BROWSERS_PATH` takes priority and must match in both processes. Fully restart DSH after changing the path. Opening settings or login never downloads a browser, and system Chrome is not used as a fallback. Playwright remains an external host dependency: install the package dependencies rather than copying only compiled JS.
-
-Credentials stay inside the host, with no download, copy, Agent tool or external credential API. Storage is isolated under `$DSH_PROFILE_DIR/custom-center/douyin/`, falling back to the same subdirectory under `$DSH_HOME` or `~/.dsh`. Direct messages, account switching and clearing login are outside this release.
-
-See [login delivery and acceptance](docs/douyin-login-validation.md) for preparation, recovery and pending live checks. Automated checks do not establish real QR login or independent same-UID HTTP success.
-
 ## Install for development
 
 Requirements: Node.js 22+, pnpm, and a DSH host whose version satisfies
@@ -308,7 +296,7 @@ dsh plugin --profile web add link:$(pwd)
 ```
 
 After the refresh, open Settings — **Appearance**, **Context & Compaction** and
-**Skills** and **Douyin Account** entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
+**Skills** entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
 press Preview to try it (changes apply live), then Save to keep it; Restore
 default clears everything. In Context & Compaction, adjust the model window and
 compaction values, then press Save. In Skills, open **Other agents** to

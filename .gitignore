@@ -15,8 +15,6 @@ coverage/
 .cache/
 .turbo/
 .vite/
-playwright-browsers/
-.douyin-session/
 
 # Logs
 *.log

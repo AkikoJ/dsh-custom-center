@@ -52,7 +52,7 @@ for (const { file, ast } of modules) {
   visit(ast)
 }
 const runtime = dependencies.filter((dependency) => dependency.runtime)
-const featureOf = (file: string) => /^src\/(appearance|tuning|skills|douyin)\//.exec(file)?.[1]
+const featureOf = (file: string) => /^src\/(appearance|tuning|skills)\//.exec(file)?.[1]
 const entries = new Set(['src/index.ts', 'src/client/index.ts', 'src/skills/index.ts', 'src/skills/client.ts'])
 
 describe('source architecture', () => {
@@ -105,8 +105,7 @@ describe('source architecture', () => {
         if (edge.target) {
           if (edge.target.includes('/server/') || /\/(host-types|host-env)\.ts$/.test(edge.target)) forbidden.push(edge)
           pending.push(edge.target)
-        } else if (edge.specifier.startsWith('node:') || builtins.has(edge.specifier)
-          || /^(playwright|playwright-core|tough-cookie)(\/|$)/.test(edge.specifier)) forbidden.push(edge)
+        } else if (edge.specifier.startsWith('node:') || builtins.has(edge.specifier)) forbidden.push(edge)
       }
     }
     expect(forbidden).toEqual([])

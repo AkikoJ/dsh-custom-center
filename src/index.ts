@@ -17,7 +17,6 @@ import type { HostServices } from "./shared/host-env.js";
 import { createLibraryRoutes, defaultLibraryRoot } from './appearance/server/library.ts'
 import { createTuningRoutes } from "./tuning/server/routes.js";
 import * as skills from './skills/index.ts'
-import { registerDouyin } from './douyin/server/index.ts'
 
 /** Stable Cordis plugin name; keep it equal to the patch row id. */
 export const name = 'ui-custom-center'
@@ -73,7 +72,6 @@ export function apply(ctx: Context, config?: Config): void {
   for (const route of routes) {
     ctx.effect(() => host.webServer.register(route), `dsh-custom-center: ${route.path}`)
   }
-  registerDouyin(ctx, host)
   // Skills management runs as its own fiber: it injects `skills`, `tools` and
   // `sessions`, and a missing service must not block the wallpaper/tuning routes.
   if (config?.skills !== false) {

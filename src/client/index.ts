@@ -2,11 +2,11 @@
  * Browser-half entry for dsh-custom-center.
  *
  * The DSH Web GUI loads this half through `window.__ModuleLoader__` from
- * `/plugins/ui-custom-center/client.js`. It registers three dedicated
+ * `/plugins/ui-custom-center/client.js`. It registers TWO dedicated
  * `settings.section` pages, each its OWN entry in the Settings sidebar (NOT a
  * row in General): 外观 (wallpaper and skin, backed by the skin controller
- * ported from dsh-client-ui-skins), 上下文与压缩 and 抖音账号.
- * A child plugin adds 技能, ported from dsh-skills-manager.
+ * ported from dsh-client-ui-skins) and 上下文与压缩 (backed by the tuning form).
+ * A child plugin adds a third page, 技能, ported from dsh-skills-manager.
  *
  * The wallpaper library (list / upload / file) is served by the host half over
  * loopback-only routes; no source patch. Wallpapers never leave the machine
@@ -21,7 +21,6 @@ import { createController } from '../appearance/client/controller.ts'
 import { AppearancePage } from '../appearance/client/AppearancePage.tsx'
 import { TuningPage } from '../tuning/client/TuningPanel.tsx'
 import * as skills from '../skills/client.ts'
-import { DouyinAccountPage } from '../douyin/client/AccountPage.tsx'
 
 /** Browser services this plugin requires before activation. */
 export const inject = ['slots', 'theme']
@@ -39,7 +38,7 @@ export function apply(rawCtx: Context): void {
   const controller = createController(theme, (handler) => ctx.on('theme/change', handler))
 
   // The plugin is Chinese-only, so the nav labels are constants.
-  const [appearance, tuning, douyin] = NAV_SECTIONS
+  const [appearance, tuning] = NAV_SECTIONS
 
   ctx.effect(() => registerNavMarker(), 'dsh-custom-center: settings nav markers')
   ctx.effect(
@@ -73,11 +72,6 @@ export function apply(rawCtx: Context): void {
     'dsh-custom-center: tuning settings section',
   )
   ctx.effect(() => () => controller.dispose(), 'dsh-custom-center: controller lifecycle')
-
-  ctx.effect(() => ctx.slots.inject('settings.section', () => ctx.slots.register(
-    { name: 'settings.section', id: douyin.id, order: douyin.order, label: () => douyin.label },
-    () => createElement(DouyinAccountPage),
-  )), 'dsh-custom-center: douyin settings section')
 
   // Skills management (ported from dsh-skills-manager) is its own fiber: it
   // needs `locale`, and a missing service must not block the pages above.

@@ -3,7 +3,7 @@
 更新日期：2026-10-30。本页描述职责拆分后的实际源码；本轮范围和验证见
 [职责重构验证记录](responsibility-refactoring-validation.md)。
 
-项目按外观、调优、技能、抖音登录四个功能组织，每个功能内部区分浏览器、宿主和纯逻辑。
+项目按外观、调优、技能三个功能组织，每个功能内部区分浏览器、宿主和纯逻辑。
 保留 Host / Browser 两个包入口及 Skills 原有子插件边界；入口只装配服务、页面、路由和清理函数。
 此次在 ADR-0002 的功能目录基础上继续拆分内部职责；ADR 和此前方案保留当时的历史含义。
 
@@ -19,7 +19,7 @@ flowchart TD
   BC --> S
 ```
 
-- 外观、调优、技能、抖音登录之间不互相引用；共用基础能力放在 `shared/`。
+- 外观、调优、技能之间不互相引用；共用基础能力放在 `shared/`。
 - `shared/` 不反向依赖功能和入口；功能实现不运行时引用入口，也不使用转发空壳维持旧内部路径。
 - 浏览器运行时依赖不得到达 `server/`、Node 内置模块或宿主适配；跨端只共享数据合同、纯规则和纯类型。
 - SDK 类型继续来自正式 npm 包；公共 SDK 缺失的宿主接口由本地窄接口描述。
@@ -29,9 +29,9 @@ flowchart TD
 
 | 文件 | 职责 |
 | --- | --- |
-| `src/index.ts` | Host 配置、壁纸库和调优路由装配、抖音生命周期注册、Skills 子插件挂载。 |
+| `src/index.ts` | Host 配置、壁纸库和调优路由装配、Skills 子插件挂载。 |
 | `src/client/index.ts` | Browser 页面注册、控制器创建、样式注入、Skills 子插件挂载及生命周期清理。 |
-| `src/client/settings-nav.ts` | 外观/调优/抖音导航声明及 DOM 标记观察器。 |
+| `src/client/settings-nav.ts` | 外观/调优导航声明及 DOM 标记观察器。 |
 | `src/client/styles.ts` | 拼接各功能样式并幂等注入；保持原级联顺序。 |
 | `src/shared/config.ts` | 插件配置和默认值。 |
 | `src/shared/browser-env.ts` | 浏览器宿主服务窄接口及 settings 插槽类型增强。 |
@@ -180,23 +180,6 @@ post、打开目录和分类批量操作共用同一个 inflightRef。详情读�
 不要把独立 hook 再聚合成覆盖全页行为的万能 manager。
 
 ## 保持原行为的约定
-
-抖音登录新增独立功能，运行及人工验收边界见[抖音登录验证记录](douyin-login-validation.md)。
-
-| 文件（相对 `src/douyin/`） | 职责 |
-| --- | --- |
-| `contracts.ts` | 不含凭据的页面状态与固定脱敏反馈。 |
-| `server/index.ts`、`server/routes.ts` | Cordis effect 资源归属、受控宿主路由及请求拒绝。 |
-| `server/service.ts` | 单账号登录编排、观察、代次取消与窗口恢复。 |
-| `server/browser.ts` | 延迟加载 Playwright、专用可见 Chromium 和浏览器身份读取。 |
-| `server/storage.ts` | profile 数据根、版本化原子快照与私有权限。 |
-| `server/http.ts`、`server/platform.ts` | 独立 CookieJar、固定平台目标与可信身份判定。 |
-| `server/types.ts` | 仅宿主使用的凭据及外部适配合同。 |
-| `client/AccountPage.tsx` | 设置页面及用户操作。 |
-| `client/controller.ts`、`client/api-client.ts` | 页面请求、轮询、卸载取消与 HTTP 适配。 |
-
-浏览器源 Cookie 与 HTTP 更新 Cookie 分别维护，快照内不混淆归属；普通页面合同不提供凭据。
-Playwright 及其配套 Chromium 保持独立部署资源，浏览器缺失不阻塞其他功能。
 
 - 外观 save 在持久化完成前更新 saved/draft/live；保存失败吞掉并记录，reset 的持久化失败继续传播。
 - 主题订阅、异步视频恢复、定时器和 URL 释放时机保持原行为。
