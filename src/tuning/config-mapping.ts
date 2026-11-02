@@ -51,13 +51,15 @@ export function readCompactionValues(plugins: unknown): CompactionValues {
   const headroomTokens = nonNegativeInteger(raw['headroomTokens'])
     ? raw['headroomTokens']
     : COMPACTION_DEFAULTS.headroomTokens
+  // Keep absence meaningful: older presets inherit this cap from headroom.
+  const summary = positiveInteger(raw['maxTokens']) ? { maxTokens: raw['maxTokens'] } : {}
   if (positiveInteger(raw['retainTokens'])) {
-    return { auto, thresholdRatio, headroomTokens, retainTokens: raw['retainTokens'] }
+    return { auto, thresholdRatio, headroomTokens, ...summary, retainTokens: raw['retainTokens'] }
   }
   const retainRatio = finiteNumber(raw['retainRatio']) && raw['retainRatio'] > 0
     ? raw['retainRatio']
     : COMPACTION_DEFAULTS.retainRatio
-  return { auto, thresholdRatio, headroomTokens, retainRatio }
+  return { auto, thresholdRatio, headroomTokens, ...summary, retainRatio }
 }
 
 /**
@@ -76,6 +78,8 @@ export function writeCompactionValues(plugins: unknown, values: CompactionValues
   config['auto'] = next.auto
   config['thresholdRatio'] = next.thresholdRatio
   config['headroomTokens'] = next.headroomTokens
+  // Requests from older clients omit this field; preserve any explicit cap.
+  if (next.maxTokens !== undefined) config['maxTokens'] = next.maxTokens
   delete config['retainRatio']
   delete config['retainTokens']
   if (next.retainTokens !== undefined) config['retainTokens'] = next.retainTokens

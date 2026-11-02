@@ -68,6 +68,17 @@ describe('compaction budget', () => {
 })
 
 describe('tuning validation', () => {
+  it('validates an independent summary cap in either retention mode', () => {
+    for (const retention of [{ retainRatio: 0.16 }, { retainTokens: 4_096 }, {}]) {
+      expect(validateCompactionValues({ ...policy, retainRatio: undefined, ...retention, maxTokens: 16_384 }))
+        .toMatchObject({ maxTokens: 16_384 })
+    }
+    for (const maxTokens of [0, -1, 1.5, NaN, Infinity, '16384', null]) {
+      expect(() => validateCompactionValues({ ...policy, maxTokens })).toThrow(TuningError)
+    }
+    expect(validateCompactionValues(policy)).not.toHaveProperty('maxTokens')
+  })
+
   it('validates a model window', () => {
     expect(validateModelWindow({ contextWindow: 400_000, maxTokens: 65_536 }))
       .toEqual({ contextWindow: 400_000, maxTokens: 65_536 })
@@ -106,6 +117,23 @@ describe('tuning validation', () => {
 })
 
 describe('preset compaction rows', () => {
+  it('round-trips a summary cap independently of headroom and preserves other fields', () => {
+    const original = writeCompactionValues(plugins, { ...policy, maxTokens: 16_384 })
+    expect(readCompactionValues(original)).toEqual({ ...policy, maxTokens: 16_384 })
+    const changed = writeCompactionValues(original, { ...policy, headroomTokens: 4_096 })
+    // Older clients that omit maxTokens must not erase an explicit summary cap.
+    expect(readCompactionValues(changed)).toEqual({ ...policy, headroomTokens: 4_096, maxTokens: 16_384 })
+    const tokens = writeCompactionValues(changed, {
+      auto: true, thresholdRatio: 0.95, headroomTokens: 4_096, maxTokens: 8_192, retainTokens: 4_096,
+    })
+    expect(readCompactionValues(tokens)).toEqual({
+      auto: true, thresholdRatio: 0.95, headroomTokens: 4_096, maxTokens: 8_192, retainTokens: 4_096,
+    })
+    expect(readCompactionValues(original).headroomTokens).toBe(32_000)
+    expect(computeCompaction(272_000, 16_384, { ...policy, maxTokens: 8_192 }))
+      .toEqual(computeCompaction(272_000, 16_384, { ...policy, maxTokens: 65_536 }))
+  })
+
   it('reads defaults when no compaction row exists', () => {
     expect(hasCompactionRow([{ id: 'persona' }])).toBe(false)
     expect(readCompactionValues([{ id: 'persona' }])).toEqual({
@@ -236,15 +264,15 @@ describe('model route config', () => {
 })
 
 describe('recommended values', () => {
-  it('compact at the ratio on a 272k window and leave a message budget', () => {
+  it('caps the long-context trigger with pressure headroom on a 272k window', () => {
     const result = computeCompaction(RECOMMENDED.contextWindow, RECOMMENDED.maxTokens, {
       auto: RECOMMENDED.auto,
       thresholdRatio: RECOMMENDED.thresholdRatio,
       headroomTokens: RECOMMENDED.headroomTokens,
       retainRatio: RECOMMENDED.retainRatio,
     })
-    expect(result.thresholdTokens).toBe(217_600)
-    expect(result.retainTokens).toBe(38_277)
+    expect(result.thresholdTokens).toBe(239_232)
+    expect(result.retainTokens).toBe(40_898)
   })
 })
 

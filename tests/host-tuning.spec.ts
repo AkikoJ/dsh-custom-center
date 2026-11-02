@@ -166,6 +166,23 @@ describe('tuning routes', () => {
     })
   })
 
+  it('persists and reads back an independent summary budget through the HTTP boundary', async () => {
+    const { services, rows } = setup()
+    const policy = { auto: true, thresholdRatio: 0.95, headroomTokens: 4_096, maxTokens: 16_384, retainRatio: 0.16 }
+    const saved = await invoke(services, request('POST', { presetId: 'standard', compaction: policy }))
+    expect(saved.status).toBe(200)
+    const read = await invoke(services, request('GET'))
+    const presets = read.body['presets'] as Array<{ compaction: unknown }>
+    expect(presets[0]?.compaction).toEqual(policy)
+    const before = structuredClone(rows.map((row) => row.entry.options.config))
+    const rejected = await invoke(services, request('POST', {
+      model: { contextWindow: 272_000, maxTokens: 16_384 },
+      presetId: 'standard', compaction: { ...policy, maxTokens: 0 },
+    }))
+    expect(rejected.status).toBe(400)
+    expect(rows.map((row) => row.entry.options.config)).toEqual(before)
+  })
+
   it('rejects a request without the same-origin marker', async () => {
     const { services } = setup()
     const result = await invoke(services, request('GET', undefined, false))

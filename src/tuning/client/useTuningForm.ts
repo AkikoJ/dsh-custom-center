@@ -49,6 +49,7 @@ export function useTuningForm() {
   const [auto, setAuto] = useState<boolean>(COMPACTION_DEFAULTS.auto)
   const [thresholdRatio, setThresholdRatio] = useState(String(COMPACTION_DEFAULTS.thresholdRatio))
   const [headroom, setHeadroom] = useState(String(COMPACTION_DEFAULTS.headroomTokens))
+  const [summaryMaxTokens, setSummaryMaxTokens] = useState(String(COMPACTION_DEFAULTS.headroomTokens))
   const [retentionMode, setRetentionMode] = useState<'ratio' | 'tokens'>('ratio')
   const [retainRatio, setRetainRatio] = useState(String(COMPACTION_DEFAULTS.retainRatio))
   const [retainTokens, setRetainTokens] = useState('')
@@ -64,6 +65,7 @@ export function useTuningForm() {
     setAuto(policy.auto)
     setThresholdRatio(String(policy.thresholdRatio))
     setHeadroom(String(policy.headroomTokens))
+    setSummaryMaxTokens(String(policy.maxTokens ?? policy.headroomTokens))
     if (policy.retainTokens === undefined) {
       setRetentionMode('ratio')
       setRetainRatio(String(policy.retainRatio ?? COMPACTION_DEFAULTS.retainRatio))
@@ -132,11 +134,12 @@ export function useTuningForm() {
       auto,
       thresholdRatio: decimal(thresholdRatio) ?? Number.NaN,
       headroomTokens: integer(headroom) ?? Number.NaN,
+      maxTokens: integer(summaryMaxTokens) ?? Number.NaN,
     }
     if (retentionMode === 'tokens') values.retainTokens = integer(retainTokens) ?? Number.NaN
     else values.retainRatio = decimal(retainRatio) ?? Number.NaN
     return values
-  }, [auto, thresholdRatio, headroom, retentionMode, retainRatio, retainTokens])
+  }, [auto, thresholdRatio, headroom, summaryMaxTokens, retentionMode, retainRatio, retainTokens])
 
   const computed = useMemo<ComputedView>(() => {
     const width = integer(contextWindow)
@@ -186,6 +189,7 @@ export function useTuningForm() {
       setAuto(RECOMMENDED.auto)
       setThresholdRatio(String(RECOMMENDED.thresholdRatio))
       setHeadroom(String(RECOMMENDED.headroomTokens))
+      setSummaryMaxTokens(String(RECOMMENDED.summaryMaxTokens))
       setRetentionMode('ratio')
       setRetainRatio(String(RECOMMENDED.retainRatio))
       setRetainTokens('')
@@ -246,9 +250,9 @@ export function useTuningForm() {
 
   return {
     snap, loading, loadError, presetId, targetKey, contextWindow, maxTokens,
-    auto, thresholdRatio, headroom, retentionMode, retainRatio, retainTokens,
+    auto, thresholdRatio, headroom, summaryMaxTokens, retentionMode, retainRatio, retainTokens,
     dirty, saving, notice, noticeTone, setContextWindow, setMaxTokens,
-    setAuto, setThresholdRatio, setHeadroom, setRetentionMode,
+    setAuto, setThresholdRatio, setHeadroom, setSummaryMaxTokens, setRetentionMode,
     setRetainRatio, setRetainTokens, reload, preset, models, targetOptions,
     scoped, scopedEditable, mixedValues, modelEditable, isGroup, sample,
     computed, touch, choosePreset, chooseTarget, restoreRecommended, save,

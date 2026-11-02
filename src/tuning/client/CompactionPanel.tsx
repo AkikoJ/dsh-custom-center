@@ -6,9 +6,9 @@ import { Row, NumberField, formatTokens } from "./fields.js";
 
 export function renderCompactionPanel(form: TuningForm, snap: NonNullable<TuningForm["snap"]>) {
   const {
-    presetId, contextWindow, maxTokens, auto, thresholdRatio, headroom,
+    presetId, contextWindow, maxTokens, auto, thresholdRatio, headroom, summaryMaxTokens,
     retentionMode, retainRatio, retainTokens, setAuto, setThresholdRatio,
-    setHeadroom, setRetentionMode, setRetainRatio, setRetainTokens,
+    setHeadroom, setSummaryMaxTokens, setRetentionMode, setRetainRatio, setRetainTokens,
     preset, computed, touch, choosePreset,
   } = form;
   const windowWidth = integer(contextWindow)
@@ -28,7 +28,7 @@ export function renderCompactionPanel(form: TuningForm, snap: NonNullable<Tuning
     <section className="dsh-cc-section">
       <header className="dsh-cc-head">
         <h3 className="dsh-cc-section-title">自动压缩</h3>
-        <p className="dsh-cc-hint">按 agent preset 独立配置，对之后新建的会话生效。</p>
+        <p className="dsh-cc-hint">与模型设置独立；请选择会话使用的 Agent preset，对之后新建的会话生效。</p>
       </header>
       <div className="dsh-cc-rows">
         <Row label="Agent preset">
@@ -60,7 +60,7 @@ export function renderCompactionPanel(form: TuningForm, snap: NonNullable<Tuning
         </Row>
         {preset?.error !== undefined && <p className="dsh-cc-warn">{preset.error}</p>}
         {preset?.broken !== undefined && <p className="dsh-cc-warn">该 preset 激活失败：{preset.broken}</p>}
-        <Row label="压缩阈值" hint={`用量达到最大上下文的该比例时压缩，推荐 ${RECOMMENDED.thresholdRatio}`} htmlFor="dsh-cc-ratio">
+        <Row label="压缩阈值" hint={`比例上限；实际触发点还受输出预留和压缩余量约束，推荐 ${RECOMMENDED.thresholdRatio}`} htmlFor="dsh-cc-ratio">
           <NumberField
             id="dsh-cc-ratio"
             min={0.05}
@@ -74,7 +74,7 @@ export function renderCompactionPanel(form: TuningForm, snap: NonNullable<Tuning
             }}
           />
         </Row>
-        <Row label="压缩余量" hint={`距上限至少留出的空间，推荐 ${RECOMMENDED.headroomTokens}`} htmlFor="dsh-cc-headroom">
+        <Row label="压缩余量" hint={`扣除正常输出预留后额外留出的空间，推荐 ${RECOMMENDED.headroomTokens}`} htmlFor="dsh-cc-headroom">
           <NumberField
             id="dsh-cc-headroom"
             unit="tokens"
@@ -84,6 +84,20 @@ export function renderCompactionPanel(form: TuningForm, snap: NonNullable<Tuning
             disabled={locked}
             onChange={(value) => {
               setHeadroom(value)
+              touch()
+            }}
+          />
+        </Row>
+        <Row label="摘要输出上限" hint={`每次压缩生成摘要的最大长度，独立于压缩余量，推荐 ${RECOMMENDED.summaryMaxTokens}`} htmlFor="dsh-cc-summary-max">
+          <NumberField
+            id="dsh-cc-summary-max"
+            unit="tokens"
+            min={1}
+            step={1024}
+            value={summaryMaxTokens}
+            disabled={locked}
+            onChange={(value) => {
+              setSummaryMaxTokens(value)
               touch()
             }}
           />
@@ -161,7 +175,7 @@ export function renderCompactionPanel(form: TuningForm, snap: NonNullable<Tuning
               <strong>{formatTokens(computed.value.retainTokens)}</strong>
             </span>
           </div>
-          <p className="dsh-cc-hint">触发点 = min(最大上下文 × 压缩阈值, 最大上下文 − 输出预留 − 压缩余量)</p>
+          <p className="dsh-cc-hint">触发点 = min(最大上下文 × 压缩阈值, 最大上下文 − 输出预留 − 压缩余量)。聊天栏占用率与此处预算的统计口径不同，显示百分比可能有差异。</p>
         </div>
       ) : (
         <p className="dsh-cc-warn" role="status">{computed.error}</p>

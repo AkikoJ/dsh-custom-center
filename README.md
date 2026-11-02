@@ -38,14 +38,20 @@ navigation (alongside General, Models, Plugins, ...).
 - **Context and compaction page** — a settings page next to Appearance. It reads
   the current default model's maximum context and output reserve and lets you
   tune each agent preset's automatic compaction: threshold ratio, headroom,
-  retention mode (window fraction or fixed tokens) and the auto switch. Saving
+  summary output cap, retention mode (window fraction or fixed tokens) and the auto switch. Saving
   goes through `configEditor` into the active profile's `cordis.patch.yml` and
   is hot-applied by the Loader; the preview uses the same threshold formula as
   DSH. A scope dropdown picks which models the window is written to: one
   model, every model of a provider, or all editable models at once. The host
   enumerates them through `llm.listProviders` / `llm.listModels`; the browser
-  never sends a list of ids. **Restore recommended** fills in 272k maximum context, a 32768 output
-  reserve, a 0.8 threshold ratio and 16384 headroom (not yet saved).
+  never sends a list of ids. **Restore recommended** fills in 272000 maximum context, a 16384 output
+  reserve, a 0.95 threshold ratio, 16384 headroom, a 16384 summary output cap
+  and a 0.16 retention ratio (not yet saved). This yields a 239232-token
+  trigger, about 88% of the window. The summary cap is saved independently as
+  the compaction plugin's `maxTokens`; older configs without it still inherit
+  the backend's headroom-based cap. Compaction applies to new sessions using
+  the selected preset. Model selection and preset selection are independent;
+  the chat usage percentage can differ because it uses different accounting.
 - **Skills page** — derived from dsh-skills-manager 1.2.11, with one core
   change: other agents' skill folders (Codex, Claude Code, Copilot and the
   rest) are **view-and-sync only**. DSH no longer loads them directly.

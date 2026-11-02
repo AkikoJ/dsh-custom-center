@@ -24,17 +24,18 @@ export const COMPACTION_DEFAULTS = Object.freeze({
 })
 
 /**
- * Values the tab applies for "restore recommended". They differ from
- * `COMPACTION_DEFAULTS` on purpose: the plugin default headroom (65 536)
- * leaves a 272k window compacting at about 64%, while 16 384 lets the 0.8
- * ratio decide, so compaction starts at 80% of the window (217 600 tokens).
+ * Long-context values applied by "restore recommended". The backend defaults
+ * stay unchanged. With W = 272 000 and O = H = 16 384, pressure caps the
+ * trigger at 239 232 tokens (about 88%), below the 0.95 ratio ceiling.
+ * Summary output is explicit so lowering headroom does not shorten summaries.
  */
 export const RECOMMENDED = Object.freeze({
   contextWindow: 272_000,
-  maxTokens: 32_768,
+  maxTokens: 16_384,
   auto: true,
-  thresholdRatio: 0.8,
+  thresholdRatio: 0.95,
   headroomTokens: 16_384,
+  summaryMaxTokens: 16_384,
   retainRatio: 0.16,
 })
 
@@ -84,12 +85,16 @@ export function validateModelWindow(input: unknown): ModelWindowValues {
 /** Validate an untrusted compaction policy input. */
 export function validateCompactionValues(input: unknown): CompactionValues {
   if (!isRecord(input)) throw new TuningError('invalid-input', '压缩设置必须是对象。')
-  const { auto, thresholdRatio, headroomTokens, retainRatio, retainTokens } = input
+  const { auto, thresholdRatio, headroomTokens, maxTokens, retainRatio, retainTokens } = input
   if (typeof auto !== 'boolean') throw new TuningError('invalid-input', '自动压缩开关必须是布尔值。')
   if (!finiteNumber(thresholdRatio) || thresholdRatio <= 0 || thresholdRatio > 1) {
     throw new TuningError('invalid-input', '触发比例必须在 0 与 1 之间。')
   }
   if (!nonNegativeInteger(headroomTokens)) throw new TuningError('invalid-input', '压缩余量必须是非负整数。')
+  if (maxTokens !== undefined && !positiveInteger(maxTokens)) {
+    throw new TuningError('invalid-input', '摘要输出上限必须是正整数。')
+  }
+  const base = { auto, thresholdRatio, headroomTokens, ...(maxTokens === undefined ? {} : { maxTokens }) }
   const hasRatio = retainRatio !== undefined
   const hasTokens = retainTokens !== undefined
   if (hasRatio && hasTokens) throw new TuningError('invalid-input', '近期保留只能选择比例或 token 数其中一种。')
@@ -97,13 +102,13 @@ export function validateCompactionValues(input: unknown): CompactionValues {
     if (!finiteNumber(retainRatio) || retainRatio <= 0 || retainRatio >= thresholdRatio) {
       throw new TuningError('invalid-input', '保留比例必须大于 0 且小于触发比例。')
     }
-    return { auto, thresholdRatio, headroomTokens, retainRatio }
+    return { ...base, retainRatio }
   }
   if (hasTokens) {
     if (!positiveInteger(retainTokens)) throw new TuningError('invalid-input', '保留 token 数必须是正整数。')
-    return { auto, thresholdRatio, headroomTokens, retainTokens }
+    return { ...base, retainTokens }
   }
-  return { auto, thresholdRatio, headroomTokens, retainRatio: COMPACTION_DEFAULTS.retainRatio }
+  return { ...base, retainRatio: COMPACTION_DEFAULTS.retainRatio }
 }
 
 export function identifier(value: unknown): value is string {

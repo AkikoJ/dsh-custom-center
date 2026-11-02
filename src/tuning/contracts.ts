@@ -25,6 +25,8 @@ export interface CompactionValues {
   auto: boolean
   thresholdRatio: number
   headroomTokens: number
+  /** Summary output cap; when omitted the backend falls back to headroomTokens. */
+  maxTokens?: number
   retainRatio?: number
   retainTokens?: number
 }
