@@ -44,6 +44,8 @@ The shared account executor now serializes writes across processes, reserves unc
 sends, records only verified receipts, and preserves reply deduplication across days.
 Its offline tests use temporary state and backend substitutes; account automation is
 still unmounted until the remaining business and UI migration is complete.
+Browser login orchestration, ComfyUI workflow outputs, monthly memory, reports and
+owned-resource cleanup are now separate modules with offline lifecycle and path checks.
 
 ## Features
 
