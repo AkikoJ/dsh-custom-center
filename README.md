@@ -54,7 +54,10 @@ skip unread images, refuse sensitive topics and retain permanent deduplication.
 Headless runs now resolve the installed CLI without a shell and use per-run private
 overlays, a live MCP tool whitelist, host-enforced recipients, verified receipts and
 awaited cancellation. Temporary proxy credentials are removed at completion;
-symlink escapes and overlapping process ownership are refused.
+symlink escapes and overlapping process ownership are refused. A child-only official
+tool guard rejects every call outside the exact MCP whitelist, including scoped
+shell, filesystem and subagent tools; inherited global tools are filtered per agent.
+The headless runner waits for guard readiness before starting its turn.
 Image reads now validate trusted HTTPS CDNs, every DNS result, redirects, byte limits
 and raster signatures before admission through the official attachment service.
 Short replies use the official LLM stream contract, bounded reasoning fallbacks and

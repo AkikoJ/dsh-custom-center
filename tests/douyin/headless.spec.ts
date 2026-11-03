@@ -66,6 +66,9 @@ describe('headless overlay and prompt', () => {
     expect(text).toContain('model: "model/variant"'); expect(text).toContain('DSH_DOUYIN_HOME: "/owned\\nroot"')
     expect(text).not.toContain('SECRET'); expect(text).not.toContain('secret')
     expect(text).toContain('DOUYIN_PROXY_TOKEN: "short-lived"')
+    expect(text).toContain('inject: [headlessStartup, douyinHeadlessGuard]')
+    expect(text).toContain('mode: native')
+    expect(text).toContain('douyin-headless-guard.js')
   })
   it('assembles the deployed charter with current quotas, memory and report settings', () => {
     const root = temp(), paths = douyinPaths(root), ledger = createLedger(paths), state = createRuntimeState(paths), memory = createMemory(paths, state)
