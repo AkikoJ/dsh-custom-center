@@ -117,7 +117,7 @@ export function createActionExecutor(deps: ExecutorDependencies) {
       }
       ledger.write(latest)
       if (verified && plan.kind === 'reply') history.mark(String(plan.args.reply_cid), context.replyTarget?.user || '')
-      return { ...result, status, verified }
+      return { ...result, ...(plan.kind === 'reply' ? { text: plan.args.text } : {}), status, verified }
     })
   }
   const reconcile = (limit = 10) => withActionLock(ledger.paths.root, async () => {
