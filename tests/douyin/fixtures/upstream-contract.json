@@ -1,0 +1,1342 @@
+{
+  "source": {
+    "package": "dsh-douyin-life",
+    "version": "0.2.9",
+    "repository": "git@github.com:kdcadmin/dsh_douyin_tools.git",
+    "commit": "aaf9f9a862afafd45a15acf32789da97688de695"
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "4938228a1f51d0aa927cba58cc7776f1f4bf07c89474ac119812d56e2b3b1911"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "12e2c1b55db4986add44f1c3769addc966ca6314262ea935de2fc176bcbd3790"
+    },
+    {
+      "path": "README.md",
+      "sha256": "cecf0b9889ec008b0df9efe19e5cdb57025c2f14c5f41c163b347aae10719b3f"
+    },
+    {
+      "path": "SPEC.md",
+      "sha256": "7be48a67d3a6a7fa6d1e8a19e85fbc36b67d8c7b0bba603f0f82a478e8f356e3"
+    },
+    {
+      "path": "assets/cover.png",
+      "sha256": "066ed18726c124af009b676aa4c2ab89248310f41a35a81e98584edf92c586d2"
+    },
+    {
+      "path": "assets/endcard-repo.png",
+      "sha256": "ac2f7d84c2e089977742146da38aea893d2ddec096c0e62007539434e01f9174"
+    },
+    {
+      "path": "assets/icon-180.png",
+      "sha256": "31384be44156fe1962ce62055429cf1b66a587ae5e0284feb268a0cde62790dd"
+    },
+    {
+      "path": "assets/shot-advanced.png",
+      "sha256": "4e2f7c892698cf1ce2ad48ac7d750c7be1d0ae0dae195e1248eb10ec078b391a"
+    },
+    {
+      "path": "assets/shot-daily.png",
+      "sha256": "0237911a50ad61b62542f173868a8c69bf0f4d58c922b0e3f9a2f8ef16db4a72"
+    },
+    {
+      "path": "assets/shot-dm.png",
+      "sha256": "ce6df6b08c1118f4db25787f4ca0f8457cebc249e80b42b282bf9978856fd175"
+    },
+    {
+      "path": "assets/shot-interact.png",
+      "sha256": "8131e8c9df4d429f94edc672f4bf506ca5dafd654ddefc4002aca9a684b0cd60"
+    },
+    {
+      "path": "assets/shot-pref.png",
+      "sha256": "54a7856d9e0a7d4ab50b9417d77fb17f461ee35444c95bb5ab4693c353c415f2"
+    },
+    {
+      "path": "assets/shot-stickers.png",
+      "sha256": "461d8c4e5b209251daed302ba0ad714abebcbeaf3f8bc1d951edae7bbed4d7db"
+    },
+    {
+      "path": "client.js",
+      "sha256": "1d246209de2c7e6d0d602294544a375756cb5caaec78a131ac3b14af49634361"
+    },
+    {
+      "path": "cordis.patch.yml",
+      "sha256": "4a6ac634571ac36c7d3c5e58ef22a92e1b27c659f78a4614a6b12d47a84889cf"
+    },
+    {
+      "path": "docs/AGENT_ONBOARDING.md",
+      "sha256": "32b74b2d9f8595fd7de13ce9968954276d8e7d245cbe50a0f4b0df874c6baef0"
+    },
+    {
+      "path": "docs/screenshots/01-日常.png",
+      "sha256": "0237911a50ad61b62542f173868a8c69bf0f4d58c922b0e3f9a2f8ef16db4a72"
+    },
+    {
+      "path": "docs/screenshots/02-刷视频.png",
+      "sha256": "54a7856d9e0a7d4ab50b9417d77fb17f461ee35444c95bb5ab4693c353c415f2"
+    },
+    {
+      "path": "docs/screenshots/03-互动-上.png",
+      "sha256": "8131e8c9df4d429f94edc672f4bf506ca5dafd654ddefc4002aca9a684b0cd60"
+    },
+    {
+      "path": "docs/screenshots/04-互动-下.png",
+      "sha256": "3d1aa90192aae176f1df4297fbb193e2d9ed934e3be894e3772f5ca920fe8acc"
+    },
+    {
+      "path": "docs/screenshots/05-私信.png",
+      "sha256": "ce6df6b08c1118f4db25787f4ca0f8457cebc249e80b42b282bf9978856fd175"
+    },
+    {
+      "path": "docs/screenshots/06-表情包.png",
+      "sha256": "461d8c4e5b209251daed302ba0ad714abebcbeaf3f8bc1d951edae7bbed4d7db"
+    },
+    {
+      "path": "docs/screenshots/07-高级-上.png",
+      "sha256": "4e2f7c892698cf1ce2ad48ac7d750c7be1d0ae0dae195e1248eb10ec078b391a"
+    },
+    {
+      "path": "docs/screenshots/08-高级-下.png",
+      "sha256": "da88f84c3f08591a60746ca2b4edbff253bc505da0fab450ba1476a7d53e3666"
+    },
+    {
+      "path": "index.js",
+      "sha256": "ccb9088015a6a4ec9bd2791557b752d31f61fb0f9c5424a4e573622d098ea715"
+    },
+    {
+      "path": "lib/action-proxy.mjs",
+      "sha256": "c4d8ea2bdd7e5a80b1e474219c5ad8361a87f092090dcea174c91653da80f56b"
+    },
+    {
+      "path": "lib/actions.mjs",
+      "sha256": "626ceace93e1bbfac8ea6da43f532bddcb0b00082f7bc19f807d4aa89c92b21c"
+    },
+    {
+      "path": "lib/covers.mjs",
+      "sha256": "ce5ee2cb729f552d2048f4c5afd4fc2f34527c3044e72b9658196592dcf84cdc"
+    },
+    {
+      "path": "lib/dm-messages.mjs",
+      "sha256": "c4f176585fbf39937ec3839e85b9c50f67243a57e6fc94cbde61296e54a9646e"
+    },
+    {
+      "path": "lib/dsh-cli.mjs",
+      "sha256": "91e366b2a4a8c849b34782a697d042d945229170905981bc912c6b6eae733be7"
+    },
+    {
+      "path": "lib/hostdeps.mjs",
+      "sha256": "b38bdd3ccc5d8f93cf651b44e12c1d5489e3295db180e06b245c91cb3de7a503"
+    },
+    {
+      "path": "lib/mcp.mjs",
+      "sha256": "f9ce13047bfd211b832f3a72333304fa0d40eefb9d1364a264cecf5d924091ec"
+    },
+    {
+      "path": "lib/process.mjs",
+      "sha256": "0e4d4d68c3d0e878ff115a451378513dbd1027f7247e98c3e05a946d6775783a"
+    },
+    {
+      "path": "lib/state.mjs",
+      "sha256": "5b2ee4b6d18bb27aed0b2a61ac5944108b13d4d7b7ac4d7802ec1617db15012e"
+    },
+    {
+      "path": "market-entry.yml",
+      "sha256": "8055880c147d464fbdf785befb4e7b3ab3f38ef2e16f95cea9770e657399f5fb"
+    },
+    {
+      "path": "package.json",
+      "sha256": "1dd758ab04af437cc4b473c1c4234ecabf7244085be0ea2d0e94e5dfa77fd1d7"
+    },
+    {
+      "path": "prompts/duty.md",
+      "sha256": "e02eb02c4e8a15ced5856c1ee58a7105a1c8522ae4b8e875bd87d750b0bb921c"
+    },
+    {
+      "path": "prompts/persona.md",
+      "sha256": "a036088d94c6cdcc26d0569c65a3e972d0c08386965c79eef003c8cd917944ce"
+    },
+    {
+      "path": "screenshots.json",
+      "sha256": "e4007f24da45c9e93ad02112b2ad0ad66c5e7f8fb66d82cb347af1c384c11dee"
+    },
+    {
+      "path": "selfcheck.mjs",
+      "sha256": "53187c555bc2d72005731ce3c151e8c78345b5f44ca76505bdd4fac6e34af6a4"
+    },
+    {
+      "path": "tests/dm-regression.mjs",
+      "sha256": "cc0d291542557ebb0d86e330376942bd75ed7504a4bb2acc3b7343790d711e0d"
+    },
+    {
+      "path": "tests/protocol-smoke.mjs",
+      "sha256": "7fc0e124c617a4c272a368b1a168a703c7bf5430101f4a742981a908efb85af6"
+    },
+    {
+      "path": "vendor/douyin-mcp/mcp_server.py",
+      "sha256": "91c0880a2937820c532803ba13045d75799c283d41e523b60ca9a1f2fca3f7c4"
+    },
+    {
+      "path": "vendor/douyin-mcp/requirements.txt",
+      "sha256": "4edbe14e5c9204d9b4568c28133ebd0009dba3978e2c1e037d822148ce32b749"
+    },
+    {
+      "path": "vendor/douyin-mcp/smoke.py",
+      "sha256": "34b3d53f36f2f645119b28fb2cc270c34205af454edef6a73d7bdc492b01d421"
+    },
+    {
+      "path": "video-understanding-lab/asr.py",
+      "sha256": "948eeaa3c49d13d613de26b457dc253561e74805943eb4fbafb4e13e2e10a11f"
+    },
+    {
+      "path": "video-understanding-lab/capture.py",
+      "sha256": "abe59b13160575c7884b01e7081397e0ee9d9a49ad1511fca9420c0c14189025"
+    },
+    {
+      "path": "video-understanding-lab/evidence.py",
+      "sha256": "d3e31bdd81a5982b79760f1f06f4dd9522241022df5be3f2c6d9570bcb11a47c"
+    },
+    {
+      "path": "video-understanding-lab/lab.py",
+      "sha256": "87305d5413abe4942ada8f822ed7e06c9637b4900666f7db99662e0aa9536ffd"
+    },
+    {
+      "path": "video-understanding-lab/media.py",
+      "sha256": "316703ad9e376d6f312ed3f72c3277689ec0f8a189f77ac3108e8ca6883ebfde"
+    },
+    {
+      "path": "video-understanding-lab/replay.py",
+      "sha256": "bac540b22aba263c02d65a3c100f22df9e0c2630b16cadff631329ad6a040641"
+    },
+    {
+      "path": "video-understanding-lab/run.py",
+      "sha256": "3f3bb8baaa41e5ef5d67ed6b30f5490a38615f9c815e5b692246d5c5ec10426e"
+    }
+  ],
+  "pluginId": "douyin-life",
+  "settingsId": "douyin-life",
+  "conversationViewId": "douyin-watched",
+  "tools": [
+    {
+      "name": "dy_status",
+      "description": "看它今天的状态：跑了没跑、挑了几条、额度剩多少、报告在哪、登录过没有、家目录、下次窗口什么时候开。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_chrome_open",
+      "description": "把「本人已经登录的那个 Chrome」拉起来并开 CDP 调试端口，之后所有抖音动作都走这个浏览器（登录态直接用，不用再扫码）。\n⚠️ Chrome 已经开着的时候，带同一个默认 profile 再拉一次**不会**开调试端口 —— 先全关 Chrome 再调这个。\n默认（cdpUrl 为空）用插件自己的持久 profile，第一次扫码一次；调这个会把 cdpUrl 切成 CDP 模式。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "number",
+            "description": "调试端口（默认用设置里的 cdpPort / 9222）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_config",
+      "description": "读 / 改「刷抖音」的设置。不给 `patch` 就是读；给了就改（只认 schema 里的字段）。\n例：`{\"perDay\":5,\"peakValley\":true,\"autoLike\":false,\"autoComment\":false,\"mentionName\":\"\"}`；ComfyUI：`{\"comfyUrl\":\"http://127.0.0.1:8188\",\"comfyOutputDir\":\"<本机 ComfyUI 的 output 目录>\"}`（目录留空表示还没接）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "patch": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "要改的字段（可省）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_whoami",
+      "description": "看抖音那边登录的是谁（昵称 / uid、登录态是否有效）。第一次用要先 dy_login_start 扫码。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_login_start",
+      "description": "打开登录窗并截下二维码。本人扫完后调 dy_login_poll。\n扫码之后抖音会再弹一层二次验证：上面先是「收验证码」，点开之后才有「获取验证码」。\npoll 返回 need_sms 时调 dy_login_sms，它会按这个顺序点，不会刷新页面、不会重新出码。\n若弹出图形验证，让本人在这个窗口里拖完，不要关窗、不要重新出码。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_login_poll",
+      "description": "查扫码结果。state=need_sms 表示扫完弹出了二次验证，接着调 dy_login_sms（先点「收验证码」，再点「获取验证码」），不要重新出码。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_login_sms",
+      "description": "扫码后的二次验证。在当前窗口先点「收验证码」，再点「获取验证码」，不会刷新页面。\n弹层里已经带出手机号时 phone 可以不填。号码是空的才要 11 位。\n若返回 needCaptcha，让本人在这个窗口里拖完滑块，不要重新出码。\n短信到了再调 dy_login_sms_submit。只发给本人确认过的号码。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "description": "本人手机号（11 位）。二次验证弹层里已经有号码时留空。"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_login_sms_submit",
+      "description": "短信验证码登录（第二步）：把本人报给你的验证码填进去并点登录，然后等登录态。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "短信里的验证码（4~6 位数字）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_reply_round",
+      "description": "回我自己视频下的评论（随机挑视频、随机挑评论）。\n每条回复**不超过 20 字**；对方是敏感话题（政治/医疗/法律/隐私/黄赌毒/金融荐股/破解代做等）⇒ 换成委婉拒绝。\n数量由设置里的「每次回几条 / 每天最多回」控制，也可以直接传 count。回过的评论不会重复回。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "这次想回几条（不填就用设置里的「每次回几条」）"
+          },
+          "random": {
+            "type": "boolean",
+            "description": "随机挑（默认按设置里的开关）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_chat_send",
+      "description": "给某个好友发一条私信。一个原语干三件事：转发视频（正文放视频链接）、续火花（随便一句）、发表情包（用 [憨笑] 这类文本码）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "对方昵称"
+          },
+          "text": {
+            "type": "string",
+            "description": "要发的内容（可含 https://www.douyin.com/video/<id> 或 [憨笑] 这类表情码）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_chat_sticker",
+      "description": "在私信里发表情包。keyword 传情绪词（开心/委屈/生气/无语/困/可爱/得意/难过），插件按收藏标签挑；留空则随机挑一张（不会永远发同一张）。pick 可指定第几张。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "发给谁"
+          },
+          "keyword": {
+            "type": "string",
+            "description": "搜什么关键词（默认「大肥鱼」）"
+          },
+          "pick": {
+            "type": "number",
+            "description": "挑第几个（从 0 开始，默认 0）"
+          },
+          "flip": {
+            "type": "number",
+            "description": "翻几页（0–6）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_reconcile_pending",
+      "description": "核对「发送状态待核对」的回复：查回复列表，已经发出去的记为成功，没发的保持失败。用来清掉卡住的 pending。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "最多核对几条（默认 10）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_dm_inbox",
+      "description": "只读：看私信收件箱最近的消息（谁发的、内容预览、是不是视频分享），不发任何东西。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "取几条（默认 20）"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "只看和某个人的会话（留空=全部，慢）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_watch",
+      "description": "真·看视频：下载这条视频 → 抽音轨 → 本地转写成文字，返回 transcript 和时长。看懂了再回话。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "视频 id 或整条链接"
+          },
+          "seconds": {
+            "type": "number",
+            "description": "最多看多少秒（默认 300）"
+          },
+          "frames": {
+            "type": "number",
+            "description": "抽多少帧（默认按设置里的 watchFrames）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_dm_poll",
+      "description": "手动跑一次私信后台巡检：有新的就起 headless 回一句，没有就什么都不做。用来查「为什么不回私信」。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_cleanup",
+      "description": "手动清一次：临时垃圾、30 天前的缩略图、120 天前的日报、超大日志轮转、浏览器 Cache（不动登录态）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "thumbDays": {
+            "type": "number",
+            "description": "缩略图保留多少天（默认 30）"
+          },
+          "reportDays": {
+            "type": "number",
+            "description": "日报保留多少天（默认 120）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_dm_round",
+      "description": "看一遍私信：谁发来新消息就回一句（每人每天「回几条」有限制，总条数也有上限）。陌生人消息也会回。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_share",
+      "description": "把一个视频转发给指定的人（发一条私信，正文是视频链接）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "视频 id 或链接"
+          },
+          "to": {
+            "type": "string",
+            "description": "发给谁（昵称；留空用设置里的「转发给谁」）"
+          },
+          "title": {
+            "type": "string",
+            "description": "视频标题（可留空，留空会自动查）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_thumb",
+      "description": "给一条视频截一张缩略图（存 <家>/thumbs/<id>.jpg，供「刷过的视频」卡片用）。\n写日报之后对今天每条调一次，页面就有图；不调也行，页面第一次打开时会自己补（慢一点）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "视频 id 或整条链接"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_my_posts",
+      "description": "我今天发过的作品（抖音站内接口，按发布时间过滤当天）。\n「自动回评论」就是靠它决定回哪些视频：**只回当日发布的，过了当天不再回**。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "number",
+            "description": "要几天内的（默认 1 = 今天）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_my_videos",
+      "description": "我自己发过的视频（来自投稿账本 ledger.json）。看它们下面的评论用 dy_comments。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_reply",
+      "description": "回复我自己视频下的一条评论（挂在对方评论下面）。\n🔴 规矩：回复**不超过 20 字**（超了会被裁到标点/20 字）；对方是敏感话题（政治/医疗/法律/隐私/黄赌毒/金融荐股/破解代做等）⇒ **不接话**，换成一句委婉拒绝。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "视频 id 或链接"
+          },
+          "cid": {
+            "type": "string",
+            "description": "要回复的那条评论 id（dy_comments 里的 cid）"
+          },
+          "text": {
+            "type": "string",
+            "description": "想回的话（会被压到 20 字以内）"
+          },
+          "comment": {
+            "type": "string",
+            "description": "对方那条评论的原文（给我判断敏不敏感；不填我会去抓）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_remember",
+      "description": "往「记忆」里记一行（<家>/memory/YYYY-MM.md）。刷到的、读到的感悟、想记住的事都可以记；下一轮开头会带上最近这些。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "line": {
+            "type": "string",
+            "description": "要记的一句话（自带日期时间更好）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_feed",
+      "description": "刷抖音推荐流（不搜索）：打开首页推荐、往下滚几屏，把露出的视频收下来。这就是「直接刷」。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "num": {
+            "type": "number",
+            "description": "要几条（默认 10）"
+          },
+          "scrolls": {
+            "type": "number",
+            "description": "最多滚几屏（默认 6）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_hot",
+      "description": "抖音热榜（**不用登录**就能拿）。返回词 / sentence_id / 热度 / 讨论视频数。\n刷一轮没登录时就从这儿起手：热榜词 → dy_hot_videos 看视频 → dy_video / dy_comments 读细节。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "取几条（默认 30，最大 100）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_hot_videos",
+      "description": "看某条热点下面的视频列表（**不用登录**）。给 sentence_id（先用 dy_hot 拿）或 word。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sentence_id": {
+            "type": "string",
+            "description": "热点的 sentence_id（推荐）"
+          },
+          "word": {
+            "type": "string",
+            "description": "热点词（没给 sentence_id 时用）"
+          },
+          "num": {
+            "type": "number",
+            "description": "取几条（默认 10，最大 60）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_search",
+      "description": "搜抖音视频。返回标题 / 视频id / 作者 / 点赞 / 评论 / 分享 / 时长 / 链接 / 封面。\n⚠️ 刷一轮的用法：搜近 7 天的，然后**逐条看标题与评论**再判断（别看标题就下结论）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "搜索关键词"
+          },
+          "num": {
+            "type": "number",
+            "description": "返回几条（默认 10，最大 50）"
+          },
+          "order": {
+            "type": "string",
+            "description": "general=综合（默认）/ latest=最新 / hot=最热"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_video",
+      "description": "取单条视频的信息（标题 / 简介 / 作者 / 点赞 / 评论数 / 链接 / 发布时间）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "抖音视频 id，也可以直接给整条链接"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_comments",
+      "description": "取一条视频的热门评论（含点赞 / 时间）。刷一轮时翻一眼，看值不值得占用使用者一次注意力。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "抖音视频 id 或整条链接"
+          },
+          "num": {
+            "type": "number",
+            "description": "取几条（默认 30）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_like",
+      "description": "给一条视频点赞（或取消）。\n🔴 安全闸：设置里的「自动点赞」**默认是关的**；关着的时候这个工具会拒绝 —— 除非本人当场让你点（那时传 force: true）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "抖音视频 id 或整条链接"
+          },
+          "undo": {
+            "type": "boolean",
+            "description": "true = 取消点赞"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "本人当场让你点的，传 true 越过\"自动点赞关着\"的闸"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_comment",
+      "description": "在视频下发评论（或回复某条评论）。这就是\"@ 本人\"那一下：短、干净、纯文本 @ 写在正文里。\n🔴 安全闸：要同时满足「自动评论并 @ 你」开着 **且** 填了「要 @ 谁」，否则拒绝 —— 除非本人当场让你发（那时传 force: true）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "description": "抖音视频 id 或整条链接"
+          },
+          "text": {
+            "type": "string",
+            "description": "评论正文（短、干净、纯文本；别堆 emoji、别写敏感词）"
+          },
+          "reply_cid": {
+            "type": "string",
+            "description": "要回复的评论 id（空 = 发新评论）"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "本人当场让你发的，传 true 越过闸门"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_publish",
+      "description": "发一条视频到抖音（默认只存草稿：`draft=True`，等本人过一眼）。\n给 `video_path` 就投那条；给 `latest: true` 就从 ComfyUI 输出目录里取**最新一个 .mp4**（配了 `comfyWorkflow` 的话会先排队出片再取）。\n🔴 安全闸：设置里的「自动发布视频」**默认是关的**；关着的时候这个工具会拒绝 —— 除非本人当场让你发（那时传 force: true）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "video_path": {
+            "type": "string",
+            "description": "要发的视频文件路径（给了就不看 latest）"
+          },
+          "latest": {
+            "type": "boolean",
+            "description": "true = 取 ComfyUI 输出目录里最新的 .mp4"
+          },
+          "title": {
+            "type": "string",
+            "description": "标题"
+          },
+          "tags": {
+            "type": "string",
+            "description": "话题/标签，空格或逗号分隔"
+          },
+          "draft": {
+            "type": "boolean",
+            "description": "true=只存草稿（默认），false=真发出去"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "本人当场让你发的，传 true 越过闸门"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_comfy_list",
+      "description": "列 ComfyUI 输出目录里最近的成片（按 mtime 从新到旧，递归找 .mp4）。配合 dy_publish(latest:true) 用。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "列几条（默认用设置里的 comfyListLimit）"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_run",
+      "description": "**立刻跑一轮**（不等窗口）：起一个 headless 会话，把 duty.md 交给它去刷、写报告。适合\"我现在就想看一份\"的场合。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "local=宿主自己跑（默认，不依赖沙箱）；headless=起子会话"
+          }
+        },
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    },
+    {
+      "name": "dy_selfcheck",
+      "description": "真跑一次：家目录 / Python / MCP 脚本 / ComfyUI 目录四项 + 一次登录检查（调 douyin_selfcheck），直接回答\"能不能用\"。",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": true
+      }
+    }
+  ],
+  "config": [
+    {
+      "name": "perDay",
+      "expression": "z.natural().default(5).extra('volatile', true)"
+    },
+    {
+      "name": "peakValley",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "noon",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "night",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "autoLike",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "autoComment",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "autoPublish",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "mentionName",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "commentPerRound",
+      "expression": "z.natural().default(1).extra('volatile', true)"
+    },
+    {
+      "name": "keywords",
+      "expression": "z.array(z.string()).default([]).extra('volatile', true)"
+    },
+    {
+      "name": "pythonPath",
+      "expression": "z.string().default('python').extra('volatile', true)"
+    },
+    {
+      "name": "dshBin",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "headlessModel",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "headlessProfile",
+      "expression": "z.string().default('headless').extra('volatile', true)"
+    },
+    {
+      "name": "overlayMcp",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "workspace",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "reportLevel",
+      "expression": "z.string().default('full').extra('volatile', true)"
+    },
+    {
+      "name": "personaPrompt",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "memory",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "comfyUrl",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "comfyOutputDir",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "comfyWorkflow",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "comfyWaitSeconds",
+      "expression": "z.natural().default(900).extra('volatile', true)"
+    },
+    {
+      "name": "comfyListLimit",
+      "expression": "z.natural().default(20).extra('volatile', true)"
+    },
+    {
+      "name": "publishDraft",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "commentPerDay",
+      "expression": "z.natural().default(10).extra('volatile', true)"
+    },
+    {
+      "name": "autoReply",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "replyPerRun",
+      "expression": "z.natural().default(3).extra('volatile', true)"
+    },
+    {
+      "name": "modelShareNote",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "replyPerDay",
+      "expression": "z.natural().default(10).extra('volatile', true)"
+    },
+    {
+      "name": "replyAllDay",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "replyRandom",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "replyVideoIds",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "replyOneShot",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "replyOncePerUser",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "localRound",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "sharePerDay",
+      "expression": "z.natural().default(10).extra('volatile', true)"
+    },
+    {
+      "name": "skipOverMin",
+      "expression": "z.natural().default(60).extra('volatile', true)"
+    },
+    {
+      "name": "skimOverMin",
+      "expression": "z.natural().default(5).extra('volatile', true)"
+    },
+    {
+      "name": "watchBeforeAct",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "watchSeconds",
+      "expression": "z.natural().default(90).extra('volatile', true)"
+    },
+    {
+      "name": "watchFrames",
+      "expression": "z.natural().default(10).extra('volatile', true)"
+    },
+    {
+      "name": "pickPerRound",
+      "expression": "z.natural().default(2).extra('volatile', true)"
+    },
+    {
+      "name": "autoCommentPlain",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "plainCommentPerDay",
+      "expression": "z.natural().default(10).extra('volatile', true)"
+    },
+    {
+      "name": "msgAllowTo",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "dmReplyOnlyTo",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "dmReply",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "dmAutoReply",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "dmAutoIntervalSec",
+      "expression": "z.natural().default(15).extra('volatile', true)"
+    },
+    {
+      "name": "dmReplyPerContact",
+      "expression": "z.natural().default(1).extra('volatile', true)"
+    },
+    {
+      "name": "dmReplyPerDay",
+      "expression": "z.natural().default(5).extra('volatile', true)"
+    },
+    {
+      "name": "dmFastReply",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "dmFastProvider",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "dmFastModel",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "dmFastReasoning",
+      "expression": "z.string().default('off').extra('volatile', true)"
+    },
+    {
+      "name": "shareWithNote",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "shareNote",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "replyWorksDays",
+      "expression": "z.natural().default(3).extra('volatile', true)"
+    },
+    {
+      "name": "autoClean",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "skipLive",
+      "expression": "z.boolean().default(true).extra('volatile', true)"
+    },
+    {
+      "name": "shareToNick",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "streakSticker",
+      "expression": "z.string().default('大肥鱼').extra('volatile', true)"
+    },
+    {
+      "name": "streakNick",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "streakPerDay",
+      "expression": "z.natural().default(1).extra('volatile', true)"
+    },
+    {
+      "name": "askDoubao",
+      "expression": "z.boolean().default(false).extra('volatile', true)"
+    },
+    {
+      "name": "replyIntervalMin",
+      "expression": "z.natural().default(30).extra('volatile', true)"
+    },
+    {
+      "name": "myNickname",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "publishPerDay",
+      "expression": "z.natural().default(1).extra('volatile', true)"
+    },
+    {
+      "name": "publishTitle",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "publishTags",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "cdpUrl",
+      "expression": "z.string().default('').extra('volatile', true)"
+    },
+    {
+      "name": "cdpPort",
+      "expression": "z.natural().default(9222).extra('volatile', true)"
+    },
+    {
+      "name": "chromePath",
+      "expression": "z.string().default('').extra('volatile', true)"
+    }
+  ],
+  "routes": [
+    "/api/douyin-duty/update/check",
+    "/api/douyin-duty/status",
+    "/api/douyin-duty/config",
+    "/api/douyin-duty/login/browser",
+    "/api/douyin-duty/login/browser/close",
+    "/api/douyin-duty/login/qr",
+    "/api/douyin-duty/login/poll",
+    "/api/douyin-duty/run",
+    "/api/douyin-duty/thumb",
+    "/api/douyin-duty/persona",
+    "/api/douyin-duty/memory",
+    "/api/douyin-duty/watched",
+    "/api/douyin-duty/cover",
+    "/api/douyin-duty/comfy/list",
+    "/api/douyin-duty/publish",
+    "/api/douyin-duty/dm",
+    "/api/douyin-duty/dm/seen/clear",
+    "/api/douyin-duty/dm/test",
+    "/api/douyin-duty/stickers",
+    "/api/douyin-duty/stickers/tags",
+    "/api/douyin-duty/stickers/test",
+    "/api/douyin-duty/report/latest",
+    "/api/douyin-duty/reply/round",
+    "/api/douyin-duty/login/sms",
+    "/api/douyin-duty/login/sms/submit",
+    "/api/douyin-duty/setup",
+    "/api/douyin-duty/setup/log",
+    "/api/douyin-duty/selfcheck",
+    "/api/douyin-duty/chrome/open",
+    "/api/douyin-duty/log",
+    "/api/douyin-duty/log/tail",
+    "/api/douyin-duty/open"
+  ],
+  "tabs": [
+    [
+      "daily",
+      "日常"
+    ],
+    [
+      "pref",
+      "刷视频"
+    ],
+    [
+      "like",
+      "互动"
+    ],
+    [
+      "dm",
+      "私信"
+    ],
+    [
+      "sticker",
+      "表情包"
+    ],
+    [
+      "mem",
+      "记忆"
+    ],
+    [
+      "adv",
+      "高级"
+    ]
+  ],
+  "executableRegressions": [
+    "selfcheck.mjs",
+    "tests/dm-regression.mjs",
+    "tests/protocol-smoke.mjs"
+  ],
+  "missingScriptTargets": [
+    "tests/run.mjs",
+    "tests/proxy-regression.mjs",
+    "tests/headless-regression.mjs",
+    "tests/real-media-smoke.py"
+  ]
+}

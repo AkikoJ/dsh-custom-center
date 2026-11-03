@@ -14,6 +14,14 @@ Unlike a General-settings row, the plugin registers its own first-level
 `settings.section` entries, so they appear as separate pages in the settings
 navigation (alongside General, Models, Plugins, ...).
 
+## Douyin migration
+
+The migration is pinned to dsh-douyin-life 0.2.9, commit
+`aaf9f9a862afafd45a15acf32789da97688de695`. The first batch records the
+upstream license and frozen contracts; it does not activate account automation.
+See the [migration record](docs/douyin-migration.md) for scope, mapping and
+validation status.
+
 ## Features
 
 - **Wallpaper library** — click the picture to open a library with an Images

@@ -1,0 +1,9 @@
+{
+  "package": "dsh-douyin-life",
+  "version": "0.2.9",
+  "repository": "git@github.com:kdcadmin/dsh_douyin_tools.git",
+  "commit": "aaf9f9a862afafd45a15acf32789da97688de695",
+  "committedAt": "2026-10-31T00:25:11+08:00",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 TiAmoSS"
+}
