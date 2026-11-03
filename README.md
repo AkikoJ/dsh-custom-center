@@ -37,6 +37,9 @@ and resumes from its manifest on retry. Exit code 2 means unresolved conflicts;
 no completion marker is written until every file is verified. Rebuild the Python
 environment through setup after switching; the old virtual environment is not copied.
 The runtime feature remains unmounted during these implementation batches.
+Packaged Python MCP, video-understanding commands and prompts use the same root.
+Child processes receive explicit cache/model/temporary paths. Runtime deployment
+preserves custom scripts and persona text; newer scripts are staged as `.new` files.
 
 ## Features
 

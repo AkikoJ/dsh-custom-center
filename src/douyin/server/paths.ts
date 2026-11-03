@@ -125,7 +125,11 @@ export function douyinPaths(home = resolveDouyinHome()) {
         TMP: tmp,
         TMPDIR: tmp,
         UV_CACHE_DIR: file(".uv-cache"),
+        UV_TOOL_DIR: file("uv-tools"),
+        UV_PYTHON_INSTALL_DIR: file("uv-python"),
         HF_HOME: file("models"),
+        HUGGINGFACE_HUB_CACHE: join(file("models"), "hub"),
+        PYTHONDONTWRITEBYTECODE: "1",
         PYTHONUTF8: "1",
         PYTHONUNBUFFERED: "1",
       };
