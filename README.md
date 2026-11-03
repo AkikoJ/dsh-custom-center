@@ -22,6 +22,22 @@ upstream license and frozen contracts; it does not activate account automation.
 See the [migration record](docs/douyin-migration.md) for scope, mapping and
 validation status.
 
+The data root is `DSH_DOUYIN_HOME`, then
+`<DSH_HOME>/dsh-custom-center/douyin`, then `~/.dsh/dsh-custom-center/douyin`.
+After stopping the old plugin, its browser and its background tasks, build and run:
+
+```sh
+pnpm build
+pnpm douyin:import --legacy-stopped
+# Optional: --source /path/to/douyin-duty --target /path/to/new-home
+```
+
+Import preserves the old directory, refuses target conflicts, verifies file hashes,
+and resumes from its manifest on retry. Exit code 2 means unresolved conflicts;
+no completion marker is written until every file is verified. Rebuild the Python
+environment through setup after switching; the old virtual environment is not copied.
+The runtime feature remains unmounted during these implementation batches.
+
 ## Features
 
 - **Wallpaper library** — click the picture to open a library with an Images

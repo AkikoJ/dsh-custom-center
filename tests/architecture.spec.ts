@@ -52,8 +52,9 @@ for (const { file, ast } of modules) {
   visit(ast)
 }
 const runtime = dependencies.filter((dependency) => dependency.runtime)
-const featureOf = (file: string) => /^src\/(appearance|tuning|skills)\//.exec(file)?.[1]
-const entries = new Set(['src/index.ts', 'src/client/index.ts', 'src/skills/index.ts', 'src/skills/client.ts'])
+const featureOf = (file: string) => /^src\/(appearance|tuning|skills|douyin)\//.exec(file)?.[1]
+const entries = new Set(['src/index.ts', 'src/client/index.ts', 'src/skills/index.ts', 'src/skills/client.ts',
+  'src/douyin/index.ts', 'src/douyin/client.ts', 'src/douyin/import-cli.ts'])
 
 describe('source architecture', () => {
   it('keeps handwritten source and tests within the 800-line limit', () => {

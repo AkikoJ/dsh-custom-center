@@ -1,0 +1,84 @@
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { describe, expect, it } from 'vitest'
+import { resolveDouyinHome, douyinPaths, legacyRelativePath } from '../../src/douyin/server/paths'
+import { createConfiguration } from '../../src/douyin/server/configuration'
+import { clampPatch, normalizeConfig } from '../../src/douyin/server/config-rules'
+import { DEFAULTS, Config } from '../../src/douyin/config'
+import baseline from './fixtures/upstream-contract.json'
+
+const home = () => mkdtempSync(join(tmpdir(), 'douyin-config-'))
+describe('抖音路径与配置', () => {
+  it('统一显式路径、DSH_HOME 和用户目录回退，不依赖 cwd', () => {
+    expect(resolveDouyinHome({ DSH_DOUYIN_HOME: '/custom', DSH_HOME: '/dsh' }, '/user')).toBe('/custom')
+    expect(resolveDouyinHome({ DSH_HOME: '/dsh' }, '/user')).toBe('/dsh/dsh-custom-center/douyin')
+    expect(resolveDouyinHome({}, '/user')).toBe('/user/.dsh/dsh-custom-center/douyin')
+    const paths = douyinPaths('/fixture')
+    const base = { DSH_HOME: '/dsh', KEEP: 'yes' }
+    expect(paths.childEnv(base)).toMatchObject({ DSH_DOUYIN_HOME: '/fixture',
+      TMPDIR: '/fixture/cache/tmp', UV_CACHE_DIR: '/fixture/cache/uv', KEEP: 'yes' })
+    expect(base).toEqual({ DSH_HOME: '/dsh', KEEP: 'yes' })
+    expect(paths.browser).toBe('/fixture/browser')
+    expect(paths.config).toBe('/fixture/config/config.json')
+    expect(() => legacyRelativePath('../secret')).toThrow()
+    expect(() => legacyRelativePath('/absolute')).toThrow()
+  })
+
+  it('保留 74 个公共字段的默认值和 volatile 元信息', () => {
+    expect(Object.keys(Config.dict ?? {})).toEqual(baseline.config.map((field) => field.name))
+    for (const field of Object.values(Config.dict ?? {})) expect(field.meta?.volatile).toBe(true)
+    expect(normalizeConfig({ autoLike: { value: true }, perDay: -1, keywords: ['猫', 2] }))
+      .toMatchObject({ autoLike: false, perDay: 5, keywords: ['猫'] })
+    expect(DEFAULTS.autoPublish).toBe(false)
+    expect(DEFAULTS.publishDraft).toBe(true)
+  })
+
+  it('严格拒绝类型和未知字段，并保留原范围与零值规则', () => {
+    for (const patch of [{ unknown: 1 }, { autoLike: 1 }, { perDay: '5' }, { keywords: [1] }, { cdpPort: -1 }]) {
+      expect(() => clampPatch(patch)).toThrow()
+    }
+    expect(clampPatch({ perDay: 80, commentPerDay: 90, replyPerDay: 9999,
+      comfyWaitSeconds: 0, watchSeconds: 0, cdpPort: 0, dmReplyPerDay: 0,
+      reportLevel: 'bad', keywords: ['猫', ' ', '狗'], replyVideoIds: 'x123, abc456' }))
+      .toMatchObject({ perDay: 50, commentPerDay: 50, replyPerDay: 1000,
+        comfyWaitSeconds: 900, watchSeconds: 90, cdpPort: 9222, dmReplyPerDay: 0,
+        reportLevel: 'full', keywords: ['猫', '狗'], replyVideoIds: '123, 456' })
+  })
+
+  it('宿主冲突时重取 revision，并在失败时保留本地优先键', async () => {
+    const file = join(home(), 'config.json')
+    const calls: number[] = []
+    let fail = true
+    const config = createConfiguration({ file, settings: {
+      describe: () => [{ ns: 'douyin-life', revision: calls.length + 1,
+        value: DEFAULTS, user: { autoLike: false } }],
+      async update(_ns, _patch, revision) {
+        calls.push(revision!)
+        if (fail) throw new Error(calls.length === 1 ? 'stale revision' : 'host offline')
+      },
+    } })
+    const saved = await config.persist({ autoLike: true })
+    expect(saved.host.ok).toBe(false)
+    expect(calls).toEqual([1, 2])
+    expect(config.refresh().autoLike).toBe(true)
+    expect(JSON.parse(readFileSync(file, 'utf8'))._localOnly).toContain('autoLike')
+    fail = false
+    expect((await config.persist({ autoLike: false })).host.ok).toBe(true)
+    expect(JSON.parse(readFileSync(file, 'utf8'))._localOnly).not.toContain('autoLike')
+  })
+
+  it('仅读取同名设置行，配置对象身份保持稳定', () => {
+    const directory = home()
+    mkdirSync(join(directory, 'config'))
+    const file = join(directory, 'config/config.json')
+    writeFileSync(file, JSON.stringify({ perDay: 7 }))
+    const config = createConfiguration({ file, settings: {
+      describe: () => [{ ns: 'unrelated', value: DEFAULTS, user: { perDay: 50 } }],
+      async update() {},
+    } })
+    const identity = config.current
+    expect(config.refresh().perDay).toBe(7)
+    expect(config.current).toBe(identity)
+  })
+})

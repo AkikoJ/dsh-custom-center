@@ -45,6 +45,7 @@
     "build": "tsc -p tsconfig.build.json && tsdown",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "douyin:import": "node lib/douyin-import.js",
     "watch": "tsdown --watch"
   },
   "peerDependencies": {
@@ -72,7 +73,9 @@
     "README.md",
     "README.zh.md",
     "LICENSE",
-    "LICENSE-skills-manager"
+    "LICENSE-skills-manager",
+    "LICENSE-douyin",
+    "resources/douyin"
   ],
   "license": "MIT",
   "dependencies": {

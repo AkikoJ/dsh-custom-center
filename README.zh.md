@@ -17,6 +17,20 @@
 `aaf9f9a862afafd45a15acf32789da97688de695`。首批记录上游许可证与完整合同，
 尚不激活账号自动化。范围、映射和验证状态见[迁移记录](docs/douyin-migration.md)。
 
+数据根依次使用 `DSH_DOUYIN_HOME`、`<DSH_HOME>/dsh-custom-center/douyin`、
+`~/.dsh/dsh-custom-center/douyin`。先停止旧插件、浏览器和后台任务，再构建并执行：
+
+```sh
+pnpm build
+pnpm douyin:import --legacy-stopped
+# 可选：--source /path/to/douyin-duty --target /path/to/new-home
+```
+
+导入保留旧目录，拒绝覆盖目标冲突，校验文件哈希，重试时从清单恢复。
+退出码 2 表示存在未解决冲突；全部文件校验完成后才写完成标记。
+切换后通过安装流程重建 Python 环境，旧虚拟环境不复制。当前实现批次暂不挂载运行功能。
+
+
 ## 功能
 
 - **壁纸库** — 点击图片打开壁纸库，分「图片」和「视频」两个标签。点网格里第一格的「上传」会把

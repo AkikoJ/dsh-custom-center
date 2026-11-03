@@ -33,7 +33,7 @@ const CLIENT_EXTERNALS = [
 
 const host: UserConfig = {
   name: ID,
-  entry: ['src/index.ts'],
+  entry: { index: 'src/index.ts', 'douyin-import': 'src/douyin/import-cli.ts' },
   outDir: 'lib',
   format: ['esm'],
   platform: 'node',
