@@ -47,7 +47,9 @@ still unmounted until the remaining business and UI migration is complete.
 Browser login orchestration, ComfyUI workflow outputs, monthly memory, reports and
 owned-resource cleanup are now separate modules with offline lifecycle and path checks.
 Interpreter and MCP lifecycle, cancellable dependency setup, content reads, publication
-preflight and short-reply rounds are also separated. Replies use actual platform comments,
+preflight and short-reply rounds are also separated. Direct-message polling now has
+separate message selection, durable cursors, verified reply orchestration and event
+watcher modules. Unknown delivery is retained without automatic resend. Replies use actual platform comments,
 skip unread images, refuse sensitive topics and retain permanent deduplication.
 
 ## Features
