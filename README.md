@@ -40,6 +40,10 @@ The runtime feature remains unmounted during these implementation batches.
 Packaged Python MCP, video-understanding commands and prompts use the same root.
 Child processes receive explicit cache/model/temporary paths. Runtime deployment
 preserves custom scripts and persona text; newer scripts are staged as `.new` files.
+The shared account executor now serializes writes across processes, reserves uncertain
+sends, records only verified receipts, and preserves reply deduplication across days.
+Its offline tests use temporary state and backend substitutes; account automation is
+still unmounted until the remaining business and UI migration is complete.
 
 ## Features
 
