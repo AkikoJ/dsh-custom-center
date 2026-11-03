@@ -52,9 +52,14 @@ separate message selection, durable cursors, verified reply orchestration and ev
 watcher modules. Unknown delivery is retained without automatic resend. Replies use actual platform comments,
 skip unread images, refuse sensitive topics and retain permanent deduplication.
 Headless runs now resolve the installed CLI without a shell and use per-run private
-overlays, a live tool whitelist, host-enforced recipients, verified receipts and
+overlays, a live MCP tool whitelist, host-enforced recipients, verified receipts and
 awaited cancellation. Temporary proxy credentials are removed at completion;
 symlink escapes and overlapping process ownership are refused.
+Image reads now validate trusted HTTPS CDNs, every DNS result, redirects, byte limits
+and raster signatures before admission through the official attachment service.
+Short replies use the official LLM stream contract, bounded reasoning fallbacks and
+cancellation. Vision fallback sends validated bytes to fixed endpoints and never
+accepts text from failed or unterminated streams as a completed reply.
 
 ## Features
 
