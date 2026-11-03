@@ -51,6 +51,10 @@ preflight and short-reply rounds are also separated. Direct-message polling now 
 separate message selection, durable cursors, verified reply orchestration and event
 watcher modules. Unknown delivery is retained without automatic resend. Replies use actual platform comments,
 skip unread images, refuse sensitive topics and retain permanent deduplication.
+Headless runs now resolve the installed CLI without a shell and use per-run private
+overlays, a live tool whitelist, host-enforced recipients, verified receipts and
+awaited cancellation. Temporary proxy credentials are removed at completion;
+symlink escapes and overlapping process ownership are refused.
 
 ## Features
 
