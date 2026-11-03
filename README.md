@@ -63,6 +63,10 @@ and raster signatures before admission through the official attachment service.
 Short replies use the official LLM stream contract, bounded reasoning fallbacks and
 cancellation. Vision fallback sends validated bytes to fixed endpoints and never
 accepts text from failed or unterminated streams as a completed reply.
+Local feed rounds now persist selections before interacting, enforce quotas and rotation,
+require transcript evidence, and stop at date changes or disposal. Verified cards precede
+notes and stickers. Window inspections, streaks, sticker labels and status checks are
+separate modules with bounded retries and awaited shutdown.
 
 ## Features
 
