@@ -4,3 +4,5 @@
 - insert:
     - id: ui-custom-center
       name: dsh-custom-center
+    - id: douyin-life
+      name: dsh-custom-center/douyin

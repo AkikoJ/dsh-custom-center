@@ -21,6 +21,7 @@ import { createController } from '../appearance/client/controller.ts'
 import { AppearancePage } from '../appearance/client/AppearancePage.tsx'
 import { TuningPage } from '../tuning/client/TuningPanel.tsx'
 import * as skills from '../skills/client.ts'
+import * as douyin from '../douyin/client/index.js'
 
 /** Browser services this plugin requires before activation. */
 export const inject = ['slots', 'theme']
@@ -76,4 +77,5 @@ export function apply(rawCtx: Context): void {
   // Skills management (ported from dsh-skills-manager) is its own fiber: it
   // needs `locale`, and a missing service must not block the pages above.
   rawCtx.plugin({ name: 'custom-center-skills', inject: skills.inject, apply: skills.apply as never })
+  rawCtx.plugin({ name: 'custom-center-douyin', inject: douyin.inject, apply: douyin.apply })
 }

@@ -72,7 +72,7 @@ The standalone `dsh-custom-center/douyin` host entry now assembles all 35 tools 
 waits for active requests, and HTTP assets require authenticated loopback requests
 with the browser marker. Output selections carry host-issued file tokens; stale
 selections require a refresh. Upstream update checks are informational and preserve
-the pinned source. The bundle remains unmounted until the browser migration is complete.
+the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 74 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. It has not been installed into a runtime profile or verified against the live GUI or a real account.
 
 ## Features
 
