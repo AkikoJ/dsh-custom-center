@@ -18,10 +18,12 @@ export function rankVideos(items: Record<string, unknown>[], ledger: Ledger, con
   const seen = new Set<string>(), data = ledger.read()
   return items.flatMap((item) => {
     const aid = videoId(item.aweme_id), title = String(item.title || '').trim()
-    const duration = Math.max(0, Number(item.duration) || 0)
+    const rawDuration = Number(item.duration), rawDigg = Number(item.digg_count || item.digg || 0)
+    if (!Number.isFinite(rawDuration) && item.duration !== undefined || !Number.isFinite(rawDigg)) return []
+    const duration = Math.max(0, rawDuration || 0)
     if (!aid || !title || seen.has(aid) || data.picks[`${ledger.day()}:${aid}`] || duration > config.skipOverMin * 60000 && config.skipOverMin > 0) return []
     seen.add(aid)
-    const score = Math.log10(Math.max(0, Number(item.digg_count || item.digg || 0)) + 10) * 10 + (duration > 20000 && duration < 600000 ? 3 : 0)
+    const score = Math.log10(Math.max(0, rawDigg) + 10) * 10 + (duration > 20000 && duration < 600000 ? 3 : 0)
     return [{ ...item, aweme_id: aid, title, duration, score }]
   }).sort((left, right) => right.score - left.score)
 }
@@ -38,14 +40,14 @@ export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger;
       const left = cfg.perDay > 0 ? Math.max(0, cfg.perDay - ledger.picked()) : options.manual ? Math.max(1, cfg.pickPerRound) : 0
       const actions: Record<string, unknown>[] = [], notes: string[] = []
       if (!left) return { ok: true, picked: 0, skipped: cfg.perDay ? '今日选片额度已满' : '自动刷取已关闭', report, actions }
+      const sameDay = () => !disposed && !currentExecution().signal?.aborted && ledger.day() === day
       let items: Record<string, unknown>[] = []
       try { items = resultItems(await content.feed({ num: 12, scrolls: 6 })) } catch (error) { notes.push('推荐流：' + errorMessage(error)) }
-      if (!items.length) try {
+      if (!items.length && sameDay()) try {
         const word = resultItems(await content.hot()).map((item) => String(item.word || '')).find(Boolean)
-        if (word) { items = resultItems(await content.hotVideos({ word, num: 10 })); notes.push('推荐流为空，使用热榜：' + word) }
+        if (word && sameDay()) { items = resultItems(await content.hotVideos({ word, num: 10 })); notes.push('推荐流为空，使用热榜：' + word) }
       } catch (error) { notes.push('热榜：' + errorMessage(error)) }
       const videos = rankVideos(items, ledger, cfg).slice(0, Math.min(5, left, Math.max(1, cfg.pickPerRound)))
-      const sameDay = () => !disposed && !currentExecution().signal?.aborted && ledger.day() === day
       let picked = 0, comments = 0, commentFailures = 0
       for (const video of videos) {
         if (!sameDay()) { notes.push('已跨日，结束本轮'); break }

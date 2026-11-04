@@ -12,6 +12,7 @@ import { createRuntimeState } from '../../src/douyin/server/state.js'
 import { createCleanup } from '../../src/douyin/server/cleanup.js'
 import { createBrowser } from '../../src/douyin/server/browser.js'
 import { dmMessageContext, dmMessageKey, normalizeDmMessage } from '../../src/douyin/server/dm-messages.js'
+import { withExecution } from '../../src/douyin/server/execution-context.js'
 import { writeJson } from '../../src/douyin/server/storage.js'
 
 const roots: string[] = []
@@ -41,6 +42,13 @@ describe('ComfyUI outputs', () => {
     expect(request.mock.calls[0][0]).toBe(DEFAULTS.comfyUrl + '/prompt')
   })
 
+  it('inherits cancellation and does not poll after the workflow wait is cancelled', async () => {
+    const abort = new AbortController(), request = vi.fn<typeof fetch>().mockResolvedValue(new Response('{"prompt_id":"job"}'))
+    const comfy = createComfy({ config: () => ({ ...DEFAULTS, comfyWorkflow: '{}' }), fetch: request, sleep: async () => { abort.abort() } })
+    await expect(withExecution({ origin: 'tool', signal: abort.signal }, () => comfy.runWorkflow())).rejects.toThrow()
+    expect(request).toHaveBeenCalledTimes(1)
+    expect((request.mock.calls[0]![1]!.signal as AbortSignal).aborted).toBe(true)
+  })
   it('rejects ambiguous and physically escaped workflow results', async () => {
     for (const escaped of [false, true]) {
       const f = fixture(), output = join(f.root, 'output'); mkdirSync(output)

@@ -8,23 +8,20 @@ export interface CommandOptions {
   signal?: AbortSignal
 }
 
-/** No shell expansion; process output is bounded and every completion clears its timer. */
+/** Cancellation settles only after the owned process has closed. */
 export function runCommand(command: string, args: string[], options: CommandOptions): Promise<{ code: number; output: string }> {
+  if (options.signal?.aborted) return Promise.reject(new Error(`命令已取消：${command}`))
   return new Promise((resolve, reject) => {
-    const proc = spawn(command, args, {
-      cwd: options.cwd, env: options.env, shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
-    })
-    let finished = false
-    let output = ''
-    const finish = (error?: Error, code = 0) => {
-      if (finished) return
-      finished = true
-      clearTimeout(timer)
-      options.signal?.removeEventListener('abort', abort)
-      if (error) reject(error); else resolve({ code, output })
+    const proc = spawn(command, args, { cwd: options.cwd, env: options.env, shell: false, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] })
+    let output = '', failure: Error | undefined, escalation: ReturnType<typeof setTimeout> | undefined
+    const terminate = (error: Error) => {
+      if (failure) return
+      failure = error
+      proc.kill('SIGTERM')
+      escalation = setTimeout(() => { proc.kill('SIGKILL') }, 1000)
     }
-    const abort = () => { proc.kill(); finish(new Error(`命令已取消：${command}`)) }
-    const timer = setTimeout(() => { proc.kill(); finish(new Error(`命令超时：${command}`)) }, options.timeoutMs ?? 30000)
+    const abort = () => terminate(new Error(`命令已取消：${command}`))
+    const timer = setTimeout(() => terminate(new Error(`命令超时：${command}`)), options.timeoutMs ?? 30000)
     options.signal?.addEventListener('abort', abort, { once: true })
     if (options.signal?.aborted) abort()
     for (const stream of [proc.stdout, proc.stderr]) {
@@ -34,7 +31,11 @@ export function runCommand(command: string, args: string[], options: CommandOpti
         try { options.onData?.(text) } catch { /* Logging cannot block process cleanup. */ }
       })
     }
-    proc.on('error', (error) => finish(error))
-    proc.on('close', (code) => finish(code === 0 ? undefined : new Error(`${command} 退出码 ${code}：${output.slice(-1000)}`), code ?? -1))
+    proc.on('error', (error) => { failure ??= error })
+    proc.on('close', (code) => {
+      clearTimeout(timer); clearTimeout(escalation); options.signal?.removeEventListener('abort', abort)
+      const error = failure ?? (code === 0 ? undefined : new Error(`${command} 退出码 ${code}：${output.slice(-1000)}`))
+      if (error) reject(error); else resolve({ code: code ?? -1, output })
+    })
   })
 }

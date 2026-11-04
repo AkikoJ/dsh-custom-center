@@ -41,7 +41,7 @@ describe('headless process tool boundary', () => {
   })
   it('rejects empty or malformed tool lists before publishing its readiness marker', () => {
     const { ctx } = fixture()
-    for (const tools of [[], ['bash'], ['douyin_video\nother'], ['mcp__other__video']]) expect(() => apply(ctx, { tools })).toThrow()
+    for (const tools of [[], ['bash'], ['douyin_video\nother'], ['douyin_video\n'], ['memory_recent\r\n'], ['mcp__other__video']]) expect(() => apply(ctx, { tools })).toThrow()
     expect(ctx.get('douyinHeadlessGuard')).toBeUndefined()
   })
 })

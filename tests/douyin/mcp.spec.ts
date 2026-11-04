@@ -5,6 +5,7 @@ const clients: McpClient[] = []
 function peer(mode = '') {
   const script = `
     const readline=require('node:readline');
+    if(${JSON.stringify(mode)}==='slow-stop')process.on('SIGTERM',()=>setTimeout(()=>process.exit(0),60));
     let initialized=false;
     let output=Promise.resolve();
     readline.createInterface({input:process.stdin}).on('line',line=>{
@@ -15,6 +16,7 @@ function peer(mode = '') {
         process.stdout.write('peer startup log\\nnull\\n');
         process.stdout.write(JSON.stringify({id:m.id,result:{protocolVersion:'2024-11-05'}})+'\\n');return;
       }
+      if(m.params.name==='pid'){process.stdout.write(JSON.stringify({id:m.id,result:{content:[{text:JSON.stringify({pid:process.pid})}]}})+'\\n');return}
       if(m.params.name==='hang')return;
       if(m.params.name==='exit'){process.exit(3);return}
       const text=m.params.name==='text'?'plain text':JSON.stringify({ok:true,initialized,args:m.params.arguments});
@@ -30,7 +32,7 @@ function peer(mode = '') {
   clients.push(client)
   return client
 }
-afterEach(() => clients.splice(0).forEach((client) => client.stop()))
+afterEach(async () => { await Promise.all(clients.splice(0).map((client) => client.stop())) })
 
 describe('MCP lifecycle and line framing', () => {
   it('initializes once for concurrent calls and parses fragmented/noisy frames', async () => {
@@ -52,6 +54,23 @@ describe('MCP lifecycle and line framing', () => {
     await rejected
     expect(client.running).toBe(false)
     expect(await client.call('again')).toMatchObject({ ok: true })
+  })
+  it('keeps cancellation and timeout pending until the owned process has closed', async () => {
+    for (const cancel of [true, false]) {
+      const client = peer('slow-stop'), abort = new AbortController()
+      const { pid } = await client.call<{ pid: number }>('pid')
+      const pending = client.call('hang', {}, { signal: abort.signal, timeoutMs: cancel ? 1000 : 20 })
+      const rejected = expect(pending).rejects.toThrow(cancel ? '取消' : '超时')
+      if (cancel) { await new Promise<void>((resolve) => setImmediate(resolve)); abort.abort() }
+      await rejected
+      expect(() => process.kill(pid, 0)).toThrow()
+      expect(client.running).toBe(false)
+    }
+  })
+  it('does not start a process for an already aborted call', async () => {
+    const client = peer(), abort = new AbortController(); abort.abort()
+    await expect(client.call('hang', {}, { signal: abort.signal })).rejects.toThrow()
+    expect(client.running).toBe(false)
   })
   it('bounds initialization and tool timeouts and handles process exit', async () => {
     await expect(peer('hang-init').start()).rejects.toThrow('超时')

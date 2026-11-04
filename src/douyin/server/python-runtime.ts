@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import type { DouyinConfig } from '../config.js'
 import type { DouyinPaths } from './paths.js'
+import { currentExecution } from './execution-context.js'
 import { McpClient } from './mcp.js'
 import { prepareRuntime, douyinResources, type DouyinResources } from './resources.js'
 
@@ -27,22 +28,26 @@ export function createPythonRuntime(paths: DouyinPaths, config: () => DouyinConf
     DOUYIN_CHROME_PATH: config().chromePath, DOUYIN_PROFILE_PORT: String(profilePort),
   })
   const python = () => pythonCommand(paths, config().pythonPath)
-  const ensure = () => {
+  let transitions = Promise.resolve()
+  const enqueue = <T>(run: () => Promise<T>): Promise<T> => { const task = transitions.then(run); transitions = task.then(() => {}, () => {}); return task }
+  const ensure = () => enqueue(async () => {
     if (disposed) throw new Error('抖音运行环境已卸载')
     const command = python(), environment = env()
     const nextKey = JSON.stringify([command, environment.DOUYIN_HEADLESS, environment.DOUYIN_OPEN_LOGIN, environment.DOUYIN_CDP_URL, environment.DOUYIN_CHROME_PATH, statSync(runtime.script).mtimeMs])
     if (!client || key !== nextKey) {
-      client?.stop(); key = nextKey
+      await client?.stop()
+      if (disposed) throw new Error('抖音运行环境已卸载')
+      key = nextKey
       client = new McpClient({ command: command.command, args: [...command.args, runtime.script], cwd: paths.root, env: environment, log, identity: resources.identity })
     }
     return client
-  }
-  const stop = () => { client?.stop(); client = null; key = '' }
-  const restart = async () => { stop(); await ensure().start() }
+  })
+  const stop = () => enqueue(async () => { await client?.stop(); client = null; key = '' })
+  const restart = async () => { await stop(); await (await ensure()).start() }
   return { env, python, profilePort, script: runtime.script, resources,
-    invoke: (name: string, args: Record<string, unknown> = {}, options?: { timeoutMs?: number }) => ensure().call(name, args, options),
+    invoke: (name: string, args: Record<string, unknown> = {}, options?: { timeoutMs?: number }) => { if (disposed) throw new Error('抖音运行环境已卸载'); return ensure().then((peer) => peer.call(name, args, { ...options, signal: name === 'douyin_dm_events' && args.stop === true ? undefined : currentExecution().signal })) },
     restart, stop, running: () => !!client?.running,
-    dispose: () => { disposed = true; stop() },
+    dispose: async () => { disposed = true; await stop() },
   }
 }
 export type PythonRuntime = ReturnType<typeof createPythonRuntime>

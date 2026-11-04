@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'n
 import { join, resolve } from 'node:path'
 import type { DouyinConfig } from '../config.js'
 import { object } from './ledger-model.js'
+import { currentExecution } from './execution-context.js'
 import { within } from './paths.js'
 
 export interface VideoFile { path: string; name: string; size: number; mtime: number; mtimeText: string }
@@ -35,7 +36,9 @@ export function createComfy(deps: ComfyDependencies) {
     return { dir: root, exists: !!root && existsSync(root), total: found.length, items: found.slice(0, Math.max(1, Math.min(Number(limit) || config.comfyListLimit || 20, 200))) }
   }
   const json = async (path: string, init: RequestInit = {}, timeoutMs = 15000): Promise<unknown> => {
-    const response = await request(base() + path, { ...init, signal: AbortSignal.timeout(timeoutMs) })
+    const inherited = currentExecution().signal
+    inherited?.throwIfAborted()
+    const response = await request(base() + path, { ...init, signal: inherited ? AbortSignal.any([inherited, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs) })
     const text = await response.text()
     if (!response.ok) throw new Error(`ComfyUI ${path} → HTTP ${response.status} ${text.slice(0, 200)}`)
     try { return text ? JSON.parse(text) : null } catch { return text }
@@ -52,9 +55,11 @@ export function createComfy(deps: ComfyDependencies) {
     deps.log?.(`ComfyUI 已排队（prompt_id=${id}），等出片`)
     const deadline = now() + Math.max(30, config.comfyWaitSeconds || 900) * 1000
     while (now() < deadline) {
+      currentExecution().signal?.throwIfAborted()
       await sleep(2000)
+      currentExecution().signal?.throwIfAborted()
       let history: unknown
-      try { history = await json('/history/' + encodeURIComponent(id)) } catch { continue }
+      try { history = await json('/history/' + encodeURIComponent(id)) } catch { currentExecution().signal?.throwIfAborted(); continue }
       const entry = object(history) ? history[id] : null
       if (!object(entry)) continue
       const status = object(entry.status) ? entry.status : {}

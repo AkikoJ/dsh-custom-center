@@ -50,6 +50,7 @@ export interface RuntimeDependencies {
 export function createDouyinRuntime(deps: RuntimeDependencies = {}) {
   const paths = deps.paths ?? douyinPaths(), now = deps.now ?? (() => new Date())
   let closing = false, disposed: Promise<void> | undefined, started = false
+  const shutdown = new AbortController()
   const operations = new Set<Promise<unknown>>()
   const log = (message: string) => {
     try { mkdirSync(paths.logs, { recursive: true, mode: 0o700 }); appendFileSync(paths.file('duty.log'), now().toISOString() + ' ' + message.slice(-10000) + '\n', { mode: 0o600 }); deps.log?.(message) } catch { /* Diagnostics do not decide action outcomes. */ }
@@ -62,7 +63,7 @@ export function createDouyinRuntime(deps: RuntimeDependencies = {}) {
     const stoppingListener = name === 'douyin_dm_events' && args.stop === true
     if (closing && !stoppingListener) return Promise.reject(new Error('抖音功能正在卸载'))
     if (!stoppingListener) currentExecution().signal?.throwIfAborted()
-    return invoke(name, args, options)
+    return stoppingListener ? invoke(name, args, options) : withExecution({ ...currentExecution(), signal: shutdown.signal }, () => invoke(name, args, options))
   }
   const executor = createActionExecutor({ config, ledger, history, invoke: guardedInvoke, ownedVideoIds: async () => (await replies.owned()).ids })
   const call: Invoke = (name, args, options) => {
@@ -88,17 +89,17 @@ export function createDouyinRuntime(deps: RuntimeDependencies = {}) {
   const status = createStatus({ config, ledger, state, reports, runtime: python, setup, browser, call, replyState: () => ({ ...dm.status(), watcher: watcher.state, scheduler: scheduler.status() }), dshCli: () => { const cli = resolveDsh(config().dshBin); return 'missing' in cli ? cli.hint : cli.command } })
   const track = <T>(action: () => Promise<T>): Promise<T> => {
     if (closing) return Promise.reject(new Error('抖音功能已停止接收请求'))
-    const task = Promise.resolve().then(action); operations.add(task)
+    const task = Promise.resolve().then(() => withExecution({ ...currentExecution(), signal: shutdown.signal }, action)); operations.add(task)
     const clear = () => { operations.delete(task) }; void task.then(clear, clear)
     return task
   }
   const start = () => { if (!started && !closing) { started = true; scheduler.start(); watcher.start() } }
   const dispose = () => disposed ??= (async () => {
-    closing = true; text.dispose()
+    closing = true; shutdown.abort(new Error('抖音功能正在卸载')); text.dispose()
     // Stop producers before draining requests; callbacks still have their state stores.
     await Promise.allSettled([scheduler.dispose(), watcher.dispose(), local.dispose(), headless.dispose(), setup.dispose()])
     await Promise.allSettled([...operations])
-    python.dispose()
+    await python.dispose()
   })()
   return { paths, config, configuration, ledger, state, python, executor, call, memory, reports, content, browser, setup, comfy, publication, images, replies, headless, dm, social, local, cleanup, stickers, scheduler, watcher, status, log, track, busy, start, dispose }
 }

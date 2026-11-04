@@ -13,7 +13,7 @@ export const Config: z<Config> = z.object({ tools: z.array(z.string()).required(
 
 /** This plugin belongs only to a one-shot child process, never the GUI host. */
 export function apply(ctx: Context, config: Config): void {
-  if (!config.tools.length || config.tools.some((tool) => !/^(?:douyin_[a-z_]+|memory_(?:write|recent|context))$/.test(tool))) throw new Error('后台工具白名单无效')
+  if (!config.tools.length || config.tools.some((tool) => !/^(?:douyin_[a-z_]+|memory_(?:write|recent|context))$(?![\s\S])/.test(tool))) throw new Error('后台工具白名单无效')
   const allowed = new Set(config.tools.map((tool) => 'mcp__douyin-duty__' + tool))
   // Scoped registrations bypass restrict(); the process-wide monotonic guard covers them too.
   ctx.tools.guard((execution) => allowed.has(execution.name) ? undefined : '后台会话只允许调用本轮抖音 MCP 工具')

@@ -44,6 +44,7 @@ describe('local evidence and action round', () => {
     const data = f.ledger.read(); data.picks[`${f.ledger.day()}:100001`] = { day: f.ledger.day(), aweme_id: '100001' }; f.ledger.write(data)
     const ranked = rankVideos([...f.videos, f.videos[0]!, { aweme_id: '999999', title: 'long', duration: 4000000 }, { aweme_id: '888888', title: '' }], f.ledger, f.config)
     expect(ranked.map((video) => video.aweme_id)).toEqual(['100000', '100002', '100003', '100004'])
+    expect(rankVideos([{ aweme_id: '999998', title: 'invalid', duration: Infinity }, { aweme_id: '999997', title: 'invalid', digg: 'oops' }], f.ledger, f.config)).toEqual([])
     expect(ranked[0]!.score).toBeCloseTo(Math.log10(110) * 10 + 3)
   })
   it('permits a manual bounded round at perDay zero, records picks without actions and does not pick twice', async () => {

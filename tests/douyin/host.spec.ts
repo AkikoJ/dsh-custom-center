@@ -40,6 +40,16 @@ async function http(runtime: DouyinRuntime, path: string, method = 'GET', data?:
 const execution = (signal = new AbortController().signal) => ({ signal }) as ToolRunContext
 
 describe('Douyin host contracts and lifecycle', () => {
+  it('propagates disposal through nested execution contexts before draining platform calls', async () => {
+    const { runtime, invoke } = fixture()
+    let signal: AbortSignal | undefined
+    invoke.mockImplementationOnce(() => new Promise((resolve) => { signal = currentExecution().signal; signal!.addEventListener('abort', () => resolve({ ok: false, verified: false, status: 'cancelled' })) }))
+    const feed = createToolDefinitions(runtime).find((tool) => tool.name === 'dy_feed')!
+    const task = feed.execute({}, execution())
+    await vi.waitFor(() => expect(signal).toBeDefined())
+    await runtime.dispose(); await task
+    expect(signal!.aborted).toBe(true)
+  })
   it('matches all 35 tool names and parameter keys without starting Python', async () => {
     const { runtime, invoke } = fixture(), definitions = createToolDefinitions(runtime)
     expect(definitions.map((d) => d.name)).toEqual(baseline.tools.map((d) => d.name))

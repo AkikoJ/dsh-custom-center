@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import type { DouyinPaths } from './paths.js'
 import type { PythonRuntime, PythonCommand } from './python-runtime.js'
 import { venvPython } from './python-runtime.js'
+import { currentExecution } from './execution-context.js'
 import { runCommand } from './process.js'
 import { errorMessage, readJson, writeJson } from './storage.js'
 
@@ -13,9 +14,9 @@ export function createSetup(paths: DouyinPaths, runtime: PythonRuntime, persist:
   const state = () => readJson<SetupState>(stateFile, { status: 'idle' })
   const save = (patch: Partial<SetupState>) => writeJson(stateFile, { ...state(), ...patch })
   if (state().status === 'running') save({ status: 'interrupted', error: '上次安装进程已结束，请重试' })
-  const dependencies = async (python: PythonCommand = runtime.python()) => {
+  const dependencies = async (python: PythonCommand = runtime.python(), signal = currentExecution().signal) => {
     try {
-      const result = await command(python.command, [...python.args, '-c', 'import sys,mcp,playwright,numpy,faster_whisper; print(sys.executable)'], { cwd: paths.root, env: runtime.env(), timeoutMs: 20000 })
+      const result = await command(python.command, [...python.args, '-c', 'import sys,mcp,playwright,numpy,faster_whisper; print(sys.executable)'], { cwd: paths.root, env: runtime.env(), timeoutMs: 20000, signal })
       return { ok: true, detail: result.output.trim() }
     } catch (error) { return { ok: false, error: errorMessage(error) } }
   }
@@ -33,11 +34,11 @@ export function createSetup(paths: DouyinPaths, runtime: PythonRuntime, persist:
         save({ phase: 'dependencies' })
         await command(executable, ['-m', 'pip', 'install', '-r', runtime.resources.requirements], options)
         save({ phase: 'verify' })
-        const probe = await dependencies({ command: executable, args: [], via: 'venv' })
+        const probe = await dependencies({ command: executable, args: [], via: 'venv' }, abort.signal)
         if (!probe.ok) throw new Error(probe.error)
         if (abort.signal.aborted) throw new Error('安装已取消')
         await persist({ pythonPath: executable })
-        runtime.stop()
+        await runtime.stop()
         save({ status: 'completed', phase: 'ready', finishedAt: new Date().toISOString() })
       } catch (error) {
         save({ status: abort.signal.aborted ? 'interrupted' : 'failed', error: errorMessage(error) })

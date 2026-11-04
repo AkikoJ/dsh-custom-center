@@ -12,4 +12,7 @@ export interface ExecutionContext {
 }
 const execution = new AsyncLocalStorage<ExecutionContext>()
 export function currentExecution(): ExecutionContext { return execution.getStore() ?? { origin: 'tool' } }
-export function withExecution<T>(context: ExecutionContext, task: () => T): T { return execution.run(context, task) }
+export function withExecution<T>(context: ExecutionContext, task: () => T): T {
+  const parent = execution.getStore()?.signal, signal = parent && context.signal && parent !== context.signal ? AbortSignal.any([parent, context.signal]) : context.signal ?? parent
+  return execution.run({ ...context, signal }, task)
+}
