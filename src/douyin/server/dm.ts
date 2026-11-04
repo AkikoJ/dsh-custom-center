@@ -41,7 +41,7 @@ export function createDm(deps: DmDependencies) {
   const sticker = (args: Record<string, unknown>) => {
     const nickname = String(args.nickname || '').trim()
     if (!nickname) return Promise.resolve({ ok: false, error: 'nickname 必填' })
-    return call('douyin_chat_sticker', { nickname, keyword: String(args.keyword || '大肥鱼'), pick: Math.max(0, Math.floor(Number(args.pick) || 0)), flip: Math.max(0, Math.min(Math.floor(Number(args.flip) || 0), 6)) }, { timeoutMs: 240000 })
+    return call('douyin_chat_sticker', { nickname, keyword: String(args.keyword ?? '大肥鱼'), pick: Math.max(0, Math.floor(Number(args.pick) || 0)), flip: Math.max(0, Math.min(Math.floor(Number(args.flip) || 0), 6)) }, { timeoutMs: 240000 })
   }
   const status = () => {
     const cfg = deps.config(), recent = Object.entries(ledger.read().dm).slice(-12).map(([peer, row]) => ({ peer, name: row.name || '', day: row.day || '', count: row.count || 0, lastReply: row.lastReply || '', lastMessageId: row.lastMessageId || '' }))

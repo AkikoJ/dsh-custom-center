@@ -16,6 +16,10 @@
       "types": "./lib/types/client/index.d.ts",
       "default": "./lib/client.js"
     },
+    "./douyin": {
+      "types": "./lib/types/douyin/index.d.ts",
+      "default": "./lib/douyin.js"
+    },
     "./icon": "./icon.svg",
     "./src/*": "./src/*",
     "./package.json": "./package.json"

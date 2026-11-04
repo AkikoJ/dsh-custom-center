@@ -9,7 +9,7 @@ import type { Social } from './social.js'
 import { resultItems, resultObject, videoId } from './content.js'
 import { confirmed, withActionLock } from './actions.js'
 import { allowInitiate } from './action-policy.js'
-import { withExecution } from './execution-context.js'
+import { currentExecution, withExecution } from './execution-context.js'
 import { mentionText, plainText } from './social.js'
 import { errorMessage } from './storage.js'
 
@@ -33,7 +33,7 @@ export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger;
     if (disposed) return { ok: false, error: '本机轮次已卸载' }
     if (busy) return { ok: false, error: '本机轮次仍在运行' }
     busy = true
-    try { return await withActionLock(ledger.paths.root, () => withExecution({ origin: 'timer' }, async () => {
+    try { return await withActionLock(ledger.paths.root, () => withExecution({ origin: 'timer', signal: currentExecution().signal }, async () => {
       const when = ledger.now(), day = ledger.day(), cfg = deps.config(), report = reports.file(when)
       const left = cfg.perDay > 0 ? Math.max(0, cfg.perDay - ledger.picked()) : options.manual ? Math.max(1, cfg.pickPerRound) : 0
       const actions: Record<string, unknown>[] = [], notes: string[] = []
@@ -45,7 +45,7 @@ export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger;
         if (word) { items = resultItems(await content.hotVideos({ word, num: 10 })); notes.push('推荐流为空，使用热榜：' + word) }
       } catch (error) { notes.push('热榜：' + errorMessage(error)) }
       const videos = rankVideos(items, ledger, cfg).slice(0, Math.min(5, left, Math.max(1, cfg.pickPerRound)))
-      const sameDay = () => !disposed && ledger.day() === day
+      const sameDay = () => !disposed && !currentExecution().signal?.aborted && ledger.day() === day
       let picked = 0, comments = 0, commentFailures = 0
       for (const video of videos) {
         if (!sameDay()) { notes.push('已跨日，结束本轮'); break }

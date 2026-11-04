@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from 'node:async_hooks'
 export interface ExecutionContext {
   origin: 'tool' | 'http' | 'timer' | 'headless'
   runId?: string
+  signal?: AbortSignal
   force?: boolean
   inbound?: { contact: string; messageId: string; peerId?: string }
   replyTarget?: { user: string; text: string }

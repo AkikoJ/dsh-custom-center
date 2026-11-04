@@ -5,6 +5,7 @@ import type { DouyinConfig } from '../config.js'
 import type { ImageAccess } from './image-access.js'
 import type { GenerateText } from './replies.js'
 import { untilAbort } from './image-fetch.js'
+import { currentExecution } from './execution-context.js'
 
 export function createTextModel(deps: {
   config(): DouyinConfig
@@ -17,7 +18,8 @@ export function createTextModel(deps: {
   const log = (text: string) => { try { deps.log?.(text) } catch { /* Generation does not depend on diagnostic output. */ } }
   const generate: GenerateText = async (system, user, options = {}) => {
     if (disposed) return ''
-    const controller = new AbortController(), deadline = AbortSignal.timeout(deps.timeoutMs ?? 30000), signal = AbortSignal.any([controller.signal, deadline])
+    const inherited = currentExecution().signal
+    const controller = new AbortController(), deadline = AbortSignal.timeout(deps.timeoutMs ?? 30000), signal = AbortSignal.any([controller.signal, deadline, ...(inherited ? [inherited] : [])])
     pending.add(controller)
     try {
       const services = deps.services(), llm = services.llm

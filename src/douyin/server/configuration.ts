@@ -10,6 +10,7 @@ interface SettingsRow {
 }
 export interface ConfigurationDependencies {
   file: string
+  initial?: unknown
   settings?: {
     describe(): SettingsRow[]
     update(ns: string, patch: object, revision?: number): Promise<void>
@@ -41,7 +42,7 @@ export function createConfiguration(deps: ConfigurationDependencies) {
   }
   const localOnly = () => new Set((raw()._localOnly ?? []).filter((key) => typeof key === 'string'))
   const load = (): DouyinConfig => {
-    const saved = normalizeConfig(raw())
+    const saved = normalizeConfig(raw(), normalizeConfig(deps.initial))
     const host = row()
     if (!host) return { ...saved, ...clampPatch(saved) }
     const output: Record<string, unknown> = normalizeConfig(host.value)
@@ -61,8 +62,9 @@ export function createConfiguration(deps: ConfigurationDependencies) {
   }
   const saveLocal = (patch: Partial<DouyinConfig>) => {
     Object.assign(current, normalizeConfig(patch, current))
-    for (const key of Object.keys(patch)) touched.add(key)
-    writeJson(deps.file, { ...current, _set: [...touched], _localOnly: [...localOnly()] })
+    const local = localOnly()
+    for (const key of Object.keys(patch)) { touched.add(key); local.add(key) }
+    writeJson(deps.file, { ...current, _set: [...touched], _localOnly: [...local] })
   }
   const saveHost = async (patch: Partial<DouyinConfig>) => {
     if (!deps.settings) return { ok: false, error: '宿主没有 settings.update' }
@@ -70,6 +72,7 @@ export function createConfiguration(deps: ConfigurationDependencies) {
       const host = row(true)
       if (!host?.ns) return { ok: false, error: '宿主里没有可写的设置表单（值只落在 config.json）' }
       await deps.settings.update(host.ns, patch, host.revision)
+      cached = undefined
       return { ok: true, ns: host.ns }
     } catch (error) {
       const message = errorMessage(error)
@@ -78,6 +81,7 @@ export function createConfiguration(deps: ConfigurationDependencies) {
           const latest = row(true)
           if (latest?.ns) {
             await deps.settings.update(latest.ns, patch, latest.revision)
+            cached = undefined
             return { ok: true, ns: latest.ns, retried: true }
           }
         } catch (retry) { log(`写 DSH 设置重试仍失败：${errorMessage(retry)}`) }
@@ -86,7 +90,8 @@ export function createConfiguration(deps: ConfigurationDependencies) {
       return { ok: false, error: message }
     }
   }
-  const persist = async (input: unknown) => {
+  let pending = Promise.resolve<unknown>(undefined)
+  const save = async (input: unknown) => {
     const clean = clampPatch(input)
     saveLocal(clean)
     const host = await saveHost(clean)
@@ -94,6 +99,11 @@ export function createConfiguration(deps: ConfigurationDependencies) {
     for (const key of Object.keys(clean)) { if (host.ok) local.delete(key); else local.add(key) }
     writeJson(deps.file, { ...raw(), _localOnly: [...local] })
     return { clean, host }
+  }
+  const persist = (input: unknown) => {
+    const task = pending.then(() => save(input))
+    pending = task.catch(() => undefined)
+    return task
   }
   return { current, refresh, persist }
 }

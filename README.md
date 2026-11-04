@@ -67,6 +67,12 @@ Local feed rounds now persist selections before interacting, enforce quotas and 
 require transcript evidence, and stop at date changes or disposal. Verified cards precede
 notes and stickers. Window inspections, streaks, sticker labels and status checks are
 separate modules with bounded retries and awaited shutdown.
+The standalone `dsh-custom-center/douyin` host entry now assembles all 35 tools and
+32 exact HTTP paths under one lifecycle. Registration failures roll back, shutdown
+waits for active requests, and HTTP assets require authenticated loopback requests
+with the browser marker. Output selections carry host-issued file tokens; stale
+selections require a refresh. Upstream update checks are informational and preserve
+the pinned source. The bundle remains unmounted until the browser migration is complete.
 
 ## Features
 

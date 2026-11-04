@@ -68,6 +68,34 @@ describe('抖音路径与配置', () => {
     expect(JSON.parse(readFileSync(file, 'utf8'))._localOnly).not.toContain('autoLike')
   })
 
+  it('加载器初值作为回退，本地文件与宿主显式值依次优先', () => {
+    const file = join(home(), 'config.json')
+    writeFileSync(file, JSON.stringify({ perDay: 7 }))
+    const config = createConfiguration({ file, initial: { perDay: 9, autoLike: true }, settings: {
+      describe: () => [{ ns: 'douyin-life', value: DEFAULTS, user: { perDay: 11 } }], async update() {},
+    } })
+    expect(config.refresh()).toMatchObject({ perDay: 11, autoLike: true })
+  })
+
+  it('串行持久化，保存中本地优先，完成后重取宿主缓存', async () => {
+    const file = join(home(), 'config.json'), user = { perDay: 3 }
+    const releases: (() => void)[] = [], calls: number[] = []
+    const config = createConfiguration({ file, settings: {
+      describe: () => [{ ns: 'douyin-life', value: DEFAULTS, user: { ...user } }],
+      async update(_ns, patch) { const value = (patch as { perDay: number }).perDay; calls.push(value); await new Promise<void>((done) => releases.push(done)); user.perDay = value },
+    } })
+    expect(config.refresh().perDay).toBe(3)
+    const first = config.persist({ perDay: 8 }), second = config.persist({ perDay: 9 })
+    await Promise.resolve(); expect(calls).toEqual([8]); expect(config.refresh().perDay).toBe(8)
+    releases.shift()!(); await first
+    await Promise.resolve(); expect(calls).toEqual([8, 9]); expect(config.refresh().perDay).toBe(9)
+    releases.shift()!(); await second
+    expect(config.refresh().perDay).toBe(9)
+    await expect(config.persist({ unknown: true })).rejects.toThrow()
+    const third = config.persist({ perDay: 10 }); await Promise.resolve(); releases.shift()!(); await third
+    expect(config.refresh().perDay).toBe(10)
+  })
+
   it('仅读取同名设置行，配置对象身份保持稳定', () => {
     const directory = home()
     mkdirSync(join(directory, 'config'))

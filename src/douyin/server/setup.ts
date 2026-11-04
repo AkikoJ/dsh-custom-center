@@ -6,7 +6,7 @@ import { venvPython } from './python-runtime.js'
 import { runCommand } from './process.js'
 import { errorMessage, readJson, writeJson } from './storage.js'
 
-interface SetupState { status: string; phase?: string; error?: string | null; startedAt?: string; finishedAt?: string }
+export interface SetupState { status: string; phase?: string; error?: string | null; startedAt?: string; finishedAt?: string }
 export function createSetup(paths: DouyinPaths, runtime: PythonRuntime, persist: (patch: Record<string, unknown>) => Promise<unknown>, command = runCommand) {
   let task: Promise<void> | null = null, controller: AbortController | null = null
   const stateFile = paths.file('setup-state.json'), log = paths.file('setup.log')
