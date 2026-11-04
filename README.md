@@ -16,19 +16,23 @@ navigation (alongside General, Models, Plugins, ...).
 
 ## Douyin migration
 
+The seven Douyin settings tabs share a compact layout with underline navigation,
+small desktop controls and an inline statistics strip. Save changes from the page
+header; expand **More sign-in and verification options** for QR/SMS login and
+**Connection and runtime details** for connection and version diagnostics.
+
 The migration is pinned to dsh-douyin-life 0.2.9, commit
-`aaf9f9a862afafd45a15acf32789da97688de695`. The bundle preserves the 35 tools,
-74 public config fields, 32 HTTP paths, seven settings tabs and conversation video view.
-F01–F09, U01–U02 and the identified seven-tab content and interaction omissions
-are implemented: optional shared character/timeline/cleanup with local fallback,
-confirmed DM memory writeback, saved run modes, combined likes, bounded QR polling,
-readable historical reports, observation updates and content-based share notes/stickers.
-The [parity acceptance record](docs/douyin-parity-repair.md) distinguishes passing
-offline checks from pending live GUI, shared-service and account acceptance.
-This does not claim visual or real-account equivalence.
-Account actions remain subject to their switches, quotas and explicit authorization.
-The current repair passes typecheck, all 353 tests in 43 files, build, package checks
-and both coexistence load orders. No runtime profile was changed for this repair.
+`aaf9f9a862afafd45a15acf32789da97688de695`. The bundle provides 34 tools,
+73 public config fields, 31 HTTP paths, seven settings tabs and conversation video view.
+Memory features have been removed at the user's request. The Persona tab edits a local,
+manual persona with backups; messages, comments and headless tasks use that persona
+and the role prompt. There are no shared-memory RPCs, memory database access,
+monthly observations, memory tools or automatic persona updates. Existing historical
+files are left untouched. Quotas, send receipts, cursors and permanent reply deduplication
+remain operational records and are not supplied as conversational memory.
+The [parity acceptance record](docs/douyin-parity-repair.md) documents this deliberate
+scope change. Live GUI and account acceptance remain pending.
+Account actions remain subject to switches, quotas and explicit authorization.
 See the [migration record](docs/douyin-migration.md) for scope, mapping, offline
 acceptance and the cutover/rollback checklist. After building, run
 `pnpm douyin:check-package` to pack and extract the release into a temporary directory,
@@ -37,7 +41,7 @@ It uses local substitutes and does not install a runtime profile.
 
 The old plugin can remain installed and run alongside Custom Center. The center uses
 Loader/settings ID `custom-center-douyin`, view `custom-center-douyin-watched`,
-35 `cc_dy_*` tools and `/api/custom-center/douyin`; its navigation label is
+34 `cc_dy_*` tools and `/api/custom-center/douyin`; its navigation label is
 **Douyin (Custom Center)**. Chrome uses a private profile and defaults to port `9223`.
 The old plugin keeps its own names. See the [coexistence guide](docs/douyin-coexistence.md)
 for upgrade details, imported CDP settings and independent automation limits.
@@ -66,7 +70,7 @@ The shared account executor now serializes writes across processes, reserves unc
 sends, records only verified receipts, and preserves reply deduplication across days.
 Its offline tests use temporary state and backend substitutes; runtime profile installation
 and real-account acceptance remain separate deployment steps.
-Browser login orchestration, ComfyUI workflow outputs, monthly memory, reports and
+Browser login orchestration, ComfyUI workflow outputs, manual persona, reports and
 owned-resource cleanup are now separate modules with offline lifecycle and path checks.
 Interpreter and MCP lifecycle, cancellable dependency setup, content reads, publication
 preflight and short-reply rounds are also separated. Direct-message polling now has
@@ -89,12 +93,12 @@ Local feed rounds now persist selections before interacting, enforce quotas and 
 require transcript evidence, and stop at date changes or disposal. Verified cards precede
 notes and stickers. Window inspections, streaks, sticker labels and status checks are
 separate modules with bounded retries and awaited shutdown.
-The standalone `dsh-custom-center/douyin` host entry now assembles all 35 tools and
-32 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
+The standalone `dsh-custom-center/douyin` host entry now assembles 34 tools and
+31 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
 waits for active requests, and HTTP assets require authenticated loopback requests
 with the browser marker. Output selections carry host-issued file tokens; stale
 selections require a refresh. Upstream update checks are informational and preserve
-the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 74 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. The linked bundle is installed but currently disabled in this profile. Live GUI and real-account acceptance remain outstanding.
+the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 73 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. The linked bundle is installed and enabled in this profile. Live GUI and real-account acceptance remain outstanding.
 
 ## Features
 

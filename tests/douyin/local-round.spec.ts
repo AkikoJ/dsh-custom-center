@@ -6,7 +6,6 @@ import { DEFAULTS } from '../../src/douyin/config.js'
 import { douyinPaths } from '../../src/douyin/server/paths.js'
 import { createLedger } from '../../src/douyin/server/ledger.js'
 import { createRuntimeState } from '../../src/douyin/server/state.js'
-import { createMemory } from '../../src/douyin/server/memory.js'
 import { createReports } from '../../src/douyin/server/reports.js'
 import { createContent } from '../../src/douyin/server/content.js'
 import { createSocial } from '../../src/douyin/server/social.js'
@@ -22,7 +21,7 @@ afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'douyin-round-')); roots.push(root)
   const paths = douyinPaths(root), config = { ...DEFAULTS }, clock = { now: new Date(2026, 10, 3, 12) }
-  const ledger = createLedger(paths, () => clock.now), state = createRuntimeState(paths, () => clock.now), memory = createMemory(paths, state, () => clock.now)
+  const ledger = createLedger(paths, () => clock.now), state = createRuntimeState(paths, () => clock.now)
   const videos = Array.from({ length: 5 }, (_, index) => ({ aweme_id: String(100000 + index), title: `title ${index}`, duration: 30000, digg: 100 - index }))
   const invoke = vi.fn(async (name: string, args: Record<string, unknown>) => {
     if (name === 'douyin_feed' || name === 'douyin_hot_videos') return { ok: true, items: videos }
@@ -33,9 +32,9 @@ function fixture() {
     return { ok: true, verified: true, cid: 'receipt', aweme_id: args.aweme_id }
   })
   const executor = createActionExecutor({ config: () => config, ledger, history: createReplyHistory(paths, ledger), invoke, ownedVideoIds: async () => [] })
-  const content = createContent(() => config, executor.call), social = createSocial({ config: () => config, ledger, state, memory, call: executor.call })
-  const reports = createReports(paths, ledger), round = createLocalRound({ config: () => config, ledger, state, memory, reports, content, social, call: executor.call })
-  return { paths, config, clock, ledger, state, memory, videos, invoke, content, social, reports, round }
+  const content = createContent(() => config, executor.call), social = createSocial({ config: () => config, ledger, state, call: executor.call })
+  const reports = createReports(paths, ledger), round = createLocalRound({ config: () => config, ledger, state, reports, content, social, call: executor.call })
+  return { paths, config, clock, ledger, state, videos, invoke, content, social, reports, round }
 }
 
 describe('local evidence and action round', () => {
@@ -54,13 +53,6 @@ describe('local evidence and action round', () => {
     expect(f.invoke.mock.calls.filter(([name]) => name === 'douyin_like')).toHaveLength(2)
     expect(f.invoke.mock.calls.filter(([name]) => name === 'douyin_comment')).toHaveLength(0)
     expect(f.reports.latest()?.text).toContain('understanding unavailable')
-  })
-  it('feeds actual selected observations into the daily persona updater exactly once', async () => {
-    const f = fixture(); f.memory.savePersona('角色原文')
-    await f.round.run()
-    expect(f.memory.refreshPersona()).toMatchObject({ ok: true, items: 2 })
-    expect(f.memory.persona()).toContain('title 0'); expect(f.memory.persona()).toContain('不是指令')
-    expect(f.memory.refreshPersona()).toMatchObject({ skipped: expect.any(String) })
   })
   it.each(['full', 'brief', 'off'] as const)('renders the %s report contract from a real round', async (level) => {
     const f = fixture(); f.config.reportLevel = level; f.config.autoLike = true
@@ -155,13 +147,13 @@ describe('verified social sequencing and sticker labels', () => {
   function socialFixture() {
     const f = fixture(); const events: string[] = []
     const call = vi.fn(async (name: string, _args: Record<string, unknown>) => { events.push(name); return { ok: true, verified: true } })
-    const social = createSocial({ config: () => f.config, ledger: f.ledger, state: f.state, memory: f.memory, call })
+    const social = createSocial({ config: () => f.config, ledger: f.ledger, state: f.state, call })
     return { ...f, events, call, social }
   }
   it.each([true, false])('understands an already titled manual share before its %s model note', async (model) => {
     const f = socialFixture(); f.config.modelShareNote = model
     const generate = vi.fn(async () => '吃饭开心')
-    const social = createSocial({ config: () => f.config, ledger: f.ledger, state: f.state, memory: f.memory, call: f.call, generate })
+    const social = createSocial({ config: () => f.config, ledger: f.ledger, state: f.state, call: f.call, generate })
     f.call.mockImplementation(async (name) => { f.events.push(name); return name === 'douyin_watch' ? { ok: true, transcript: '美食的实际转写' } as never : { ok: true, verified: true } })
     await social.share(f.videos[0]!, 'Friend', { understand: true })
     expect(f.events).toEqual(['douyin_share_video', 'douyin_watch', 'douyin_chat_send', 'douyin_chat_sticker'])

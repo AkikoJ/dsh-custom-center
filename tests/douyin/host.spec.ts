@@ -40,6 +40,17 @@ async function http(runtime: DouyinRuntime, path: string, method = 'GET', data?:
 const execution = (signal = new AbortController().signal) => ({ signal }) as ToolRunContext
 
 describe('Douyin host contracts and lifecycle', () => {
+  it('exposes persona independently and removes memory routes, settings and tools', async () => {
+    const { runtime, invoke } = fixture({ memory: true })
+    const paths = createDouyinRoutes({ runtime, reject: () => undefined }).map((route) => route.path)
+    expect(paths).not.toContain(API_PREFIX + '/memory')
+    expect(createToolDefinitions(runtime).map((tool) => tool.name)).not.toContain('cc_dy_remember')
+    expect(runtime.config()).not.toHaveProperty('memory')
+    expect((await http(runtime, '/persona')).json()).toMatchObject({ ok: true, persona: expect.stringContaining('我是谁') })
+    expect((await http(runtime, '/persona', 'POST', { text: '温和、简短，称呼我小林' })).json()).toMatchObject({ ok: true })
+    expect((await http(runtime, '/persona')).json()).toMatchObject({ persona: '温和、简短，称呼我小林' })
+    expect(invoke).not.toHaveBeenCalled()
+  })
   it.each([true, false])('resolves saved localRound=%s equally through HTTP and tool overrides', async (saved) => {
     const { runtime } = fixture({ localRound: saved })
     const local = vi.spyOn(runtime.local, 'run').mockResolvedValue({ ok: true, picked: 0 } as never)
@@ -67,9 +78,9 @@ describe('Douyin host contracts and lifecycle', () => {
     await runtime.dispose(); await task
     expect(signal!.aborted).toBe(true)
   })
-  it('matches all 35 tool names and parameter keys without starting Python', async () => {
+  it('matches all 34 tool names and parameter keys without starting Python', async () => {
     const { runtime, invoke } = fixture(), definitions = createToolDefinitions(runtime)
-    expect(definitions.map((d) => d.name)).toEqual(baseline.tools.map((d) => `cc_${d.name}`))
+    expect(definitions.map((d) => d.name)).toEqual(baseline.tools.filter((tool) => tool.name !== 'dy_remember').map((d) => `cc_${d.name}`))
     for (const tool of definitions) {
       const original = baseline.tools.find((d) => `cc_${d.name}` === tool.name)!
       expect(Object.keys(tool.parameters.properties ?? {}).sort()).toEqual(Object.keys(original.parameters.properties).sort())
@@ -84,7 +95,7 @@ describe('Douyin host contracts and lifecycle', () => {
     expect(removed).toEqual(['cc_dy_config', 'cc_dy_chrome_open', 'cc_dy_status'])
     removed.length = 0
     const stop = registerTools({ register: (tool) => () => removed.push(tool.name) }, runtime)
-    stop(); stop(); expect(removed).toHaveLength(35); expect(removed[0]).toBe('cc_dy_selfcheck')
+    stop(); stop(); expect(removed).toHaveLength(34); expect(removed[0]).toBe('cc_dy_selfcheck')
   })
   it('derives tool authorization from execution context, strips payload force and adds configured mention', async () => {
     const { runtime, invoke } = fixture({ mentionName: 'owner' }), tools = createToolDefinitions(runtime)
@@ -118,9 +129,9 @@ describe('Douyin host contracts and lifecycle', () => {
 })
 
 describe('Douyin HTTP boundary', () => {
-  it('keeps all 32 exact paths with loopback, authentication and marker fences', async () => {
+  it('keeps all 31 exact paths with loopback, authentication and marker fences', async () => {
     const { runtime, invoke } = fixture()
-    expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual(baseline.routes.map((path) => path.replace('/api/douyin-duty', API_PREFIX)).sort())
+    expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual(baseline.routes.filter((path) => !path.endsWith('/memory')).map((path) => path.replace('/api/douyin-duty', API_PREFIX)).sort())
     for (const [options, reject] of [[{ marker: false }, undefined], [{ remote: '10.0.0.2' }, undefined], [{}, 401]] as const) {
       const out = await http(runtime, '/config', 'GET', undefined, options, reject)
       expect(out.status).toBe(reject || 403)

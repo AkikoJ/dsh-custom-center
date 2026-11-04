@@ -9,7 +9,7 @@ import { createRuntimeState } from '../../src/douyin/server/state.js'
 import { createHeadless, type Headless } from '../../src/douyin/server/headless.js'
 import { headlessTools, overlayText } from '../../src/douyin/server/overlay.js'
 import { findDesktopCli, resolveDsh } from '../../src/douyin/server/cli.js'
-import { createMemory } from '../../src/douyin/server/memory.js'
+import { createPersona } from '../../src/douyin/server/persona.js'
 import { createReports } from '../../src/douyin/server/reports.js'
 import { headlessPrompt } from '../../src/douyin/server/headless-prompt.js'
 import { currentExecution } from '../../src/douyin/server/execution-context.js'
@@ -71,13 +71,13 @@ describe('headless overlay and prompt', () => {
     expect(text).toContain('mode: native')
     expect(text).toContain('douyin-headless-guard.js')
   })
-  it('assembles the deployed charter with current quotas, memory and report settings', () => {
-    const root = temp(), paths = douyinPaths(root), ledger = createLedger(paths), state = createRuntimeState(paths), memory = createMemory(paths, state)
-    put(paths.file('duty.md'), '<家目录> dy_feed cc_dy_feed'); memory.savePersona('手写人设'); memory.append('读过的视频素材')
-    const cfg = { ...DEFAULTS, perDay: 3, pickPerRound: 2, memory: true, reportLevel: 'off' }
-    const text = headlessPrompt({ config: cfg, paths, ledger, memory, reports: createReports(paths, ledger) })
+  it('assembles the deployed charter with current quotas, persona and report settings', () => {
+    const root = temp(), paths = douyinPaths(root), ledger = createLedger(paths), state = createRuntimeState(paths), persona = createPersona(paths)
+    put(paths.file('duty.md'), '<家目录> dy_feed cc_dy_feed'); persona.save('手写人设')
+    const cfg = { ...DEFAULTS, perDay: 3, pickPerRound: 2, reportLevel: 'off' }
+    const text = headlessPrompt({ config: cfg, paths, ledger, persona, reports: createReports(paths, ledger) })
     expect(text).toContain(root + ' douyin_feed douyin_feed'); expect(text).toContain('本轮最多再挑 2 条')
-    expect(text).toContain('手写人设'); expect(text).toContain('读过的视频素材'); expect(text).toContain('不要写日报文件')
+    expect(text).toContain('手写人设'); expect(text).not.toContain('最近记忆'); expect(text).toContain('不要写日报文件')
   })
 })
 

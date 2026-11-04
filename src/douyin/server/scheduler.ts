@@ -21,7 +21,6 @@ interface SchedulerDependencies {
   dm(): Promise<unknown>
   reply(): Promise<unknown>
   clean(): Promise<unknown>
-  persona(): unknown
   busy(): boolean
   random?: () => number
   log?(message: string): void
@@ -51,7 +50,7 @@ export function createScheduler(deps: SchedulerDependencies) {
   })
   const inspection = async () => {
     const steps: [string, () => unknown][] = [
-      ['清理', deps.clean], ['人设观察更新', deps.persona], ['谷时轮次', windowTick], ['续火花', deps.streak], ['私信巡检', deps.dm],
+      ['清理', deps.clean], ['谷时轮次', windowTick], ['续火花', deps.streak], ['私信巡检', deps.dm],
       ['评论巡检', async () => {
         const config = deps.config(), now = ledger.now()
         if (!config.autoReply || !(config.replyAllDay || config.noon && inWindow(now, WINDOWS.noon) || config.night && inWindow(now, WINDOWS.night))) return

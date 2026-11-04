@@ -1,6 +1,6 @@
 import z from '@deepseek-ai/schemastery'
 
-/** Public schema frozen at upstream 0.2.9. */
+/** Public settings based on upstream 0.2.9, excluding removed memory features. */
 export const Config = z.object({
   perDay: z.natural().default(5).extra('volatile', true),
   peakValley: z.boolean().default(false).extra('volatile', true),
@@ -20,7 +20,6 @@ export const Config = z.object({
   workspace: z.string().default('').extra('volatile', true),
   reportLevel: z.string().default('full').extra('volatile', true),
   personaPrompt: z.string().default('').extra('volatile', true),
-  memory: z.boolean().default(true).extra('volatile', true),
   comfyUrl: z.string().default('').extra('volatile', true),
   comfyOutputDir: z.string().default('').extra('volatile', true),
   comfyWorkflow: z.string().default('').extra('volatile', true),
@@ -85,7 +84,6 @@ export const DEFAULTS = {
     pythonPath: 'python', dshBin: '', headlessProfile: 'headless', overlayMcp: true,
     workspace: '', reportLevel: 'full',
     personaPrompt: '',
-    memory: true,
     autoReply: false, replyPerRun: 3, replyPerDay: 10, replyAllDay: true, replyRandom: true, replyVideoIds: '', replyOneShot: true, myNickname: '', modelShareNote: true, replyOncePerUser: false, replyIntervalMin: 30, skipLive: true, shareToNick: '', streakSticker: '大肥鱼', streakNick: '', streakPerDay: 1, askDoubao: false,
     headlessModel: '',
     shareWithNote: true, shareNote: '', sharePerDay: 10, pickPerRound: 2, watchBeforeAct: true, watchSeconds: 90, watchFrames: 10, skipOverMin: 60, skimOverMin: 5, autoCommentPlain: false, plainCommentPerDay: 10, msgAllowTo: '', dmAutoReply: true, dmAutoIntervalSec: 15, dmReply: false, dmReplyOnlyTo: '', dmReplyPerContact: 1, dmReplyPerDay: 5, dmFastReply: true, dmFastProvider: '', dmFastModel: '', dmFastReasoning: 'off', dmFastVision: true, dmFastVisionModel: 'qwen3-vl-plus', dmFastImageAttach: true, dmAssumeInbound: false, dmDuringHeadless: true, localRound: true,

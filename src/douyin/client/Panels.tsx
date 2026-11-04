@@ -19,7 +19,7 @@ export function Stickers({ dirty = false }: { dirty?: boolean }) {
  <p>{t('收藏表情')} {rows(source.data?.custom).length} · {t('通用表情')} {String(source.data?.emojiCount ?? rows(source.data?.emoji).length)} · {t('已逐张打标签，关键词命中后使用')}</p>{dirty && <p>{t('测试前请保存联系人配置')}</p>}<Feedback error={source.error || action.error} busy={action.busy} />{source.data && !rows(source.data.custom).length && !rows(source.data.emoji).length && <p>{t('暂无记录')}</p>}
  {(['custom', 'emoji'] as const).map((kind) => <section key={kind}><h3>{t(kind === 'custom' ? '收藏表情' : '通用表情')}</h3>{rows(source.data?.[kind]).map((item, index) => <Sticker key={kind + index + JSON.stringify(item.tags)} item={item} file={kind === 'custom' ? 'favorites2.json' : 'favorites.json'} disabled={!!action.busy} save={(data) => action.run('/stickers/tags', data)} />)}</section>)}<Result value={action.result} /></Card>
 }
-export { MemoryPanel as Memory } from './MemoryPanel.js'
+export { PersonaPanel as Persona } from './PersonaPanel.js'
 export function Advanced({ dirty }: { dirty: boolean }) {
  const t = useText(), action = useActions(), logs = useResource('/setup/log')
  useEffect(() => { if (logs.data?.status !== 'running') return; const timer = setInterval(logs.refresh, 2000); return () => clearInterval(timer) }, [logs.data?.status, logs.refresh])

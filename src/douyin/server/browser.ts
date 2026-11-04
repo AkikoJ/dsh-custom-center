@@ -91,7 +91,7 @@ export function createBrowser(deps: BrowserDependencies, state: RuntimeStateStor
     return { ok: true, hint: show ? '浏览器窗口已打开，请在其中完成登录' : '已切回后台无头模式' }
   }
   return { cdpBase, chrome, probe, running, open, markLogin, qr, visible,
-    whoami: () => result('douyin_whoami'), poll: () => result('douyin_login_poll'),
+    whoami: () => result('douyin_check_credential'), poll: () => result('douyin_login_poll'),
     sms: (phone: string) => result('douyin_login_sms', { phone }), submit: (code: string) => result('douyin_login_sms_submit', { code }),
   }
 }

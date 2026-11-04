@@ -34,7 +34,6 @@ export function toolHandlers(runtime: DouyinRuntime) {
     cc_dy_my_posts: r.content.posts,
     cc_dy_my_videos: r.publication.videos,
     cc_dy_reply: r.replies.single,
-    cc_dy_remember: (a) => { const line = String(a.line || '').trim(); if (!line) return { ok: false, error: 'line 不能为空' }; r.memory.append(line.slice(0, 12000)); return { ok: true } },
     cc_dy_feed: r.content.feed,
     cc_dy_hot: r.content.hot,
     cc_dy_hot_videos: r.content.hotVideos,

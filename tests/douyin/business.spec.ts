@@ -11,7 +11,7 @@ import { createPublication } from '../../src/douyin/server/publication.js'
 import { createComfy } from '../../src/douyin/server/comfy.js'
 import { createLedger } from '../../src/douyin/server/ledger.js'
 import { createRuntimeState } from '../../src/douyin/server/state.js'
-import { createMemory } from '../../src/douyin/server/memory.js'
+import { createPersona } from '../../src/douyin/server/persona.js'
 import { createReplyHistory } from '../../src/douyin/server/reply-history.js'
 import { createReplies } from '../../src/douyin/server/replies.js'
 import { createActionExecutor } from '../../src/douyin/server/action-executor.js'
@@ -23,8 +23,8 @@ afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'douyin-business-')); roots.push(root)
   const paths = douyinPaths(root), config = { ...DEFAULTS }, ledger = createLedger(paths)
-  const memory = createMemory(paths, createRuntimeState(paths)), history = createReplyHistory(paths, ledger)
-  return { root, paths, config, ledger, memory, history }
+  const persona = createPersona(paths), history = createReplyHistory(paths, ledger)
+  return { root, paths, config, ledger, persona, history }
 }
 
 describe('Python runtime and environment setup', () => {
@@ -51,6 +51,7 @@ describe('Python runtime and environment setup', () => {
     expect(command.mock.calls[0][1]).toEqual(['-m', 'venv', f.paths.python])
     expect(command.mock.calls[1][1]).toEqual(['-m', 'pip', 'install', '-r', runtime.resources.requirements])
     expect(persist).toHaveBeenCalledWith({ pythonPath: venvPython(f.paths) })
+    expect(command.mock.calls[2][1]).toContain('import sys; from mcp.server.fastmcp import FastMCP; import playwright,numpy,faster_whisper; print(sys.executable)')
     expect(await setup.status()).toMatchObject({ venvReady: true, phase: 'ready' })
     await setup.dispose(); runtime.dispose()
   })
@@ -123,18 +124,17 @@ describe('comment reply orchestration through the shared executor', () => {
       return { ok: false }
     })
     const executor = createActionExecutor({ config: () => f.config, ledger: f.ledger, history: f.history, invoke, ownedVideoIds: async () => ['123456'] })
-    const generate = vi.fn(async (_system: string, _user: string) => 'a reply'), sharedMemory = vi.fn(async () => '共享评论上下文 COMMENT-SHARED'), persist = vi.fn(async () => {})
-    const replies = createReplies({ config: () => f.config, ledger: f.ledger, history: f.history, memory: f.memory, call: executor.call, generate, describe: async () => '', persist, sharedMemory })
-    return { ...f, comments, invoke, executor, generate, sharedMemory, persist, replies }
+    const generate = vi.fn(async (_system: string, _user: string) => 'a reply'), persist = vi.fn(async () => {})
+    const replies = createReplies({ config: () => f.config, ledger: f.ledger, history: f.history, persona: f.persona, call: executor.call, generate, describe: async () => '', persist })
+    return { ...f, comments, invoke, executor, generate, persist, replies }
   }
-  it.each([true, false])('uses shared comment memory when available=%s, otherwise local memory', async (available) => {
-    const f = repliesFixture(); f.memory.append('评论本地上下文 COMMENT-LOCAL')
-    if (!available) f.sharedMemory.mockRejectedValue(new Error('unavailable'))
+  it('uses the saved persona and role prompt without memory calls', async () => {
+    const f = repliesFixture(); f.persona.save('人工人设 COMMENT-PERSONA'); f.config.personaPrompt = '角色提示 ROLE-PROMPT'
     f.comments[0].text = '今天心情很好'
     expect(await f.replies.round({ count: 1 })).toMatchObject({ sent: 1 })
-    const prompt = f.generate.mock.calls[0][0]
-    expect(prompt).toContain(available ? 'COMMENT-SHARED' : 'COMMENT-LOCAL')
-    expect(prompt).not.toContain(available ? 'COMMENT-LOCAL' : 'COMMENT-SHARED')
+    expect(f.generate.mock.calls[0][0]).toContain('COMMENT-PERSONA')
+    expect(f.generate.mock.calls[0][0]).toContain('ROLE-PROMPT')
+    expect(f.invoke.mock.calls.some(([name]) => name.startsWith('memory_'))).toBe(false)
   })
   it('refuses sensitive topics, skips unread images, and preserves permanent reply deduplication', async () => {
     const f = repliesFixture()

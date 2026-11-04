@@ -17,7 +17,7 @@ function fixture() {
   const paths = douyinPaths(root), config = { ...DEFAULTS }, clock = { now: new Date(2026, 10, 3, 12) }
   const ledger = createLedger(paths, () => clock.now), state = createRuntimeState(paths, () => clock.now), events: string[] = []
   const step = (name: string) => vi.fn(async () => { events.push(name); expect(currentExecution().origin).toBe('timer') })
-  const deps = { config: () => config, ledger, state, round: vi.fn(async () => { events.push('round'); return { ok: true, picked: 1 } }), streak: step('streak'), dm: step('dm'), reply: step('reply'), clean: step('clean'), persona: step('persona'), busy: () => false, random: () => 0, log: vi.fn() }
+  const deps = { config: () => config, ledger, state, round: vi.fn(async () => { events.push('round'); return { ok: true, picked: 1 } }), streak: step('streak'), dm: step('dm'), reply: step('reply'), clean: step('clean'), busy: () => false, random: () => 0, log: vi.fn() }
   const scheduler = createScheduler(deps)
   return { config, clock, ledger, state, events, deps, scheduler }
 }
@@ -36,7 +36,7 @@ describe('owned inspection scheduler', () => {
     const f = fixture(); f.config.autoReply = true
     f.deps.clean.mockImplementationOnce(async () => { f.events.push('clean'); throw new Error('temporary') })
     await f.scheduler.tick()
-    expect(f.events).toEqual(['clean', 'persona', 'streak', 'dm', 'reply'])
+    expect(f.events).toEqual(['clean', 'streak', 'dm', 'reply'])
     expect(f.deps.log).toHaveBeenCalledWith(expect.stringContaining('temporary'))
     f.events.length = 0; f.config.replyAllDay = false; f.clock.now = new Date(2026, 10, 3, 15)
     await f.scheduler.tick(); expect(f.events).not.toContain('reply')
@@ -61,7 +61,7 @@ describe('owned inspection scheduler', () => {
     const first = f.scheduler.tick(), second = f.scheduler.tick()
     expect(first).toBe(second); expect(f.scheduler.status().busy).toBe(true)
     const disposing = f.scheduler.dispose(); release(); await disposing
-    expect(f.deps.persona).not.toHaveBeenCalled(); expect(f.deps.streak).not.toHaveBeenCalled()
+    expect(f.deps.streak).not.toHaveBeenCalled()
     await f.scheduler.tick(); expect(f.deps.clean).toHaveBeenCalledTimes(1)
   })
   it('applies interval jitter and runs only cleanup from the independent nightly timer', async () => {
@@ -72,7 +72,7 @@ describe('owned inspection scheduler', () => {
     await vi.advanceTimersByTimeAsync(30 * 60000)
     expect(f.events).toEqual(['clean'])
     await vi.advanceTimersByTimeAsync(18 * 60000)
-    expect(f.events).toEqual(['clean', 'clean', 'persona', 'streak', 'dm'])
+    expect(f.events).toEqual(['clean', 'clean', 'streak', 'dm'])
     await f.scheduler.dispose(); expect(vi.getTimerCount()).toBe(0)
   })
 })

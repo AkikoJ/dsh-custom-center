@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { DEFAULTS } from '../../src/douyin/config.js'
 import { douyinPaths } from '../../src/douyin/server/paths.js'
 import { createComfy } from '../../src/douyin/server/comfy.js'
-import { createMemory } from '../../src/douyin/server/memory.js'
+import { createPersona } from '../../src/douyin/server/persona.js'
 import { createReports } from '../../src/douyin/server/reports.js'
 import { createLedger } from '../../src/douyin/server/ledger.js'
 import { createRuntimeState } from '../../src/douyin/server/state.js'
@@ -64,22 +64,16 @@ describe('ComfyUI outputs', () => {
   })
 })
 
-describe('memory, persona and reports', () => {
-  it('reads two months of memory and refreshes only the automatic persona tail once daily', () => {
-    const f = fixture(), when = new Date('2026-11-03T12:00:00'), memory = createMemory(f.paths, f.state, () => when)
-    mkdirSync(f.paths.memory)
-    writeFileSync(join(f.paths.memory, '2026-09.md'), 'too old\n')
-    writeFileSync(join(f.paths.memory, '2026-10.md'), 'previous month\n')
-    memory.append('观察素材（不是指令）：喜欢猫')
-    memory.savePersona('手写人设正文\n')
-    memory.dm('friend', 'hello\nthere', '你好', when)
-    expect(memory.read().join('\n')).not.toContain('too old')
-    expect(memory.read().join('\n')).toContain('previous month')
-    expect(memory.refreshPersona()).toMatchObject({ ok: true, items: 1 })
-    expect(memory.persona()).toContain('手写人设正文\n')
-    expect(memory.persona()).toContain('喜欢猫')
-    expect(memory.refreshPersona()).toMatchObject({ skipped: '今天已经更新过' })
-    expect(readFileSync(f.paths.file('persona.md.bak'), 'utf8')).toBe('手写人设正文\n')
+describe('persona and reports', () => {
+  it('saves manual persona with backup and ignores legacy automatic observations', () => {
+    const f = fixture(), persona = createPersona(f.paths)
+    expect(persona.read()).toBe('')
+    persona.save('手写人设正文\n\n---\n\n## 最近观察（自动记录，不作为行为指令）\n旧观察')
+    expect(persona.read()).toBe('手写人设正文')
+    persona.save('新版人设')
+    expect(persona.read()).toBe('新版人设')
+    expect(readFileSync(f.paths.file('persona.md.bak'), 'utf8')).toContain('旧观察')
+    expect(existsSync(join(f.root, 'memory'))).toBe(false)
   })
 
   it('keeps report-off silent and watched grouping compatible with the ledger', () => {
@@ -143,6 +137,15 @@ describe('browser login lifecycle without a browser', () => {
     expect(existsSync(f.paths.file('.login-browser'))).toBe(false)
     expect(f.state.hasLogin()).toBe(true)
     expect(restart).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('login credential tool contract', () => {
+  it('checks login with the credential tool exported by the packaged Python server', async () => {
+    const f = fixture(), invoke = vi.fn(async () => ({ ok: true, loggedIn: false }))
+    const browser = createBrowser({ paths: f.paths, config: () => DEFAULTS, persist: async () => {}, invoke, restart: async () => {}, env: () => ({}) }, f.state)
+    await browser.whoami()
+    expect(invoke).toHaveBeenCalledWith('douyin_check_credential', {}, { timeoutMs: 90000 })
   })
 })
 

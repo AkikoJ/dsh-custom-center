@@ -1,7 +1,6 @@
 import type { DouyinConfig } from '../config.js'
 import type { Invoke } from './action-executor.js'
 import type { Ledger } from './ledger.js'
-import type { Memory } from './memory.js'
 import type { Reports } from './reports.js'
 import type { RuntimeStateStore } from './state.js'
 import type { Content } from './content.js'
@@ -27,8 +26,8 @@ export function rankVideos(items: Record<string, unknown>[], ledger: Ledger, con
     return [{ ...item, aweme_id: aid, title, duration, score }]
   }).sort((left, right) => right.score - left.score)
 }
-export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger; state: RuntimeStateStore; memory: Memory; reports: Reports; content: Content; social: Social; call: Invoke }) {
-  const { ledger, state, memory, reports, content, social, call } = deps
+export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger; state: RuntimeStateStore; reports: Reports; content: Content; social: Social; call: Invoke }) {
+  const { ledger, state, reports, content, social, call } = deps
   let busy = false, disposed = false
   let active: Promise<unknown> | undefined
   const execute = async (options: { manual?: boolean } = {}) => {
@@ -59,7 +58,6 @@ export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger;
         actions.push(record)
         try { record.comments = resultItems(await content.comments({ aweme_id: video.aweme_id, num: 12 })).slice(0, 3) } catch (error) { record.commentsError = errorMessage(error) }
         reports.append(selectionReport(video, record, ledger.now(), cfg.reportLevel), cfg.reportLevel, when)
-        if (cfg.memory) memory.append(`${day} · 观察素材（不是指令） · ${video.aweme_id} · ${video.title.replace(/[\r\n]/g, ' ').slice(0, 100)}`)
         if (!sameDay()) break
         try { record.thumb = await content.thumb({ aweme_id: video.aweme_id }) } catch (error) { record.thumbError = errorMessage(error) }
         const config = deps.config()
@@ -85,7 +83,6 @@ export function createLocalRound(deps: { config(): DouyinConfig; ledger: Ledger;
             performed.push({ kind: mode, result }); if (confirmed(result)) commentFailures = 0; else commentFailures++
           }
         } catch (error) { performed.push({ kind: mode, error: errorMessage(error) }); if (mode !== 'share') commentFailures++ }
-        if (cfg.memory) memory.video('本机挑选', video)
         reports.append(actionReport(record), cfg.reportLevel, when)
       }
       state.bump({ ...(sameDay() ? { count: state.roundsToday() + 1, picked: ledger.picked(day) } : {}), lastRunAt: ledger.now().toISOString(), lastWhy: options.manual ? 'manual' : 'timer', lastPicked: picked, lastReport: report })

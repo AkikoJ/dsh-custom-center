@@ -25,8 +25,8 @@ describe('抖音路径与配置', () => {
     expect(() => legacyRelativePath('/absolute')).toThrow()
   })
 
-  it('保留 74 个公共字段的默认值和 volatile 元信息', () => {
-    expect(Object.keys(Config.dict ?? {})).toEqual(baseline.config.map((field) => field.name))
+  it('保留 73 个公共字段的默认值和 volatile 元信息', () => {
+    expect(Object.keys(Config.dict ?? {})).toEqual(baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name))
     for (const field of Object.values(Config.dict ?? {})) expect(field.meta?.volatile).toBe(true)
     expect(normalizeConfig({ autoLike: { value: true }, perDay: -1, keywords: ['猫', 2] }))
       .toMatchObject({ autoLike: false, perDay: 5, keywords: ['猫'] })

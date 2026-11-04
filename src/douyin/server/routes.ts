@@ -17,8 +17,8 @@ import { createImageFetcher } from './image-fetch.js'
 import { openDirectory, ownedTail, thumbnail } from './http-assets.js'
 
 export const HTTP_METHODS: Readonly<Record<string, readonly string[]>> = {
-  '/update/check': ['GET'], '/status': ['GET'], '/thumb': ['GET'], '/memory': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
-  '/config': ['GET', 'POST'], '/login/browser': ['POST'], '/login/browser/close': ['POST'], '/login/qr': ['POST'], '/login/poll': ['POST'], '/run': ['POST'], '/persona': ['POST'], '/publish': ['POST'], '/dm/seen/clear': ['POST'], '/dm/test': ['POST'], '/stickers/tags': ['POST'], '/stickers/test': ['POST'], '/reply/round': ['POST'], '/login/sms': ['POST'], '/login/sms/submit': ['POST'], '/setup': ['POST'], '/selfcheck': ['POST'], '/chrome/open': ['POST'], '/log': ['POST'], '/open': ['POST'],
+  '/update/check': ['GET'], '/status': ['GET'], '/thumb': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
+  '/config': ['GET', 'POST'], '/login/browser': ['POST'], '/login/browser/close': ['POST'], '/login/qr': ['POST'], '/login/poll': ['POST'], '/run': ['POST'], '/persona': ['GET', 'POST'], '/publish': ['POST'], '/dm/seen/clear': ['POST'], '/dm/test': ['POST'], '/stickers/tags': ['POST'], '/stickers/test': ['POST'], '/reply/round': ['POST'], '/login/sms': ['POST'], '/login/sms/submit': ['POST'], '/setup': ['POST'], '/selfcheck': ['POST'], '/chrome/open': ['POST'], '/log': ['POST'], '/open': ['POST'],
 }
 class HttpFailure extends Error { constructor(readonly status: number, message: string) { super(message) } }
 function json(res: ServerResponse, status: number, body: unknown) {
@@ -49,7 +49,6 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
       const saved = await r.configuration.persist(patch)
       return { ok: true, config: r.config(), saved: saved.clean, host: saved.host }
     },
-    '/memory': () => ({ ok: true, lines: r.memory.read(60).reverse(), mdDir: r.paths.memory, persona: r.memory.persona(), metadata: r.memory.metadata(), personaPath: r.paths.file('persona.md') }),
     '/watched': (_data, query) => r.reports.watched(Number(query.get('days')) || 14),
     '/comfy/list': (_data, query) => { const list = r.comfy.list(Number(query.get('limit')) || undefined); return { ok: true, ...list, items: list.items.map((file) => ({ ...file, token: videoToken(file) })) } },
     '/dm': () => ({ ...r.dm.status(), watcher: r.watcher.state }),
@@ -62,7 +61,7 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
     '/login/qr': r.browser.qr,
     '/login/poll': r.browser.poll,
     '/run': (data) => runManual(r.config(), data.mode, () => r.local.run({ manual: true }), () => r.headless.run('http')),
-    '/persona': (data) => { const text = String(data.text || ''); if (!text.trim()) throw new HttpFailure(400, '人设不能为空'); return r.memory.savePersona(text) },
+    '/persona': (data) => { if (!('text' in data)) return { ok: true, persona: r.persona.read(), personaPath: r.paths.file('persona.md') }; const text = String(data.text || ''); if (!text.trim()) throw new HttpFailure(400, '人设不能为空'); return r.persona.save(text) },
     '/publish': (data) => {
       if ('video_path' in data || 'path' in data || 'url' in data) throw new HttpFailure(400, '请从宿主输出列表选择视频')
       const index = data.index === undefined ? undefined : Number(data.index)

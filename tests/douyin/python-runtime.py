@@ -30,5 +30,5 @@ assert module.RUNTIME["version"] == "0.2.9"
 assert not (set(registered) & module.WRITE_TOOL_NAMES)
 assert "douyin_watch" in registered
 assert "douyin_feed" in registered
-assert "memory_recent" in registered
+assert not any(name.startswith("memory_") for name in registered)
 print(json.dumps({"ok": True, "registered": len(registered), "writes": False}))

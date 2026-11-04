@@ -5,7 +5,7 @@ import { within, type DouyinPaths } from './paths.js'
 import { douyinResources } from './resources.js'
 import type { PythonCommand } from './python-runtime.js'
 
-const READ_TOOLS = ['douyin_feed', 'douyin_hot', 'douyin_hot_videos', 'douyin_search', 'douyin_video', 'douyin_comments', 'douyin_my_posts', 'douyin_watch', 'douyin_thumb', 'douyin_check_credential', 'memory_write', 'memory_recent', 'memory_context']
+const READ_TOOLS = ['douyin_feed', 'douyin_hot', 'douyin_hot_videos', 'douyin_search', 'douyin_video', 'douyin_comments', 'douyin_my_posts', 'douyin_watch', 'douyin_thumb', 'douyin_check_credential']
 export function headlessTools(config: DouyinConfig, recipient = ''): ReadonlySet<string> {
   const tools = new Set(READ_TOOLS)
   if (recipient) { tools.add('douyin_chat_send'); tools.add('douyin_chat_sticker'); return tools }

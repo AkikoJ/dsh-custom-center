@@ -68,7 +68,7 @@ export function deployAsset(source: string, target: string, hashFile?: string, r
 }
 
 export function prepareRuntime(paths: DouyinPaths, resources = douyinResources()) {
-  for (const directory of [paths.cache, paths.runtime, paths.logs, paths.memory, paths.reports, dirname(paths.python),
+  for (const directory of [paths.cache, paths.runtime, paths.logs, paths.reports, dirname(paths.python),
     join(paths.root, 'state', 'legacy'), paths.prompts, paths.file('.tmp')]) {
     checkPath(paths.root, directory)
     mkdirSync(directory, { recursive: true, mode: 0o700 })

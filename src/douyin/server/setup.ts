@@ -16,7 +16,7 @@ export function createSetup(paths: DouyinPaths, runtime: PythonRuntime, persist:
   if (state().status === 'running') save({ status: 'interrupted', error: '上次安装进程已结束，请重试' })
   const dependencies = async (python: PythonCommand = runtime.python(), signal = currentExecution().signal) => {
     try {
-      const result = await command(python.command, [...python.args, '-c', 'import sys,mcp,playwright,numpy,faster_whisper; print(sys.executable)'], { cwd: paths.root, env: runtime.env(), timeoutMs: 20000, signal })
+      const result = await command(python.command, [...python.args, '-c', 'import sys; from mcp.server.fastmcp import FastMCP; import playwright,numpy,faster_whisper; print(sys.executable)'], { cwd: paths.root, env: runtime.env(), timeoutMs: 20000, signal })
       return { ok: true, detail: result.output.trim() }
     } catch (error) { return { ok: false, error: errorMessage(error) } }
   }

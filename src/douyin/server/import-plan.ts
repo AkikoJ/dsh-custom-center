@@ -85,7 +85,7 @@ export function importContent(sourceRoot: string, targetRoot: string, name: stri
       // A copied virtualenv is not portable. Runtime setup must create a new one.
       if (relative.startsWith('.venv/')) config[key] = 'python'
     } else if (!relative) config[key] = targetRoot
-    else if (['out', 'memory', '.tmp'].includes(relative.split('/')[0])) {
+    else if (['out', '.tmp'].includes(relative.split('/')[0])) {
       config[key] = join(targetRoot, legacyRelativePath(relative))
     }
   }

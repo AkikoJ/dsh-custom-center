@@ -3,7 +3,7 @@ import type { ToolDefinition, JsonSchemaNode } from '@deepseek-ai/dsh-tools'
 export const PLUGIN_ID = 'custom-center-douyin'
 export const CONVERSATION_VIEW_ID = 'custom-center-douyin-watched'
 export const API_PREFIX = '/api/custom-center/douyin'
-export const TABS = [['daily', '日常'], ['pref', '刷视频'], ['like', '互动'], ['dm', '私信'], ['sticker', '表情包'], ['mem', '记忆'], ['adv', '高级']] as const
+export const TABS = [['daily', '日常'], ['pref', '刷视频'], ['like', '互动'], ['dm', '私信'], ['sticker', '表情包'], ['persona', '人设'], ['adv', '高级']] as const
 export type ToolContract = Pick<ToolDefinition, 'name' | 'description' | 'parameters'>
 const text = (description: string): JsonSchemaNode => ({ type: 'string', description })
 const number = (description: string): JsonSchemaNode => ({ type: 'number', description })
@@ -33,7 +33,6 @@ export const TOOL_CONTRACTS: readonly ToolContract[] = [
   contract('cc_dy_my_posts', '查看账号近期发布的作品。', { days: number('最近天数，默认 1 表示今天') }),
   contract('cc_dy_my_videos', '查看投稿账本中的作品与草稿。'),
   contract('cc_dy_reply', '回复自己作品下指定评论，每条至多 20 字，敏感话题委婉拒绝。', { aweme_id: aweme, cid: text('评论 CID'), text: text('回复正文'), comment: text('原评论提示；发送前仍读取实际评论') }),
-  contract('cc_dy_remember', '向本地月度记忆追加观察。', { line: text('要记录的观察文字') }),
   contract('cc_dy_feed', '滚动抖音推荐页并读取视频列表。', { num: number('视频数量，默认 10'), scrolls: number('最大滚屏数，默认 6') }),
   contract('cc_dy_hot', '读取抖音热榜，无需登录。', { limit: number('条数，默认 30，最多 100') }),
   contract('cc_dy_hot_videos', '读取某热点下的视频列表，无需登录。', { sentence_id: text('热榜条目的 sentence_id'), word: text('未提供 sentence_id 时使用的热点词'), num: number('条数，默认 10，最多 60') }),

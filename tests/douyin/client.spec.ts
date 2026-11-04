@@ -15,9 +15,9 @@ import { MARKER_HEADER } from '../../src/shared/request.js'
 afterEach(() => vi.unstubAllGlobals())
 describe('Douyin browser boundary and public UI contract', () => {
  it('covers every public setting once across seven tabs with balanced translations and labeled controls', () => {
-  expect(FIELDS.map((field) => field.key).sort()).toEqual(baseline.config.map((field) => field.name).sort())
-  expect(new Set(FIELDS.map((field) => field.key)).size).toBe(74)
-  expect(TABS.map(([id]) => id)).toEqual(['daily','pref','like','dm','sticker','mem','adv'])
+  expect(FIELDS.map((field) => field.key).sort()).toEqual(baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name).sort())
+  expect(new Set(FIELDS.map((field) => field.key)).size).toBe(73)
+  expect(TABS.map(([id]) => id)).toEqual(['daily','pref','like','dm','sticker','persona','adv'])
   expect(Object.keys(dictionaries['en-US']).sort()).toEqual(Object.keys(dictionaries['zh-CN']).sort())
   for (const [tab] of TABS) {
    const markup = renderToStaticMarkup(createElement(ConfigFields, { tab, draft: {}, set: () => {} }))

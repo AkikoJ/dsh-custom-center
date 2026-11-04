@@ -40,7 +40,7 @@ export function apply(ctx: Context, config?: unknown): void {
   ctx.effect(() => () => runtime.dispose(), `${PLUGIN_ID}: runtime`)
   const policy = settings()
   if (policy) ctx.effect(() => policy.configure({ auto: false }), `${PLUGIN_ID}: settings page policy`)
-  ctx.effect(() => registerTools(ctx.tools, runtime), `${PLUGIN_ID}: 35 tools`)
+  ctx.effect(() => registerTools(ctx.tools, runtime), `${PLUGIN_ID}: 34 tools`)
   for (const route of createDouyinRoutes({ runtime, reject: (request) => host.connection.requestRejection(request) })) {
     ctx.effect(() => host.webServer.register(route), PLUGIN_ID + ': ' + route.path)
   }

@@ -9,8 +9,7 @@ import { createActionExecutor, type Invoke } from './action-executor.js'
 import { createBrowser } from './browser.js'
 import { createSetup } from './setup.js'
 import { createContent } from './content.js'
-import { createSharedMemory } from './shared-memory.js'
-import { createMemory } from './memory.js'
+import { createPersona } from './persona.js'
 import { createReports } from './reports.js'
 import { createComfy } from './comfy.js'
 import { createPublication } from './publication.js'
@@ -41,7 +40,6 @@ export interface RuntimeDependencies {
   services?: ModelDependencies['services']
   attachments?: ImageDependencies['attachments']
   credentials?: ImageDependencies['credentials']
-  sharedMemory?(): Promise<string>
   now?: () => Date
   invoke?: Invoke
   log?(message: string): void
@@ -73,20 +71,19 @@ export function createDouyinRuntime(deps: RuntimeDependencies = {}) {
     if (!stoppingListener) currentExecution().signal?.throwIfAborted()
     return executor.call(name, args, options)
   }
-  const shared = createSharedMemory(call, log)
-  const memory = createMemory(paths, state, now, shared.writeDm), reports = createReports(paths, ledger), content = createContent(config, call)
+  const persona = createPersona(paths), reports = createReports(paths, ledger), content = createContent(config, call)
   const browser = createBrowser({ paths, config, persist, invoke: call, restart: python.restart, env: python.env }, state)
   const setup = createSetup(paths, python, persist), comfy = createComfy({ config, log }), publication = createPublication(config, ledger, comfy, call)
   const images = createImageAccess({ paths, config, fetch: createImageFetcher(), attachments: deps.attachments ?? (() => undefined), credentials: deps.credentials ?? (() => undefined), log })
   const text = createTextModel({ config, services: deps.services ?? (() => ({})), images, log })
-  const replies = createReplies({ config, ledger, history, memory, call, generate: text.generate, describe: (url) => images.describe(url, currentExecution().signal), persist, sharedMemory: shared.recent })
-  const headless = createHeadless({ paths, config, ledger, state, runtime: python, call, prompt: () => headlessPrompt({ config: config(), paths, ledger, memory, reports }), log })
+  const replies = createReplies({ config, ledger, history, persona, call, generate: text.generate, describe: (url) => images.describe(url, currentExecution().signal), persist })
+  const headless = createHeadless({ paths, config, ledger, state, runtime: python, call, prompt: () => headlessPrompt({ config: config(), paths, ledger, persona, reports }), log })
   const busy = () => headless.busy() || local.busy() || setup.running()
-  const dm = createDm({ config, ledger, history: createDmHistory(paths, now), memory, reports, call, generate: text.generate, run: headless.run, busy, sharedMemory: deps.sharedMemory ?? shared.context, log })
-  const social = createSocial({ config, ledger, state, memory, call, generate: text.generate })
-  const local = createLocalRound({ config, ledger, state, memory, reports, content, social, call })
+  const dm = createDm({ config, ledger, history: createDmHistory(paths, now), persona, reports, call, generate: text.generate, run: headless.run, busy, log })
+  const social = createSocial({ config, ledger, state, call, generate: text.generate })
+  const local = createLocalRound({ config, ledger, state, reports, content, social, call })
   const cleanup = createCleanup(paths, busy, state), stickers = createStickers(paths)
-  const scheduler = createScheduler({ config, ledger, state, round: () => local.run(), streak: social.streak, dm: dm.round, reply: replies.round, clean: () => cleanup.maybe(config().autoClean), persona: memory.refreshPersona, busy, log })
+  const scheduler = createScheduler({ config, ledger, state, round: () => local.run(), streak: social.streak, dm: dm.round, reply: replies.round, clean: () => cleanup.maybe(config().autoClean), busy, log })
   const watcher = createDmWatcher({ config, call, poll: (reason) => withExecution({ origin: 'timer' }, () => dm.poll(reason)), busy, log })
   const status = createStatus({ config, ledger, state, reports, runtime: python, setup, browser, call, replyState: () => ({ ...dm.status(), watcher: watcher.state, scheduler: scheduler.status() }), dshCli: () => { const cli = resolveDsh(config().dshBin); return 'missing' in cli ? cli.hint : cli.command } })
   const track = <T>(action: () => Promise<T>): Promise<T> => {
@@ -103,6 +100,6 @@ export function createDouyinRuntime(deps: RuntimeDependencies = {}) {
     await Promise.allSettled([...operations])
     await python.dispose()
   })()
-  return { paths, config, configuration, ledger, state, python, executor, call, memory, reports, content, browser, setup, comfy, publication, images, replies, headless, dm, social, local, cleanup, stickers, scheduler, watcher, status, log, track, busy, start, dispose }
+  return { paths, config, configuration, ledger, state, python, executor, call, persona, reports, content, browser, setup, comfy, publication, images, replies, headless, dm, social, local, cleanup, stickers, scheduler, watcher, status, log, track, busy, start, dispose }
 }
 export type DouyinRuntime = ReturnType<typeof createDouyinRuntime>

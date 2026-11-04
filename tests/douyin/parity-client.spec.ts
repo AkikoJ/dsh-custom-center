@@ -1,7 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { pollLogin } from '../../src/douyin/client/login-poll.js'
-import { memoryCall } from '../../src/douyin/client/shared-memory.js'
-import { clearWorkspace } from '../../src/douyin/client/memory-operations.js'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { ConfigFields, Result } from '../../src/douyin/client/controls.js'
@@ -35,39 +33,6 @@ describe('bounded sign-in polling', () => {
     vi.stubGlobal('fetch', fetcher); const stop = pollLogin(success, status)
     await vi.advanceTimersByTimeAsync(3000); stop(); release(Response.json({ ok: true, loggedIn: true })); await vi.advanceTimersByTimeAsync(0)
     expect(success).not.toHaveBeenCalled(); expect(status).not.toHaveBeenCalled(); expect(vi.getTimerCount()).toBe(0)
-  })
-})
-describe('shared memory UI adapter and destructive operations', () => {
-  it.each([{ items: [{ id: 1 }] }, [{ id: 1 }], { ok: true, value: [{ id: 1 }] }])('normalizes supported list envelopes', async (result) => {
-    const rpc = vi.fn(async () => result), call = memoryCall(rpc)
-    expect(await call('recall', { limit: 80 })).toEqual({ items: [{ id: 1 }] })
-    expect(rpc).toHaveBeenCalledWith('memory.recall', { limit: 80 })
-  })
-  it('reports unavailable or failed RPC without inventing an empty successful list', async () => {
-    await expect(memoryCall()('stats')).rejects.toThrow('本地记录')
-    await expect(memoryCall(async () => ({ ok: false, error: { message: 'not installed' } }))('stats')).rejects.toThrow('not installed')
-  })
-  it('clears more than one page and verifies the final workspace', async () => {
-    let records = Array.from({ length: 1003 }, (_, id) => ({ id, content: 'memory' }))
-    const call = vi.fn(async (method: string, args: Data = {}) => {
-      if (method === 'forget') { records = records.filter((row) => row.id !== args.id); return { ok: true } }
-      return { items: records.slice(0, 500) }
-    }), progress = vi.fn()
-    expect(await clearWorkspace(call, 'workspace-A', progress)).toMatchObject({ deleted: 1003, failed: 0, remaining: [] })
-    expect(records).toEqual([]); expect(progress).toHaveBeenLastCalledWith(1003)
-    expect(call.mock.calls.filter(([method]) => method === 'workspace_detail').length).toBeGreaterThan(2)
-  })
-  it('preserves failures, detects false successful deletes, and does not loop forever', async () => {
-    const call = vi.fn(async (method: string, args: Data = {}) => { if (method === 'forget' && args.id === 2) throw new Error('failed'); return method === 'forget' ? { ok: true } : { items: [{ id: 1 }, { id: 2 }] } })
-    expect(await clearWorkspace(call, 'workspace-A', () => {})).toMatchObject({ deleted: 0, failed: 2, remaining: [{ id: 1 }, { id: 2 }] })
-    expect(call.mock.calls.filter(([method]) => method === 'forget')).toHaveLength(2)
-    await expect(clearWorkspace(async () => ({}), 'workspace-A', () => {})).rejects.toThrow('格式无效')
-  })
-  it('stops later deletions after the owning page is disposed', async () => {
-    const controller = new AbortController(), writes: unknown[] = []
-    const call = async (method: string, args: Data = {}) => { if (method === 'forget') { writes.push(args.id); controller.abort(); return { ok: true } } return { items: [{ id: 1 }, { id: 2 }] } }
-    await expect(clearWorkspace(call, 'workspace-A', () => {}, controller.signal)).rejects.toThrow()
-    expect(writes).toEqual([1])
   })
 })
 describe('visible settings and diagnostics', () => {

@@ -7,6 +7,7 @@ vi.mock('react', async (original) => ({ ...await original<typeof import('react')
  useEffect(effect: () => void | (() => void)) { const dispose = effect(); if (dispose) harness.disposers.push(dispose) },
 }))
 vi.mock('../../src/douyin/client/state.js', () => ({ useResource: (path: string) => ({ data: harness.resources[path] ?? null, error: '', refresh: harness.refresh }), useActions: () => ({ busy: '', error: '', result: null, run: harness.run }) }))
+import { PersonaPanel } from '../../src/douyin/client/PersonaPanel.js'
 import { Daily } from '../../src/douyin/client/Daily.js'
 import { Publication } from '../../src/douyin/client/Publication.js'
 import { WatchedVideos } from '../../src/douyin/client/WatchedVideos.js'
@@ -17,6 +18,17 @@ function render<T>(component: () => T) { harness.cursor = 0; return component() 
 function button(tree: unknown, label: string) { const value = nodes(tree).find((node) => node.type === 'button' && text(node) === label); if (!value) throw new Error('Button missing: ' + label); return value.props! }
 beforeEach(() => { for (const dispose of harness.disposers.splice(0)) dispose(); harness.values = []; harness.cursor = 0; harness.resources = {}; harness.refresh.mockReset(); harness.run.mockReset() })
 describe('visible page interactions', () => {
+ it('loads and saves manual persona using only the independent persona API', async () => {
+  harness.resources['/persona'] = { persona: '原始人设' }; harness.run.mockResolvedValue({ ok: true })
+  render(PersonaPanel); let tree = render(PersonaPanel)
+  expect(nodes(tree).find((node) => node.type === 'textarea')!.props!.value).toBe('原始人设')
+  expect(button(tree, '保存角色设定').disabled).toBe(true)
+  nodes(tree).find((node) => node.type === 'textarea')!.props!.onChange({ target: { value: '手动新设定' } })
+  tree = render(PersonaPanel); expect(button(tree, '保存角色设定').disabled).toBe(false)
+  await button(tree, '保存角色设定').onClick()
+  expect(harness.run).toHaveBeenCalledExactlyOnceWith('/persona', { text: '手动新设定' })
+  expect(harness.refresh).toHaveBeenCalledTimes(1)
+ })
  it('opens actual report content, selects a historical day, and renders the historical response', () => {
   harness.resources['/status'] = { doing: {} }
   harness.resources['/report/latest'] = { dates: ['2026-11-04', '2026-11-01'], report: { text: 'LATEST-REPORT' } }

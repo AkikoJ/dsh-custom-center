@@ -1,7 +1,6 @@
 import type { DouyinConfig } from '../config.js'
 import type { Invoke } from './action-executor.js'
 import type { Ledger } from './ledger.js'
-import type { Memory } from './memory.js'
 import type { RuntimeStateStore } from './state.js'
 import { confirmed, withActionLock } from './actions.js'
 import { allowInitiate } from './action-policy.js'
@@ -24,14 +23,13 @@ export function stickerMood(text: string) {
   if (/厉害|学到|有用|收获/.test(text)) return '666'
   return '开心'
 }
-export function createSocial(deps: { config(): DouyinConfig; ledger: Ledger; state: RuntimeStateStore; memory: Memory; call: Invoke; generate?: GenerateText }) {
-  const { ledger, state, memory, call } = deps
+export function createSocial(deps: { config(): DouyinConfig; ledger: Ledger; state: RuntimeStateStore; call: Invoke; generate?: GenerateText }) {
+  const { ledger, state, call } = deps
   const share = (video: Record<string, unknown>, nickname = deps.config().shareToNick, options: { understand?: boolean } = {}) => withActionLock(ledger.paths.root, async () => {
     const day = ledger.day(), aid = videoId(video.aweme_id)
     const card = resultObject(await call('douyin_share_video', { aweme_id: aid, nickname }, { timeoutMs: 180000 }))
     if (!confirmed(card) || ledger.day() !== day) return { ...card, note: null, sticker: null }
     const config = deps.config()
-    if (config.memory) memory.video('转发给你', video, 'to=' + nickname)
     if (!config.shareWithNote) return { ...card, note: null, sticker: null }
     let understandingError = ''
     if (options.understand && !video.transcript) {
@@ -61,7 +59,6 @@ export function createSocial(deps: { config(): DouyinConfig; ledger: Ledger; sta
     // The shared executor owns reservations, verified counts and permanent deduplication.
     const result = resultObject(await withExecution({ origin: 'timer', action: 'streak' }, () => call('douyin_chat_sticker', { nickname, keyword: config.streakSticker.trim() || '大肥鱼', pick: 0 }, { timeoutMs: 180000 })))
     state.bump({ [key]: Number(state.read()[key] || 0) + (confirmed(result) ? 1 : 0), lastStreakAt: ledger.now().toISOString(), lastStreakOk: confirmed(result) })
-    if (config.memory) memory.append(`续火花 · ${nickname} · ${confirmed(result) ? '已发送' : '失败或待核对'}`)
     return result
   })
   return { share, streak }

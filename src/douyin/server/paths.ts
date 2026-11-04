@@ -23,7 +23,6 @@ export function resolveDouyinHome(
 
 const directories: Record<string, string> = {
   out: "reports",
-  memory: "memory",
   browser: "browser",
   ".venv": "python/.venv",
   thumbs: "cache/thumbs",
@@ -109,7 +108,6 @@ export function douyinPaths(home = resolveDouyinHome()) {
     ledger: file("ledger.json"),
     state: file("state.json"),
     reports: file("out"),
-    memory: file("memory"),
     prompts: join(root, "prompts"),
     cache: join(root, "cache"),
     browser: file("browser"),

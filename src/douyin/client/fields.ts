@@ -1,6 +1,6 @@
 import type { DouyinConfig } from '../config.js'
 import { addMessages } from './messages.js'
-export type Tab = 'daily' | 'pref' | 'like' | 'dm' | 'sticker' | 'mem' | 'adv'
+export type Tab = 'daily' | 'pref' | 'like' | 'dm' | 'sticker' | 'persona' | 'adv'
 export interface Field { key: keyof DouyinConfig; label: string; en: string; tab: Tab; type?: 'text' | 'number' | 'boolean' | 'textarea' | 'list'; options?: string[]; hint?: string }
 const group = (tab: Tab, values: [keyof DouyinConfig, string, string, Field['type']?, string[]?][]): Field[] => values.map(([key, label, en, type, options]) => ({ key, label, en, type, options, tab }))
 export const FIELDS: Field[] = [
@@ -16,7 +16,7 @@ export const FIELDS: Field[] = [
  ...group('dm', [
   ['dmReplyOnlyTo','私信回复联系人限制','Reply contact filter','textarea'], ['dmReply','轮次内回复私信','Reply within feed rounds','boolean'], ['dmAutoReply','后台私信巡检','Background message inspection','boolean'], ['dmAutoIntervalSec','旧巡检间隔（兼容字段）','Legacy inspection interval (compatibility)','number'], ['dmReplyPerContact','每日每人回复上限','Daily replies per contact','number'], ['dmReplyPerDay','每日私信回复总量','Daily message reply limit','number'], ['dmFastReply','使用快速回复模型','Use fast reply model','boolean'], ['dmFastProvider','快速回复提供方','Fast reply provider'], ['dmFastModel','快速回复模型','Fast reply model'], ['dmFastReasoning','快速回复推理等级','Fast reply reasoning','text',['off','low','medium','high']],
  ]),
- ...group('mem', [['memory','启用记忆','Enable memory','boolean'], ['personaPrompt','角色提示词','Persona prompt','textarea']]),
+ ...group('persona', [['personaPrompt','角色提示词','Persona prompt','textarea']]),
  ...group('adv', [
   ['pythonPath','Python 解释器','Python executable'], ['dshBin','宿主命令路径','Harness command path'], ['headlessModel','后台模型','Headless model'], ['headlessProfile','后台 profile','Headless profile'], ['overlayMcp','注入 MCP 覆盖配置','Inject MCP overlay','boolean'], ['workspace','后台工作目录','Headless working directory'], ['reportLevel','日报详细程度','Report detail','text',['full','brief','off']], ['localRound','本机执行轮次','Use local rounds','boolean'], ['autoClean','自动清理缓存','Automatic cache cleanup','boolean'], ['askDoubao','允许调用豆包','Allow Doubao','boolean'], ['comfyUrl','ComfyUI 地址','ComfyUI URL'], ['comfyOutputDir','ComfyUI 输出目录','ComfyUI output folder'], ['comfyWorkflow','ComfyUI 工作流 JSON','ComfyUI workflow JSON','textarea'], ['comfyWaitSeconds','出片等待秒数','Generation timeout (seconds)','number'], ['comfyListLimit','输出列表条数','Output list size','number'], ['cdpUrl','Chrome 调试地址','Chrome debugging URL'], ['cdpPort','Chrome 调试端口','Chrome debugging port','number'], ['chromePath','Chrome 程序路径','Chrome executable'],
  ]),

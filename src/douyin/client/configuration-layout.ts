@@ -13,7 +13,7 @@ export function fieldVisible(field: Field, draft: Data) { const parent = parents
 export const GROUP_STARTS: Record<string, string> = {
  peakValley: '谷时窗口', perDay: '选片与时长', keywords: '内容偏好', shareToNick: '视频转发', streakNick: '续火花',
  autoLike: '点赞与评论', autoReply: '作品回复范围', autoPublish: '手动工具与后台投稿', msgAllowTo: '主动联系人与回复范围', dmReply: '私信巡检', dmFastReply: '快速回复模型',
- memory: '记忆开关与角色提示', pythonPath: '运行环境', headlessModel: '后台轮次', reportLevel: '日报与执行方式', comfyUrl: 'ComfyUI 出片', cdpUrl: '浏览器连接',
+ personaPrompt: '角色提示', pythonPath: '运行环境', headlessModel: '后台轮次', reportLevel: '日报与执行方式', comfyUrl: 'ComfyUI 出片', cdpUrl: '浏览器连接',
 }
 export const HINTS: Record<string, string> = {
  peakValley: '只在谷时窗口自动运行；关闭后仍可手动运行。', perDay: '填 0 关闭自动刷取，仍可手动选片。已看数只统计成功理解的视频；选片额度另记。',
