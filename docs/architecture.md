@@ -188,7 +188,7 @@ post、打开目录和分类批量操作共用同一个 inflightRef。详情读�
 | 职责 | 实现 |
 | --- | --- |
 | Host 装配 | [入口](../src/douyin/index.ts)只创建运行实例并注册工具、路由、配置桥和卸载回调；不包含业务流程。 |
-| Browser 装配 | [浏览器入口](../src/douyin/client/index.ts)注册设置及会话插槽、双语字典；[设置页](../src/douyin/client/Settings.tsx)组合七个页签。 |
+| Browser 装配 | [浏览器入口](../src/douyin/client/index.ts)注册设置及会话插槽、双语字典；[设置页](../src/douyin/client/Settings.tsx)组合八个页签。 |
 | 外部合同 | [contracts.ts](../src/douyin/contracts.ts)固定工具名、参数与插槽 ID；[config.ts](../src/douyin/config.ts)保留 74 个公开字段。 |
 | 运行与环境 | [runtime.ts](../src/douyin/server/runtime.ts)组合业务依赖并负责取消和排空；[paths.ts](../src/douyin/server/paths.ts)解析唯一数据根；[resources.ts](../src/douyin/server/resources.ts)部署受管资源。 |
 | 账号写动作 | [actions.ts](../src/douyin/server/actions.ts)负责跨进程锁；[action-policy.ts](../src/douyin/server/action-policy.ts)负责授权、额度与边界；[action-executor.ts](../src/douyin/server/action-executor.ts)负责平台调用、确认与未知结果；[ledger.ts](../src/douyin/server/ledger.ts)保留账本。 |

@@ -147,6 +147,15 @@ describe('login credential tool contract', () => {
     await browser.whoami()
     expect(invoke).toHaveBeenCalledWith('douyin_check_credential', {}, { timeoutMs: 90000 })
   })
+  it('persists the verified account identity without exposing its CDN address to the page', async () => {
+    const f = fixture(), invoke = vi.fn(async (): Promise<Record<string, unknown>> => ({ ok: true, loggedIn: true, nickname: '  账号昵称  ', avatarUrl: 'https://p3.douyinpic.com/avatar.jpeg', uid: 'account-id' }))
+    const browser = createBrowser({ paths: f.paths, config: () => DEFAULTS, persist: async () => {}, invoke, restart: async () => {}, env: () => ({}) }, f.state)
+    expect(await browser.account()).toMatchObject({ loggedIn: true, nickname: '账号昵称', hasAvatar: true })
+    expect(await browser.account()).not.toHaveProperty('avatarUrl')
+    expect(f.state.read()).toMatchObject({ nickname: '账号昵称', avatarUrl: 'https://p3.douyinpic.com/avatar.jpeg', uid: 'account-id' })
+    invoke.mockResolvedValueOnce({ ok: true, loggedIn: false })
+    expect(await browser.account()).toMatchObject({ loggedIn: false, nickname: '', hasAvatar: false })
+  })
 })
 
 describe('incoming message identity and context', () => {

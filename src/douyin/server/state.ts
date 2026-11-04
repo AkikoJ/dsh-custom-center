@@ -9,6 +9,8 @@ export interface RuntimeState extends Record<string, unknown> {
   windows?: Record<string, unknown>
   loggedIn?: boolean
   nickname?: string
+  avatarUrl?: string
+  uid?: string
 }
 export function createRuntimeState(paths: DouyinPaths, now: () => Date = () => new Date()) {
   const read = () => readRequiredObject(paths.state) as RuntimeState

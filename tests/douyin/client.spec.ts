@@ -8,16 +8,18 @@ import { FIELDS } from '../../src/douyin/client/fields.js'
 import { dictionaries } from '../../src/douyin/client/messages.js'
 import { ConfigFields } from '../../src/douyin/client/controls.js'
 import { groupVideos } from '../../src/douyin/client/WatchedVideos.js'
-import { platformUrl, request, imageUrl } from '../../src/douyin/client/api.js'
+import { platformUrl, request, imageUrl, accountAvatar } from '../../src/douyin/client/api.js'
 import { TABS } from '../../src/douyin/contracts.js'
 import { MARKER_HEADER } from '../../src/shared/request.js'
 
 afterEach(() => vi.unstubAllGlobals())
 describe('Douyin browser boundary and public UI contract', () => {
- it('covers every public setting once across seven tabs with balanced translations and labeled controls', () => {
+ it('covers every public setting once across eight tabs with balanced translations and labeled controls', () => {
   expect(FIELDS.map((field) => field.key).sort()).toEqual(baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name).sort())
   expect(new Set(FIELDS.map((field) => field.key)).size).toBe(73)
-  expect(TABS.map(([id]) => id)).toEqual(['daily','pref','like','dm','sticker','persona','adv'])
+  expect(TABS.map(([id]) => id)).toEqual(['home','daily','pref','like','dm','sticker','persona','adv'])
+   expect(TABS[0][1]).toBe('首页')
+   expect(TABS[1][1]).toBe('日常')
   expect(Object.keys(dictionaries['en-US']).sort()).toEqual(Object.keys(dictionaries['zh-CN']).sort())
   for (const [tab] of TABS) {
    const markup = renderToStaticMarkup(createElement(ConfigFields, { tab, draft: {}, set: () => {} }))
@@ -55,6 +57,9 @@ describe('Douyin browser boundary and public UI contract', () => {
   expect(fetcher.mock.calls[0]).toEqual(['/api/custom-center/douyin/thumb?id=1234567890123456789', expect.objectContaining({ headers: { [MARKER_HEADER]: '1' }, signal })]); URL.revokeObjectURL(url)
   await expect(imageUrl('../secret', 'cover', signal)).rejects.toThrow()
   expect(fetcher).toHaveBeenCalledOnce()
+   const avatar = await accountAvatar(signal)
+   expect(fetcher.mock.calls[1]).toEqual(['/api/custom-center/douyin/account/avatar', expect.objectContaining({ headers: { [MARKER_HEADER]: '1' }, signal })])
+   URL.revokeObjectURL(avatar)
  })
  it('orders dates and accepts only safe platform work links', () => {
   expect(groupVideos([{ day: '2026-01-01' }, { day: '2026-02-01' }, { day: '2026-01-01' }]).map(([day, list]) => [day, list.length])).toEqual([['2026-02-01',1],['2026-01-01',2]])

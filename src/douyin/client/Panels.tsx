@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useId, useState } from 'react'
 import { record, rows, type Data } from './api.js'
 import { useResource, useActions } from './state.js'
 import { Card, Feedback, Result } from './controls.js'
@@ -21,7 +21,6 @@ export function Stickers({ dirty = false }: { dirty?: boolean }) {
 }
 export { PersonaPanel as Persona } from './PersonaPanel.js'
 export function Advanced({ dirty }: { dirty: boolean }) {
- const t = useText(), action = useActions(), logs = useResource('/setup/log')
- useEffect(() => { if (logs.data?.status !== 'running') return; const timer = setInterval(logs.refresh, 2000); return () => clearInterval(timer) }, [logs.data?.status, logs.refresh])
- return <Card title="高级"><div className="dy-toolbar">{[['/setup','安装运行环境'],['/selfcheck','环境自检'],['/chrome/open','连接 Chrome'],['/setup/log','查看安装日志'],['/log/tail','查看运行日志'],['/update/check','检查上游版本']].map(([path, label]) => <button key={path} disabled={!!action.busy || dirty} onClick={async () => { await action.run(path, ['/setup', '/selfcheck', '/chrome/open'].includes(path) ? {} : undefined); if (path === '/setup') logs.refresh() }}>{t(label)}</button>)}<button disabled={!!action.busy} onClick={() => void action.run('/open', { what: 'home' })}>{t('打开数据目录')}</button><button disabled={!!action.busy || dirty} onClick={() => void action.run('/run', { mode: 'headless' })}>{t('后台轮次')}</button></div><details><summary>{t('环境安装状态与日志')} · {String(logs.data?.status || '—')}</summary><Feedback error={logs.error} /><Result value={logs.data} /><button onClick={logs.refresh}>{t('刷新')}</button></details><Feedback busy={action.busy} error={action.error} /><Result value={action.result} /></Card>
+ const t = useText(), action = useActions()
+ return <Card title="高级"><div className="dy-toolbar"><button disabled={!!action.busy} onClick={() => void action.run('/log/tail')}>{t('查看运行日志')}</button><button disabled={!!action.busy} onClick={() => void action.run('/update/check')}>{t('检查上游版本')}</button><button disabled={!!action.busy} onClick={() => void action.run('/open', { what: 'home' })}>{t('打开数据目录')}</button><button disabled={!!action.busy || dirty} onClick={() => void action.run('/run', { mode: 'headless' })}>{t('后台轮次')}</button></div><Feedback busy={action.busy} error={action.error} /><Result value={action.result} /></Card>
 }

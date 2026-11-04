@@ -16,9 +16,15 @@ export async function request(path: string, data?: Data, signal?: AbortSignal): 
 export function platformUrl(value: unknown, id: unknown): string | undefined {
   try { const url = new URL(String(value || `https://www.douyin.com/video/${id}`)); return url.protocol === 'https:' && url.hostname === 'www.douyin.com' && /^\/(video|note)\/\d+$/.test(url.pathname) && !url.username && !url.password ? url.href : undefined } catch { return undefined }
 }
-export async function imageUrl(id: string, kind: 'thumb' | 'cover', signal: AbortSignal): Promise<string> {
-  if (!/^\d{6,24}$/.test(id)) throw new Error('Invalid video id')
-  const response = await fetch(`${API_PREFIX}/${kind}?id=${id}`, { credentials: 'same-origin', headers: { [MARKER_HEADER]: '1' }, signal })
+async function blobImage(path: string, signal: AbortSignal): Promise<string> {
+  const response = await fetch(API_PREFIX + path, { credentials: 'same-origin', headers: { [MARKER_HEADER]: '1' }, signal })
   if (!response.ok || !/^image\/(jpeg|png|webp|gif)$/.test(response.headers.get('content-type') || '')) throw new Error('No image')
   return URL.createObjectURL(await response.blob())
+}
+export async function imageUrl(id: string, kind: 'thumb' | 'cover', signal: AbortSignal): Promise<string> {
+  if (!/^\d{6,24}$/.test(id)) throw new Error('Invalid video id')
+  return blobImage(`/${kind}?id=${id}`, signal)
+}
+export function accountAvatar(signal: AbortSignal): Promise<string> {
+  return blobImage('/account/avatar', signal)
 }

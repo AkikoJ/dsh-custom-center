@@ -16,14 +16,13 @@ navigation (alongside General, Models, Plugins, ...).
 
 ## Douyin migration
 
-The seven Douyin settings tabs share a compact layout with underline navigation,
-small desktop controls and an inline statistics strip. Save changes from the page
-header; expand **More sign-in and verification options** for QR/SMS login and
-**Connection and runtime details** for connection and version diagnostics.
-
-The migration is pinned to dsh-douyin-life 0.2.9, commit
-`aaf9f9a862afafd45a15acf32789da97688de695`. The bundle provides 34 tools,
-73 public config fields, 31 HTTP paths, seven settings tabs and conversation video view.
+The eight Douyin settings tabs share a compact layout with underline navigation and
+small desktop controls. The first tab is **Home** and contains only the current account
+avatar, nickname, online state, browser/QR/SMS sign-in, and runtime setup issues. Healthy
+environment checks stay hidden; missing Chrome, Python, FFmpeg, ComfyUI or the transcription
+model includes a download link. Daily statistics, runs, reports, connection details and
+watched videos are on **Daily**, not Home. The bundle provides 34 tools, 73 public config
+fields, 34 HTTP paths, eight settings tabs and conversation video view.
 Memory features have been removed at the user's request. The Persona tab edits a local,
 manual persona with backups; messages, comments and headless tasks use that persona
 and the role prompt. There are no shared-memory RPCs, memory database access,
@@ -94,7 +93,7 @@ require transcript evidence, and stop at date changes or disposal. Verified card
 notes and stickers. Window inspections, streaks, sticker labels and status checks are
 separate modules with bounded retries and awaited shutdown.
 The standalone `dsh-custom-center/douyin` host entry now assembles 34 tools and
-31 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
+34 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
 waits for active requests, and HTTP assets require authenticated loopback requests
 with the browser marker. Output selections carry host-issued file tokens; stale
 selections require a refresh. Upstream update checks are informational and preserve
@@ -181,7 +180,7 @@ Legibility over a photo is checked rather than assumed:
 | Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
 | Feature logic | `src/appearance/` (colour, palette, sampling, media rules), `src/tuning/` (model window and compaction), and existing tests |
 | Shared boundary | `src/shared/`: plugin config, cross-feature page/control styles, browser/host adapters, request marker and loopback check |
-| Douyin | [Standalone host](src/douyin/index.ts) owns tools, routes and automation; [browser child](src/douyin/client/index.ts) registers seven settings tabs and the watched-video conversation view through the center entry. |
+| Douyin | [Standalone host](src/douyin/index.ts) owns tools, routes and automation; [browser child](src/douyin/client/index.ts) registers eight settings tabs and the watched-video conversation view through the center entry. |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
 
 The browser half registers into the `settings.section` slot (full settings

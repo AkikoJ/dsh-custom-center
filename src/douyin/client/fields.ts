@@ -1,6 +1,6 @@
 import type { DouyinConfig } from '../config.js'
 import { addMessages } from './messages.js'
-export type Tab = 'daily' | 'pref' | 'like' | 'dm' | 'sticker' | 'persona' | 'adv'
+export type Tab = 'home' | 'daily' | 'pref' | 'like' | 'dm' | 'sticker' | 'persona' | 'adv'
 export interface Field { key: keyof DouyinConfig; label: string; en: string; tab: Tab; type?: 'text' | 'number' | 'boolean' | 'textarea' | 'list'; options?: string[]; hint?: string }
 const group = (tab: Tab, values: [keyof DouyinConfig, string, string, Field['type']?, string[]?][]): Field[] => values.map(([key, label, en, type, options]) => ({ key, label, en, type, options, tab }))
 export const FIELDS: Field[] = [

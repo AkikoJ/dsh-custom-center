@@ -868,6 +868,7 @@ async def _login_state(page, ctx) -> dict:
         log(f"read cookies fail: {exc}")
 
     avatar = False
+    avatar_url = ""
     nickname = ""
     if page is not None:
         for sel in AVATAR_SELS:
@@ -876,6 +877,15 @@ async def _login_state(page, ctx) -> dict:
                 if await loc.count() and await loc.is_visible(timeout=500):
                     avatar = True
                     nickname = (await loc.get_attribute("alt")) or ""
+                    avatar_url = await loc.evaluate("""el => {
+                        const img = el.tagName === 'IMG' ? el : el.querySelector('img');
+                        return img ? (img.currentSrc || img.src || '') : '';
+                    }""") or ""
+                    if not nickname:
+                        nickname = await loc.evaluate("""el => {
+                            const img = el.tagName === 'IMG' ? el : el.querySelector('img');
+                            return img ? (img.alt || '') : '';
+                        }""") or ""
                     break
             except Exception:
                 continue
@@ -905,12 +915,32 @@ async def _login_state(page, ctx) -> dict:
         except Exception:
             nickname = ""
 
+    if logged_in and page is not None and (not nickname or not avatar_url):
+        # 页面头像常没有 alt；平台本人接口可补齐昵称与头像，不借用其他用户资料。
+        try:
+            me = await page.evaluate("""async () => {
+                const r = await fetch('/aweme/v1/web/user/profile/self/?device_platform=webapp&aid=6383', {credentials: 'include'});
+                if (!r.ok) return {};
+                return await r.json();
+            }""")
+            user = (me or {}).get("user") or {}
+            nickname = nickname or str(user.get("nickname") or "")
+            if not avatar_url:
+                for key in ("avatar_larger", "avatar_medium", "avatar_thumb"):
+                    urls = (user.get(key) or {}).get("url_list") or []
+                    if urls:
+                        avatar_url = str(urls[0])
+                        break
+        except Exception:
+            pass
+
     return {
         "loggedIn": logged_in,
         "cookie": bool(session),
         "avatar": avatar,
+        "avatarUrl": avatar_url,
         "loginPrompt": login_prompt,
-        "nickname": nickname,
+        "nickname": nickname.strip()[:100],
         "uid": uid,
     }
 
@@ -1800,6 +1830,8 @@ async def _sms_submit_core(page, ctx, code: str) -> dict:
             out = _ok(loggedIn=True, hint="短信验证通过，登录态已经写进 profile")
             if st.get("nickname"):
                 out["nickname"] = st["nickname"]
+            if st.get("avatarUrl"):
+                out["avatarUrl"] = st["avatarUrl"]
             if st.get("uid"):
                 out["uid"] = st["uid"]
             log("短信验证码登录成功")
@@ -1815,6 +1847,8 @@ async def _login_poll_core(page, ctx) -> dict:
         out = _ok(loggedIn=True, state="ok", hint="登录成功，登录态已写进 profile，后续工具可以直接用")
         if st["nickname"]:
             out["nickname"] = st["nickname"]
+        if st["avatarUrl"]:
+            out["avatarUrl"] = st["avatarUrl"]
         if st["uid"]:
             out["uid"] = st["uid"]
         return out
@@ -2683,6 +2717,8 @@ async def _selfcheck_core() -> dict:
         out["evidence"] = {"cookie": st["cookie"], "avatar": st["avatar"], "loginPrompt": st["loginPrompt"]}
         if st["nickname"]:
             out["nickname"] = st["nickname"]
+        if st["avatarUrl"]:
+            out["avatarUrl"] = st["avatarUrl"]
         if st["uid"]:
             out["uid"] = st["uid"]
 
@@ -2901,6 +2937,8 @@ async def _check_credential_core() -> dict:
     if st["loggedIn"]:
         if st["nickname"]:
             out["nickname"] = st["nickname"]
+        if st["avatarUrl"]:
+            out["avatarUrl"] = st["avatarUrl"]
         if st["uid"]:
             out["uid"] = st["uid"]
         out["hint"] = "已登录：搜索/点赞/评论/投稿都能用"

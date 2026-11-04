@@ -17,7 +17,7 @@ import { createImageFetcher } from './image-fetch.js'
 import { openDirectory, ownedTail, thumbnail } from './http-assets.js'
 
 export const HTTP_METHODS: Readonly<Record<string, readonly string[]>> = {
-  '/update/check': ['GET'], '/status': ['GET'], '/thumb': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
+  '/update/check': ['GET'], '/status': ['GET'], '/account': ['GET'], '/account/avatar': ['GET'], '/environment': ['GET'], '/thumb': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
   '/config': ['GET', 'POST'], '/login/browser': ['POST'], '/login/browser/close': ['POST'], '/login/qr': ['POST'], '/login/poll': ['POST'], '/run': ['POST'], '/persona': ['GET', 'POST'], '/publish': ['POST'], '/dm/seen/clear': ['POST'], '/dm/test': ['POST'], '/stickers/tags': ['POST'], '/stickers/test': ['POST'], '/reply/round': ['POST'], '/login/sms': ['POST'], '/login/sms/submit': ['POST'], '/setup': ['POST'], '/selfcheck': ['POST'], '/chrome/open': ['POST'], '/log': ['POST'], '/open': ['POST'],
 }
 class HttpFailure extends Error { constructor(readonly status: number, message: string) { super(message) } }
@@ -43,6 +43,8 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
   const handlers: Record<string, (data: Record<string, unknown>, query: URLSearchParams, signal: AbortSignal) => unknown> = {
     '/update/check': (_data, _query, signal) => options.checkUpdate?.() ?? checkUpstreamUpdate(fetch, signal),
     '/status': r.status.snapshot,
+    '/account': r.browser.account,
+    '/environment': r.status.environment,
     '/config': async (data) => {
       const patch = object(data.patch) ? data.patch : data
       if (!Object.keys(patch).length) return { ok: true, config: r.config(), defaults: DEFAULTS, home: r.paths.root }
@@ -98,14 +100,20 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
         const data = method === 'POST' ? await body(req) : {}
         await r.track(() => withExecution({ origin: 'http', signal: controller.signal }, async () => {
           controller.signal.throwIfAborted()
-          if (suffix === '/thumb' || suffix === '/cover') {
-            if (query.has('u') || query.has('url') || query.has('path')) throw new HttpFailure(400, '资源接口只接受视频 ID')
-            const id = query.get('id') || query.get('aweme_id') || ''
-            if (!/^\d{6,24}$/.test(id)) throw new HttpFailure(400, '视频 ID 无效')
-            const pick = Object.values(r.ledger.read().picks).find((item) => item.aweme_id === id)
-            const cover = pick && String(pick.cover || pick.cover_url || '')
-            const image = suffix === '/thumb' ? thumbnail(r.paths, id) : cover ? await fetchImage(cover, controller.signal) : null
-            if (!image) throw new HttpFailure(404, '没有封面')
+          if (suffix === '/thumb' || suffix === '/cover' || suffix === '/account/avatar') {
+            if (query.has('u') || query.has('url') || query.has('path')) throw new HttpFailure(400, '资源接口不接受客户端资源地址')
+            let image: Awaited<ReturnType<typeof fetchImage>> | ReturnType<typeof thumbnail> | null = null
+            if (suffix === '/account/avatar') {
+              const avatarUrl = String(r.state.read().avatarUrl || '')
+              if (avatarUrl) image = await fetchImage(avatarUrl, controller.signal)
+            } else {
+              const id = query.get('id') || query.get('aweme_id') || ''
+              if (!/^\d{6,24}$/.test(id)) throw new HttpFailure(400, '视频 ID 无效')
+              const pick = Object.values(r.ledger.read().picks).find((item) => item.aweme_id === id)
+              const cover = pick && String(pick.cover || pick.cover_url || '')
+              image = suffix === '/thumb' ? thumbnail(r.paths, id) : cover ? await fetchImage(cover, controller.signal) : null
+            }
+            if (!image) throw new HttpFailure(404, suffix === '/account/avatar' ? '没有账号头像' : '没有封面')
             if (!res.destroyed) { res.writeHead(200, { 'content-type': image.type, 'cache-control': 'private, max-age=300', 'x-content-type-options': 'nosniff' }); res.end(image.buffer) }
           } else json(res, 200, await handlers[suffix](data, query, controller.signal))
         }))

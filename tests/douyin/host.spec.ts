@@ -129,9 +129,10 @@ describe('Douyin host contracts and lifecycle', () => {
 })
 
 describe('Douyin HTTP boundary', () => {
-  it('keeps all 31 exact paths with loopback, authentication and marker fences', async () => {
+  it('keeps all 34 exact paths with loopback, authentication and marker fences', async () => {
     const { runtime, invoke } = fixture()
-    expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual(baseline.routes.filter((path) => !path.endsWith('/memory')).map((path) => path.replace('/api/douyin-duty', API_PREFIX)).sort())
+    const additional = ['/account', '/account/avatar', '/environment'].map((path) => API_PREFIX + path)
+    expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual([...baseline.routes.filter((path) => !path.endsWith('/memory')).map((path) => path.replace('/api/douyin-duty', API_PREFIX)), ...additional].sort())
     for (const [options, reject] of [[{ marker: false }, undefined], [{ remote: '10.0.0.2' }, undefined], [{}, 401]] as const) {
       const out = await http(runtime, '/config', 'GET', undefined, options, reject)
       expect(out.status).toBe(reject || 403)
@@ -144,6 +145,8 @@ describe('Douyin HTTP boundary', () => {
     expect((await http(runtime, '/persona', 'POST', undefined, { raw: '{' })).status).toBe(400)
     expect((await http(runtime, '/persona', 'POST', undefined, { raw: 'a'.repeat(131073) })).status).toBe(413)
     expect((await http(runtime, '/cover?u=https://example.com')).status).toBe(400)
+    expect((await http(runtime, '/account/avatar?url=https://example.com/avatar.png')).status).toBe(400)
+    expect((await http(runtime, '/account/avatar')).status).toBe(404)
     expect((await http(runtime, '/publish', 'POST', { video_path: '/outside.mp4' })).status).toBe(400)
     mkdirSync(runtime.paths.file('thumbs'), { recursive: true })
     const secret = join(root, 'secret.jpg'); writeFileSync(secret, Buffer.from([255, 216, 255, 1]))

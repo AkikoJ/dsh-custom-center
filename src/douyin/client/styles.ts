@@ -56,6 +56,27 @@ export const CSS = `
 .dy-page .dy-card .dy-card{background:var(--dsw-alias-bg-layer-2);padding:12px}
 .dy-account-state{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:4px 9px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);font-size:12px;font-weight:500;white-space:nowrap}
 .dy-account-state[data-active=true]{background:var(--dsw-alias-state-success-tertiary);color:var(--dsw-alias-state-success-primary)}
+.dy-account-header{display:flex;align-items:center;gap:12px;padding:0 0 16px;margin:0 0 14px;border-bottom:1px solid var(--dsw-alias-border-l1)}
+.dy-account-avatar{position:relative;display:block;width:54px;height:54px;flex:0 0 54px;border-radius:50%;overflow:visible;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-tertiary)}
+.dy-account-avatar>img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
+.dy-account-avatar>svg{width:100%;height:100%;padding:10px;border-radius:50%}
+.dy-account-avatar>.dy-status-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border:2px solid var(--dsw-alias-bg-layer-1)}
+.dy-account-identity{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dy-account-identity>strong{font-size:17px;line-height:1.4;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dy-account-presence{display:inline-flex;align-items:center;gap:6px;color:var(--dsw-alias-label-secondary);font-size:12px}
+.dy-account-presence[data-active=true]{color:var(--dsw-alias-state-success-primary)}
+.dy-account-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-left:auto}
+.dy-environment-count{padding:3px 8px;border-radius:999px;background:var(--dsw-alias-state-warn-tertiary);color:var(--dsw-alias-state-warn-label);font-size:12px;white-space:nowrap}
+.dy-environment-list{display:grid;gap:0}
+.dy-page .dy-environment-issue{display:flex;align-items:center;gap:16px;padding:12px 0}
+.dy-environment-copy{min-width:0;flex:1}
+.dy-environment-copy>strong{font-size:13px;font-weight:600}
+.dy-environment-copy>p{margin:3px 0}
+.dy-environment-copy>small{display:block;margin-top:4px;color:var(--dsw-alias-label-tertiary);white-space:pre-wrap;word-break:break-word}
+.dy-environment-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex-shrink:0}
+.dy-page a.dy-download{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 11px;border:1px solid var(--dsw-alias-border-l2);border-radius:7px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;line-height:1.5;text-decoration:none;white-space:nowrap;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.dy-page a.dy-download:hover{background:var(--dsw-alias-interactive-bg-hover);border-color:var(--dsw-alias-brand-primary)}
+.dy-environment-log{margin-top:8px}
 .dy-field{display:grid;grid-template-columns:minmax(140px,.85fr) minmax(180px,1.15fr);gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid var(--dsw-alias-border-l1)}
 .dy-field:last-child{border-bottom:0}
 .dy-field label{min-width:0}
@@ -98,8 +119,8 @@ export const CSS = `
 .dy-publish{border:1px solid var(--dsw-alias-brand-primary);padding:14px;border-radius:10px;margin-top:12px}
 .dy-page fieldset{border:1px solid var(--dsw-alias-border-l1);border-radius:8px;padding:12px;margin:12px 0;min-width:0}
 .dy-page legend{font-size:12px;padding:0 4px;color:var(--dsw-alias-label-secondary)}
-@container(max-width:440px){.dy-page{padding:16px}.dy-heading{flex-wrap:wrap}.dy-save{flex-direction:row;align-items:center;margin-left:auto}.dy-save-status{text-align:left}.dy-tabs{gap:14px}.dy-field{gap:10px}.dy-overview-actions{flex-wrap:wrap}.dy-overview-actions>span{flex-basis:100%}.dy-page .dy-card{padding:14px}}
-@container(max-width:360px){.dy-field{grid-template-columns:1fr;gap:8px}.dy-field input[type=checkbox]{justify-self:start}.dy-control{justify-content:flex-start}.dy-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dy-videos{grid-template-columns:repeat(2,minmax(0,1fr))}.dy-save{width:100%;margin-left:0}.dy-page .dy-save .dy-primary{width:auto;min-width:104px}}
-@media(pointer:coarse){.dy-page button,.dy-page .dy-overview-actions button,.dy-page input:not([type=checkbox]),.dy-page select,.dy-page summary{min-height:44px}.dy-page .dy-tabs button{min-height:44px}.dy-page input[type=checkbox]{width:20px;height:20px;min-height:20px}.dy-control:has(>input[type=checkbox]){min-height:44px;align-items:center}}
-@media(prefers-reduced-motion:reduce){.dy-page button,.dy-page input,.dy-page select,.dy-page textarea,.dy-page summary,.dy-video{transition:none}}
+@container(max-width:440px){.dy-page{padding:16px}.dy-heading{flex-wrap:wrap}.dy-save{flex-direction:row;align-items:center;margin-left:auto}.dy-save-status{text-align:left}.dy-tabs{gap:14px}.dy-field{gap:10px}.dy-overview-actions{flex-wrap:wrap}.dy-overview-actions>span{flex-basis:100%}.dy-page .dy-card{padding:14px}.dy-account-header{flex-wrap:wrap}.dy-account-identity{flex:1}.dy-account-actions{flex-basis:100%;justify-content:flex-start;margin-left:66px}.dy-page .dy-environment-issue{align-items:flex-start;flex-direction:column;gap:10px}.dy-environment-actions{justify-content:flex-start}}
+@container(max-width:360px){.dy-field{grid-template-columns:1fr;gap:8px}.dy-field input[type=checkbox]{justify-self:start}.dy-control{justify-content:flex-start}.dy-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dy-videos{grid-template-columns:repeat(2,minmax(0,1fr))}.dy-save{width:100%;margin-left:0}.dy-page .dy-save .dy-primary{width:auto;min-width:104px}.dy-account-actions{margin-left:0}.dy-account-identity>strong{font-size:16px}}
+@media(pointer:coarse){.dy-page button,.dy-page a.dy-download,.dy-page .dy-overview-actions button,.dy-page input:not([type=checkbox]),.dy-page select,.dy-page summary{min-height:44px}.dy-page .dy-tabs button{min-height:44px}.dy-page input[type=checkbox]{width:20px;height:20px;min-height:20px}.dy-control:has(>input[type=checkbox]){min-height:44px;align-items:center}}
+@media(prefers-reduced-motion:reduce){.dy-page button,.dy-page a.dy-download,.dy-page input,.dy-page select,.dy-page textarea,.dy-page summary,.dy-video{transition:none}}
 `

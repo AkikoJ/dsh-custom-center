@@ -67,11 +67,20 @@ export function createBrowser(deps: BrowserDependencies, state: RuntimeStateStor
     }
     return { ok: false, error: '20s 内 CDP 端口没起来', chrome: executable, url: cdpBase() }
   }
-  const markLogin = (loggedIn: boolean) => state.bump({ loggedIn, loginCheckedAt: new Date().toISOString() })
+  const markLogin = (loggedIn: boolean, identity: Record<string, unknown> = {}) => {
+    const patch: Record<string, unknown> = { loggedIn, loginCheckedAt: new Date().toISOString() }
+    if (!loggedIn) Object.assign(patch, { nickname: '', avatarUrl: '', uid: '' })
+    else {
+      if (typeof identity.nickname === 'string' && identity.nickname.trim()) patch.nickname = identity.nickname.trim().slice(0, 100)
+      if (typeof identity.avatarUrl === 'string' && identity.avatarUrl.startsWith('https://')) patch.avatarUrl = identity.avatarUrl.slice(0, 4096)
+      if (typeof identity.uid === 'string' && identity.uid.trim()) patch.uid = identity.uid.trim().slice(0, 200)
+    }
+    return state.bump(patch)
+  }
   const result = async (name: string, args: Record<string, unknown> = {}) => {
     const value = await deps.invoke(name, args, { timeoutMs: 90000 })
     const data = object(value) ? value : { ok: false, error: '登录返回格式无效' }
-    if (typeof data.loggedIn === 'boolean') markLogin(data.loggedIn)
+    if (typeof data.loggedIn === 'boolean') markLogin(data.loggedIn, data)
     if (data.loggedIn && existsSync(paths.file('.login-browser'))) {
       rmSync(paths.file('.login-browser'), { force: true }); await deps.restart()
     }
@@ -90,8 +99,16 @@ export function createBrowser(deps: BrowserDependencies, state: RuntimeStateStor
     await deps.restart()
     return { ok: true, hint: show ? '浏览器窗口已打开，请在其中完成登录' : '已切回后台无头模式' }
   }
-  return { cdpBase, chrome, probe, running, open, markLogin, qr, visible,
-    whoami: () => result('douyin_check_credential'), poll: () => result('douyin_login_poll'),
+  const whoami = () => result('douyin_check_credential')
+  const account = async () => {
+    const data = await whoami(), current = state.read()
+    return {
+      ok: data.ok, loggedIn: current.loggedIn === true, nickname: String(current.nickname || ''), hasAvatar: Boolean(current.avatarUrl),
+      checkedAt: String(current.loginCheckedAt || ''), evidence: data.evidence, hint: data.hint, ...(data.error ? { error: data.error } : {}),
+    }
+  }
+  return { cdpBase, chrome, probe, running, open, markLogin, qr, visible, account,
+    whoami, poll: () => result('douyin_login_poll'),
     sms: (phone: string) => result('douyin_login_sms', { phone }), submit: (code: string) => result('douyin_login_sms_submit', { code }),
   }
 }

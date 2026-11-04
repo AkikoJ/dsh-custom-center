@@ -3,7 +3,7 @@ import type { ToolDefinition, JsonSchemaNode } from '@deepseek-ai/dsh-tools'
 export const PLUGIN_ID = 'custom-center-douyin'
 export const CONVERSATION_VIEW_ID = 'custom-center-douyin-watched'
 export const API_PREFIX = '/api/custom-center/douyin'
-export const TABS = [['daily', '日常'], ['pref', '刷视频'], ['like', '互动'], ['dm', '私信'], ['sticker', '表情包'], ['persona', '人设'], ['adv', '高级']] as const
+export const TABS = [['home', '首页'], ['daily', '日常'], ['pref', '刷视频'], ['like', '互动'], ['dm', '私信'], ['sticker', '表情包'], ['persona', '人设'], ['adv', '高级']] as const
 export type ToolContract = Pick<ToolDefinition, 'name' | 'description' | 'parameters'>
 const text = (description: string): JsonSchemaNode => ({ type: 'string', description })
 const number = (description: string): JsonSchemaNode => ({ type: 'number', description })
