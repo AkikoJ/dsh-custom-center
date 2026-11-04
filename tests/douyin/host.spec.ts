@@ -44,7 +44,7 @@ describe('Douyin host contracts and lifecycle', () => {
     const { runtime, invoke } = fixture()
     let signal: AbortSignal | undefined
     invoke.mockImplementationOnce(() => new Promise((resolve) => { signal = currentExecution().signal; signal!.addEventListener('abort', () => resolve({ ok: false, verified: false, status: 'cancelled' })) }))
-    const feed = createToolDefinitions(runtime).find((tool) => tool.name === 'dy_feed')!
+    const feed = createToolDefinitions(runtime).find((tool) => tool.name === 'cc_dy_feed')!
     const task = feed.execute({}, execution())
     await vi.waitFor(() => expect(signal).toBeDefined())
     await runtime.dispose(); await task
@@ -52,29 +52,29 @@ describe('Douyin host contracts and lifecycle', () => {
   })
   it('matches all 35 tool names and parameter keys without starting Python', async () => {
     const { runtime, invoke } = fixture(), definitions = createToolDefinitions(runtime)
-    expect(definitions.map((d) => d.name)).toEqual(baseline.tools.map((d) => d.name))
+    expect(definitions.map((d) => d.name)).toEqual(baseline.tools.map((d) => `cc_${d.name}`))
     for (const tool of definitions) {
-      const original = baseline.tools.find((d) => d.name === tool.name)!
+      const original = baseline.tools.find((d) => `cc_${d.name}` === tool.name)!
       expect(Object.keys(tool.parameters.properties ?? {}).sort()).toEqual(Object.keys(original.parameters.properties).sort())
       expect(tool.output).toBeDefined()
     }
-    const status = await definitions.find((d) => d.name === 'dy_status')!.execute({}, execution())
+    const status = await definitions.find((d) => d.name === 'cc_dy_status')!.execute({}, execution())
     expect(status).toMatchObject({ ok: true }); expect(invoke).not.toHaveBeenCalled(); expect(runtime.python.running()).toBe(false)
   })
   it('rolls back earlier registrations on collision and disposes once in reverse order', () => {
-    const { runtime } = fixture(), removed: string[] = [], register = vi.fn((tool) => { if (tool.name === 'dy_whoami') throw new Error('duplicate'); return () => removed.push(tool.name) })
+    const { runtime } = fixture(), removed: string[] = [], register = vi.fn((tool) => { if (tool.name === 'cc_dy_whoami') throw new Error('duplicate'); return () => removed.push(tool.name) })
     expect(() => registerTools({ register }, runtime)).toThrow('duplicate')
-    expect(removed).toEqual(['dy_config', 'dy_chrome_open', 'dy_status'])
+    expect(removed).toEqual(['cc_dy_config', 'cc_dy_chrome_open', 'cc_dy_status'])
     removed.length = 0
     const stop = registerTools({ register: (tool) => () => removed.push(tool.name) }, runtime)
-    stop(); stop(); expect(removed).toHaveLength(35); expect(removed[0]).toBe('dy_selfcheck')
+    stop(); stop(); expect(removed).toHaveLength(35); expect(removed[0]).toBe('cc_dy_selfcheck')
   })
   it('derives tool authorization from execution context, strips payload force and adds configured mention', async () => {
     const { runtime, invoke } = fixture({ mentionName: 'owner' }), tools = createToolDefinitions(runtime)
-    const like = tools.find((d) => d.name === 'dy_like')!
+    const like = tools.find((d) => d.name === 'cc_dy_like')!
     expect(await like.execute({ aweme_id: '123456789', force: false }, execution())).toMatchObject({ ok: false })
     expect(invoke).not.toHaveBeenCalled()
-    await tools.find((d) => d.name === 'dy_comment')!.execute({ aweme_id: '123456789', text: '看看这个', force: true }, execution())
+    await tools.find((d) => d.name === 'cc_dy_comment')!.execute({ aweme_id: '123456789', text: '看看这个', force: true }, execution())
     expect(invoke).toHaveBeenCalledWith('douyin_comment', expect.objectContaining({ text: '@owner 看看这个', mention: 'owner' }), undefined)
     expect(invoke.mock.calls[0][1]).not.toHaveProperty('force')
   })
@@ -82,7 +82,7 @@ describe('Douyin host contracts and lifecycle', () => {
     const { runtime, invoke } = fixture()
     let done!: (value: { ok: boolean; verified: boolean; status: string }) => void
     invoke.mockImplementationOnce(() => new Promise((resolve) => { done = resolve }))
-    const tool = createToolDefinitions(runtime).find((d) => d.name === 'dy_video')!
+    const tool = createToolDefinitions(runtime).find((d) => d.name === 'cc_dy_video')!
     const pending = tool.execute({ aweme_id: '123456789' }, execution())
     await vi.waitFor(() => expect(invoke).toHaveBeenCalledOnce())
     let disposed = false; const closing = runtime.dispose().then(() => { disposed = true })
@@ -93,7 +93,7 @@ describe('Douyin host contracts and lifecycle', () => {
   it('observes cancellation before invoking platform work and keeps empty sticker keyword', async () => {
     const { runtime, invoke } = fixture({ msgAllowTo: 'friend' }), controller = new AbortController()
     controller.abort(new Error('cancelled'))
-    await expect(createToolDefinitions(runtime).find((d) => d.name === 'dy_video')!.execute({}, execution(controller.signal))).rejects.toThrow('cancelled')
+    await expect(createToolDefinitions(runtime).find((d) => d.name === 'cc_dy_video')!.execute({}, execution(controller.signal))).rejects.toThrow('cancelled')
     expect(invoke).not.toHaveBeenCalled()
     await runtime.dm.sticker({ nickname: 'friend', keyword: '' })
     expect(invoke).toHaveBeenCalledWith('douyin_chat_sticker', expect.objectContaining({ keyword: '' }), expect.anything())
@@ -103,7 +103,7 @@ describe('Douyin host contracts and lifecycle', () => {
 describe('Douyin HTTP boundary', () => {
   it('keeps all 32 exact paths with loopback, authentication and marker fences', async () => {
     const { runtime, invoke } = fixture()
-    expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual([...baseline.routes].sort())
+    expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual(baseline.routes.map((path) => path.replace('/api/douyin-duty', API_PREFIX)).sort())
     for (const [options, reject] of [[{ marker: false }, undefined], [{ remote: '10.0.0.2' }, undefined], [{}, 401]] as const) {
       const out = await http(runtime, '/config', 'GET', undefined, options, reject)
       expect(out.status).toBe(reject || 403)

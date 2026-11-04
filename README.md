@@ -19,6 +19,7 @@ navigation (alongside General, Models, Plugins, ...).
 The migration is pinned to dsh-douyin-life 0.2.9, commit
 `aaf9f9a862afafd45a15acf32789da97688de695`. The bundle preserves the 35 tools,
 74 public config fields, 32 HTTP paths, seven settings tabs and conversation video view.
+Known feature and UI gaps remain tracked in the [parity repair checklist](docs/douyin-parity-repair.md).
 Account actions remain subject to their switches, quotas and explicit authorization.
 See the [migration record](docs/douyin-migration.md) for scope, mapping, offline
 acceptance and the cutover/rollback checklist. After building, run
@@ -26,7 +27,16 @@ acceptance and the cutover/rollback checklist. After building, run
 exercise both entries and resumable import, and run the packaged video doctor.
 It uses local substitutes and does not install a runtime profile.
 
-The data root is `DSH_DOUYIN_HOME`, then
+The old plugin can remain installed and run alongside Custom Center. The center uses
+Loader/settings ID `custom-center-douyin`, view `custom-center-douyin-watched`,
+35 `cc_dy_*` tools and `/api/custom-center/douyin`; its navigation label is
+**Douyin (Custom Center)**. Chrome uses a private profile and defaults to port `9223`.
+The old plugin keeps its own names. See the [coexistence guide](docs/douyin-coexistence.md)
+for upgrade details, imported CDP settings and independent automation limits.
+Custom Center ignores the old plugin's `DSH_DOUYIN_HOME`; set the new variable below
+to the same path if you previously used it for the center.
+
+The data root is `DSH_CUSTOM_CENTER_DOUYIN_HOME`, then
 `<DSH_HOME>/dsh-custom-center/douyin`, then `~/.dsh/dsh-custom-center/douyin`.
 After stopping the old plugin, its browser and its background tasks, build and run:
 
@@ -72,11 +82,11 @@ require transcript evidence, and stop at date changes or disposal. Verified card
 notes and stickers. Window inspections, streaks, sticker labels and status checks are
 separate modules with bounded retries and awaited shutdown.
 The standalone `dsh-custom-center/douyin` host entry now assembles all 35 tools and
-32 exact HTTP paths under one lifecycle. Registration failures roll back, shutdown
+32 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
 waits for active requests, and HTTP assets require authenticated loopback requests
 with the browser marker. Output selections carry host-issued file tokens; stale
 selections require a refresh. Upstream update checks are informational and preserve
-the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 74 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. It has not been installed into a runtime profile or verified against the live GUI or a real account.
+the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 74 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. The linked bundle is installed but currently disabled in this profile. Live GUI and real-account acceptance remain outstanding.
 
 ## Features
 
@@ -154,7 +164,7 @@ Legibility over a photo is checked rather than assumed:
 | Part | State |
 | --- | --- |
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
-| Loader row | `ui-custom-center` -> package `dsh-custom-center`; `douyin-life` -> `dsh-custom-center/douyin` |
+| Loader row | `ui-custom-center` -> package `dsh-custom-center`; `custom-center-douyin` -> `dsh-custom-center/douyin` |
 | Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/appearance/server/library.ts`), the context/compaction routes (`src/tuning/server/routes.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
 | Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
 | Feature logic | `src/appearance/` (colour, palette, sampling, media rules), `src/tuning/` (model window and compaction), and existing tests |

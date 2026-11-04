@@ -20,7 +20,15 @@
 构建后运行 `pnpm douyin:check-package`，在临时目录打包和解压发布物，验证双端入口、
 可恢复导入及随包视频 doctor。该检查使用本地替身，不安装运行 profile。
 
-数据根依次使用 `DSH_DOUYIN_HOME`、`<DSH_HOME>/dsh-custom-center/douyin`、
+旧插件可以保留安装并与中心版同时加载。中心版使用独立 Loader/设置 ID
+`custom-center-douyin`、会话视图 `custom-center-douyin-watched`、35 个 `cc_dy_*`
+工具和 `/api/custom-center/douyin` 前缀，设置导航显示为「刷抖音（中心版）」。
+Chrome 使用专用用户目录，默认端口 `9223`；旧插件保留原有名称。升级方法、
+导入的 CDP 配置及各自自动任务的边界见[并行启动说明](docs/douyin-coexistence.md)。
+中心版不再读取旧插件的 `DSH_DOUYIN_HOME`；此前若用它指定中心版目录，
+需将同一路径设置到下面的新变量。功能与界面缺口仍见[修复清单](docs/douyin-parity-repair.md)。
+
+数据根依次使用 `DSH_CUSTOM_CENTER_DOUYIN_HOME`、`<DSH_HOME>/dsh-custom-center/douyin`、
 `~/.dsh/dsh-custom-center/douyin`。先停止旧插件、浏览器和后台任务，再构建并执行：
 
 ```sh
@@ -56,7 +64,7 @@ pnpm douyin:import --legacy-stopped
 输出列表携带宿主文件凭据，列表变化后必须刷新再选择；上游更新检查只读且保留固定提交。
 Bundle 已声明独立抖音宿主行，中心浏览器入口已接入七页签与会话视频视图。
 74 个公开字段保留双语标签；界面支持配置草稿、登录、固定联系人测试、收藏标签与投稿确认。
-当前未安装到运行 profile，也未进行真实账号或 GUI 验收。
+当前 profile 已链接安装此 bundle，但处于停用状态；真实账号与 GUI 验收尚未完成。
 
 
 ## 功能
@@ -101,7 +109,7 @@ Bundle 已声明独立抖音宿主行，中心浏览器入口已接入七页签�
 | 部分 | 状态 |
 | --- | --- |
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
-| Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center`；`douyin-life` -> `dsh-custom-center/douyin` |
+| Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center`；`custom-center-douyin` -> `dsh-custom-center/douyin` |
 | Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/appearance/server/library.ts`）+ 上下文/压缩路由（`src/tuning/server/routes.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
 | 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」两个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
 | 功能逻辑 | `src/appearance/`（配色、皮肤、取色、媒体规则）、`src/tuning/`（模型窗口与压缩）及既有测试 |

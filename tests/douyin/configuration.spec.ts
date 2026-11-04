@@ -11,8 +11,8 @@ import baseline from './fixtures/upstream-contract.json'
 const home = () => mkdtempSync(join(tmpdir(), 'douyin-config-'))
 describe('抖音路径与配置', () => {
   it('统一显式路径、DSH_HOME 和用户目录回退，不依赖 cwd', () => {
-    expect(resolveDouyinHome({ DSH_DOUYIN_HOME: '/custom', DSH_HOME: '/dsh' }, '/user')).toBe('/custom')
-    expect(resolveDouyinHome({ DSH_HOME: '/dsh' }, '/user')).toBe('/dsh/dsh-custom-center/douyin')
+    expect(resolveDouyinHome({ DSH_CUSTOM_CENTER_DOUYIN_HOME: '/custom', DSH_DOUYIN_HOME: '/legacy', DSH_HOME: '/dsh' }, '/user')).toBe('/custom')
+    expect(resolveDouyinHome({ DSH_HOME: '/dsh', DSH_DOUYIN_HOME: '/legacy' }, '/user')).toBe('/dsh/dsh-custom-center/douyin')
     expect(resolveDouyinHome({}, '/user')).toBe('/user/.dsh/dsh-custom-center/douyin')
     const paths = douyinPaths('/fixture')
     const base = { DSH_HOME: '/dsh', KEEP: 'yes' }
@@ -42,7 +42,7 @@ describe('抖音路径与配置', () => {
       comfyWaitSeconds: 0, watchSeconds: 0, cdpPort: 0, dmReplyPerDay: 0,
       reportLevel: 'bad', keywords: ['猫', ' ', '狗'], replyVideoIds: 'x123, abc456' }))
       .toMatchObject({ perDay: 50, commentPerDay: 50, replyPerDay: 1000,
-        comfyWaitSeconds: 900, watchSeconds: 90, cdpPort: 9222, dmReplyPerDay: 0,
+        comfyWaitSeconds: 900, watchSeconds: 90, cdpPort: 9223, dmReplyPerDay: 0,
         reportLevel: 'full', keywords: ['猫', '狗'], replyVideoIds: '123, 456' })
   })
 
@@ -51,7 +51,7 @@ describe('抖音路径与配置', () => {
     const calls: number[] = []
     let fail = true
     const config = createConfiguration({ file, settings: {
-      describe: () => [{ ns: 'douyin-life', revision: calls.length + 1,
+      describe: () => [{ ns: 'custom-center-douyin', revision: calls.length + 1,
         value: DEFAULTS, user: { autoLike: false } }],
       async update(_ns, _patch, revision) {
         calls.push(revision!)
@@ -72,7 +72,7 @@ describe('抖音路径与配置', () => {
     const file = join(home(), 'config.json')
     writeFileSync(file, JSON.stringify({ perDay: 7 }))
     const config = createConfiguration({ file, initial: { perDay: 9, autoLike: true }, settings: {
-      describe: () => [{ ns: 'douyin-life', value: DEFAULTS, user: { perDay: 11 } }], async update() {},
+      describe: () => [{ ns: 'custom-center-douyin', value: DEFAULTS, user: { perDay: 11 } }], async update() {},
     } })
     expect(config.refresh()).toMatchObject({ perDay: 11, autoLike: true })
   })
@@ -81,7 +81,7 @@ describe('抖音路径与配置', () => {
     const file = join(home(), 'config.json'), user = { perDay: 3 }
     const releases: (() => void)[] = [], calls: number[] = []
     const config = createConfiguration({ file, settings: {
-      describe: () => [{ ns: 'douyin-life', value: DEFAULTS, user: { ...user } }],
+      describe: () => [{ ns: 'custom-center-douyin', value: DEFAULTS, user: { ...user } }],
       async update(_ns, patch) { const value = (patch as { perDay: number }).perDay; calls.push(value); await new Promise<void>((done) => releases.push(done)); user.perDay = value },
     } })
     expect(config.refresh().perDay).toBe(3)
@@ -96,13 +96,27 @@ describe('抖音路径与配置', () => {
     expect(config.refresh().perDay).toBe(10)
   })
 
+  it('两套设置同时存在时只读写中心版行', async () => {
+    const file = join(home(), 'config.json'), writes: unknown[][] = []
+    const config = createConfiguration({ file, settings: {
+      describe: () => [
+        { ns: 'douyin-life', revision: 19, value: DEFAULTS, user: { perDay: 49 } },
+        { ns: 'custom-center-douyin', revision: 7, value: DEFAULTS, user: { perDay: 6 } },
+      ],
+      async update(...args) { writes.push(args) },
+    } })
+    expect(config.refresh().perDay).toBe(6)
+    expect((await config.persist({ perDay: 8 })).host.ok).toBe(true)
+    expect(writes).toEqual([['custom-center-douyin', { perDay: 8 }, 7]])
+  })
+
   it('仅读取同名设置行，配置对象身份保持稳定', () => {
     const directory = home()
     mkdirSync(join(directory, 'config'))
     const file = join(directory, 'config/config.json')
     writeFileSync(file, JSON.stringify({ perDay: 7 }))
     const config = createConfiguration({ file, settings: {
-      describe: () => [{ ns: 'unrelated', value: DEFAULTS, user: { perDay: 50 } }],
+      describe: () => [{ ns: 'douyin-life', value: DEFAULTS, user: { perDay: 50 } }],
       async update() {},
     } })
     const identity = config.current

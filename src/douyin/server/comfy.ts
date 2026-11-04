@@ -49,7 +49,7 @@ export function createComfy(deps: ComfyDependencies) {
     const source = !/^[[{]/.test(raw) && existsSync(raw) ? raw : 'inline'
     const workflow: unknown = JSON.parse(source === 'inline' ? raw : readFileSync(raw, 'utf8'))
     const prompt = object(workflow) && object(workflow.prompt) ? workflow.prompt : workflow
-    const queued = await json('/prompt', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt, client_id: 'dsh-douyin-life' }) }, 20000)
+    const queued = await json('/prompt', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt, client_id: 'dsh-custom-center-douyin' }) }, 20000)
     const id = object(queued) ? String(queued.prompt_id || queued.id || '') : ''
     if (!id) throw new Error('ComfyUI 没返回 prompt_id')
     deps.log?.(`ComfyUI 已排队（prompt_id=${id}），等出片`)

@@ -1,3 +1,4 @@
+import { PLUGIN_ID } from '../contracts.js'
 import { DEFAULTS, type DouyinConfig } from '../config.js'
 import { clampPatch, normalizeConfig } from './config-rules.js'
 import { errorMessage, readJson, writeJson } from './storage.js'
@@ -35,7 +36,7 @@ export function createConfiguration(deps: ConfigurationDependencies) {
   const row = (fresh = false) => {
     if (!fresh && cached && now() - cached.at < 3000) return cached.row
     let found: SettingsRow | null = null
-    try { found = deps.settings?.describe().find((item) => item.ns === 'douyin-life') ?? null }
+    try { found = deps.settings?.describe().find((item) => item.ns === PLUGIN_ID) ?? null }
     catch (error) { log(`读 DSH 设置表单失败（不影响跑）：${errorMessage(error)}`) }
     cached = { at: now(), row: found }
     return found

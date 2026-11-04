@@ -1,14 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { spawn } from 'node:child_process'
-import { homedir } from 'node:os'
 import type { DouyinConfig } from '../config.js'
 import type { DouyinPaths } from './paths.js'
 import type { RuntimeStateStore } from './state.js'
 import type { Invoke } from './action-executor.js'
 import { object } from './ledger-model.js'
 import { errorMessage } from './storage.js'
-import { runCommand } from './process.js'
 
 export interface BrowserDependencies {
   paths: DouyinPaths
@@ -42,24 +40,20 @@ export function createBrowser(deps: BrowserDependencies, state: RuntimeStateStor
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const info: unknown = await response.json()
       return { ok: true, url, browser: object(info) ? String(info.Browser || '') : '', ws: object(info) ? String(info.webSocketDebuggerUrl || '') : '' }
-    } catch (error) { return { ok: false, url, error: errorMessage(error), hint: '先关闭 Chrome，再调用 dy_chrome_open' } }
+    } catch (error) { return { ok: false, url, error: errorMessage(error), hint: '调用 cc_dy_chrome_open 打开中心版专用 Chrome；手动指定 CDP 时请检查该地址' } }
   }
-  const running = async () => {
-    if (process.platform !== 'win32') return false
-    try { return /chrome\.exe/i.test((await runCommand('tasklist', ['/FI', 'IMAGENAME eq chrome.exe', '/NH'], { env: deps.env(), timeoutMs: 5000 })).output) } catch { return false }
-  }
+  const running = async () => (await probe()).ok
   const open = async (requestedPort?: number) => {
-    const port = Math.max(1024, Math.min(Number(requestedPort) || deps.config().cdpPort || 9222, 65535))
+    const port = Math.max(1024, Math.min(Number(requestedPort) || deps.config().cdpPort || 9223, 65535))
     if (!cdpBase()) await deps.persist({ cdpPort: port, cdpUrl: `http://127.0.0.1:${port}` })
     const before = await probe(1200)
     if (before.ok) return { ...before, already: true }
     const executable = chrome().path
     if (!executable) return { ok: false, error: '没找到 Chrome，请设置 chromePath' }
-    if (await running()) return { ok: false, needClose: true, chrome: executable, hint: '先关闭所有 Chrome 窗口及后台进程，再打开调试端口' }
     const env = deps.env()
-    const userDataDir = process.platform === 'win32' ? join(env.LOCALAPPDATA || '', 'Google/Chrome/User Data') : process.platform === 'darwin' ? join(homedir(), 'Library/Application Support/Google/Chrome') : join(homedir(), '.config/google-chrome')
-    const args = [`--remote-debugging-port=${port}`, '--remote-allow-origins=*', '--no-first-run', '--no-default-browser-check']
-    if (existsSync(userDataDir)) args.push(`--user-data-dir=${userDataDir}`)
+    const userDataDir = join(paths.browser, 'cdp')
+    mkdirSync(userDataDir, { recursive: true, mode: 0o700 })
+    const args = [`--remote-debugging-port=${port}`, '--remote-allow-origins=*', '--no-first-run', '--no-default-browser-check', `--user-data-dir=${userDataDir}`]
     args.push('https://www.douyin.com/')
     await new Promise<void>((resolve, reject) => {
       const child = spawn(executable, args, { detached: true, stdio: 'ignore', env, shell: false, windowsHide: false })

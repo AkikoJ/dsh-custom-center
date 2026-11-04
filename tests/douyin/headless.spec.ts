@@ -62,8 +62,9 @@ describe('headless overlay and prompt', () => {
     const cfg = { ...DEFAULTS, msgAllowTo: 'Friend', headlessModel: 'provider/model/variant', autoPublish: true }
     const tools = headlessTools(cfg, 'Friend')
     expect([...tools]).toContain('douyin_chat_send'); expect([...tools]).not.toContain('douyin_publish')
-    const text = overlayText({ config: cfg, python: { command: "C:\\a'b\\python.exe", args: [], via: 'test' }, script: '/owned/mcp.py', env: { DSH_DOUYIN_HOME: '/owned\nroot', SECRET: 'secret', TEMP: '/owned/tmp' }, proxy: { url: 'http://127.0.0.1:1/action', token: 'short-lived' }, tools })
+    const text = overlayText({ config: cfg, python: { command: "C:\\a'b\\python.exe", args: [], via: 'test' }, script: '/owned/mcp.py', env: { DSH_CUSTOM_CENTER_DOUYIN_HOME: '/owned\nroot', DSH_DOUYIN_HOME: '/owned\nroot', SECRET: 'secret', TEMP: '/owned/tmp' }, proxy: { url: 'http://127.0.0.1:1/action', token: 'short-lived' }, tools })
     expect(text).toContain('model: "model/variant"'); expect(text).toContain('DSH_DOUYIN_HOME: "/owned\\nroot"')
+    expect(text).toContain('DSH_CUSTOM_CENTER_DOUYIN_HOME: "/owned\\nroot"')
     expect(text).not.toContain('SECRET'); expect(text).not.toContain('secret')
     expect(text).toContain('DOUYIN_PROXY_TOKEN: "short-lived"')
     expect(text).toContain('inject: [headlessStartup, douyinHeadlessGuard]')
@@ -72,10 +73,10 @@ describe('headless overlay and prompt', () => {
   })
   it('assembles the deployed charter with current quotas, memory and report settings', () => {
     const root = temp(), paths = douyinPaths(root), ledger = createLedger(paths), state = createRuntimeState(paths), memory = createMemory(paths, state)
-    put(paths.file('duty.md'), '<家目录> dy_feed'); memory.savePersona('手写人设'); memory.append('读过的视频素材')
+    put(paths.file('duty.md'), '<家目录> dy_feed cc_dy_feed'); memory.savePersona('手写人设'); memory.append('读过的视频素材')
     const cfg = { ...DEFAULTS, perDay: 3, pickPerRound: 2, memory: true, reportLevel: 'off' }
     const text = headlessPrompt({ config: cfg, paths, ledger, memory, reports: createReports(paths, ledger) })
-    expect(text).toContain(root + ' douyin_feed'); expect(text).toContain('本轮最多再挑 2 条')
+    expect(text).toContain(root + ' douyin_feed douyin_feed'); expect(text).toContain('本轮最多再挑 2 条')
     expect(text).toContain('手写人设'); expect(text).toContain('读过的视频素材'); expect(text).toContain('不要写日报文件')
   })
 })

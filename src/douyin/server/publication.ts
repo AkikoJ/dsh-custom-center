@@ -30,7 +30,7 @@ export function createPublication(config: () => DouyinConfig, ledger: Ledger, co
   })
   const videos = () => {
     const items = Object.values(ledger.read().published).map((record) => ({ aweme_id: String(record.awemeId || record.video_id || ''), video: String(record.video || ''), name: basename(String(record.video || '')), draft: Boolean(record.draft), url: record.url || '', at: record.at || '' }))
-    return { ok: true, count: items.length, items, hint: items.length ? '这些是我投过的；评论用 dy_comments 读' : '我还没有投过视频' }
+    return { ok: true, count: items.length, items, hint: items.length ? '这些是我投过的；评论用 cc_dy_comments 读' : '我还没有投过视频' }
   }
   return { publish, videos }
 }

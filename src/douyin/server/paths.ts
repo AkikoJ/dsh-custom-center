@@ -2,6 +2,7 @@ import { homedir } from "node:os";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 
 export interface PathEnvironment {
+  DSH_CUSTOM_CENTER_DOUYIN_HOME?: string;
   DSH_DOUYIN_HOME?: string;
   DSH_HOME?: string;
 }
@@ -11,7 +12,7 @@ export function resolveDouyinHome(
   env: PathEnvironment = process.env,
   userHome = homedir(),
 ): string {
-  const explicit = env.DSH_DOUYIN_HOME?.trim();
+  const explicit = env.DSH_CUSTOM_CENTER_DOUYIN_HOME?.trim();
   if (explicit) return resolve(explicit);
   return resolve(
     env.DSH_HOME?.trim() || join(userHome, ".dsh"),
@@ -119,6 +120,7 @@ export function douyinPaths(home = resolveDouyinHome()) {
       const tmp = file(".tmp");
       return {
         ...base,
+        DSH_CUSTOM_CENTER_DOUYIN_HOME: root,
         DSH_DOUYIN_HOME: root,
         DOUYIN_CACHE_HOME: join(root, "cache"),
         TEMP: tmp,

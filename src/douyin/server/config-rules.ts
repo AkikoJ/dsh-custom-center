@@ -9,7 +9,7 @@ const bounds: Record<string, [number, number, number]> = {
   watchFrames: [3, 48, 10], skipOverMin: [1, 600, 60], skimOverMin: [1, 120, 5],
   plainCommentPerDay: [0, 30, 0], dmAutoIntervalSec: [5, 120, 15],
   dmReplyPerContact: [1, 10, 1], dmReplyPerDay: [0, 100, 0], streakPerDay: [0, 20, 0],
-  publishPerDay: [0, 20, 0], cdpPort: [1024, 65535, 9222],
+  publishPerDay: [0, 20, 0], cdpPort: [1024, 65535, 9223],
 }
 const lengths: Record<string, number> = {
   personaPrompt: 4000, comfyWorkflow: 400000, myNickname: 40, shareNote: 80,

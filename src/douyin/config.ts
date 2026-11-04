@@ -74,7 +74,7 @@ export const Config = z.object({
   publishTitle: z.string().default('').extra('volatile', true),
   publishTags: z.string().default('').extra('volatile', true),
   cdpUrl: z.string().default('').extra('volatile', true),
-  cdpPort: z.natural().default(9222).extra('volatile', true),
+  cdpPort: z.natural().default(9223).extra('volatile', true),
   chromePath: z.string().default('').extra('volatile', true),
 })
 
@@ -93,7 +93,7 @@ export const DEFAULTS = {
     comfyOutputDir: '',
     comfyWorkflow: '', comfyWaitSeconds: 900, comfyListLimit: 20, publishDraft: true,
     commentPerDay: 10, publishPerDay: 1, publishTitle: '', publishTags: '',
-    cdpUrl: '', cdpPort: 9222, chromePath: '',
+    cdpUrl: '', cdpPort: 9223, chromePath: '',
   }
 
 export type DouyinConfig = typeof DEFAULTS

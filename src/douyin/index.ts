@@ -37,12 +37,12 @@ export function apply(ctx: Context, config?: unknown): void {
     credentials: () => ctx.get('credentials') as CredentialProvider | undefined,
   })
   // Runtime cleanup is registered first so later route/tool effects leave first.
-  ctx.effect(() => () => runtime.dispose(), 'douyin-life: runtime')
+  ctx.effect(() => () => runtime.dispose(), `${PLUGIN_ID}: runtime`)
   const policy = settings()
-  if (policy) ctx.effect(() => policy.configure({ auto: false }), 'douyin-life: settings page policy')
-  ctx.effect(() => registerTools(ctx.tools, runtime), 'douyin-life: 35 tools')
+  if (policy) ctx.effect(() => policy.configure({ auto: false }), `${PLUGIN_ID}: settings page policy`)
+  ctx.effect(() => registerTools(ctx.tools, runtime), `${PLUGIN_ID}: 35 tools`)
   for (const route of createDouyinRoutes({ runtime, reject: (request) => host.connection.requestRejection(request) })) {
-    ctx.effect(() => host.webServer.register(route), 'douyin-life: ' + route.path)
+    ctx.effect(() => host.webServer.register(route), PLUGIN_ID + ': ' + route.path)
   }
   runtime.start()
 }

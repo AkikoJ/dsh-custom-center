@@ -2,7 +2,7 @@
 
 ## 来源和范围
 
-本次将独立插件 dsh-douyin-life 0.2.9 并入个性化中心，保留原业务和外部合同，按功能内部职责组织实现。
+本次将独立插件 dsh-douyin-life 0.2.9 并入个性化中心，以保留原业务为目标，按功能内部职责组织实现。已发现的功能与界面差异见[修复清单](douyin-parity-repair.md)；为支持共存，中心版外部名称已做下述适配。
 
 - 源仓库：git@github.com:kdcadmin/dsh_douyin_tools.git
 - 固定提交：aaf9f9a862afafd45a15acf32789da97688de695
@@ -41,11 +41,11 @@
 | package.json 上游版本和元信息 | resources/douyin/upstream.json |
 | 源测试、自检、文档、资源、许可证 | tests/douyin/、docs/、resources/douyin/、LICENSE-douyin |
 
-独立宿主入口使用 dsh-custom-center/douyin，Loader 行及设置页仍为 douyin-life，会话视图仍为 douyin-watched，HTTP 前缀仍为 /api/douyin-duty。最终 Bundle 已装配全部模块；下方批次记录中的“未挂载”是各阶段历史状态。
+独立宿主入口使用 dsh-custom-center/douyin，Loader 行及设置页为 `custom-center-douyin`，会话视图为 `custom-center-douyin-watched`，HTTP 前缀为 `/api/custom-center/douyin`，35 个工具使用 `cc_dy_*`。旧插件保持原名，可同时加载；详见[并行启动说明](douyin-coexistence.md)。下方批次记录是历史状态，其中的原名保留说明已由本次共存适配取代。
 
 ## 必要适配
 
-统一数据根优先 DSH_DOUYIN_HOME，其次 DSH_HOME/dsh-custom-center/douyin，最后 ~/.dsh/dsh-custom-center/douyin。所有子进程显式接收同一数据根和缓存环境；不得修改宿主全局环境。
+统一数据根优先 DSH_CUSTOM_CENTER_DOUYIN_HOME，其次 DSH_HOME/dsh-custom-center/douyin，最后 ~/.dsh/dsh-custom-center/douyin。所有子进程显式接收同一数据根和缓存环境；不得修改宿主全局环境。
 
 缓存归 cache，持久化登录态归 browser。旧数据只能通过独立命令校验复制，保留原目录，不覆盖已有目标，记录清单和完成标记并支持重试，不在启动时隐式迁移。开发验收仅使用临时目录和替身。
 
@@ -55,20 +55,20 @@ HTTP 统一执行回环、来源、浏览器请求标记及服务端资源根检
 
 ## 最终工具与路由映射
 
-全部工具仍使用原 `dy_` 名称，参数和默认值与[冻结快照](../tests/douyin/fixtures/upstream-contract.json)核对；
+全部工具将原 `dy_` 一一映射为 `cc_dy_` 名称，参数与[冻结快照](../tests/douyin/fixtures/upstream-contract.json)核对；
 注册入口见 [tools.ts](../src/douyin/server/tools.ts)。下表按业务归属列出全部 35 项。
 
-| 目标职责 | 保留工具 |
+| 目标职责 | 中心版工具 |
 | --- | --- |
-| 状态和配置 | `dy_status`、`dy_config`、`dy_selfcheck` |
-| Chrome 与登录 | `dy_chrome_open`、`dy_whoami`、`dy_login_start`、`dy_login_poll`、`dy_login_sms`、`dy_login_sms_submit` |
-| 视频采集和理解 | `dy_feed`、`dy_hot`、`dy_hot_videos`、`dy_search`、`dy_video`、`dy_comments`、`dy_watch`、`dy_thumb`、`dy_my_posts` |
-| 评论和写动作 | `dy_like`、`dy_comment`、`dy_reply`、`dy_reply_round`、`dy_reconcile_pending` |
-| 私信和分享 | `dy_chat_send`、`dy_chat_sticker`、`dy_dm_inbox`、`dy_dm_poll`、`dy_dm_round`、`dy_share` |
-| 投稿和生成 | `dy_publish`、`dy_my_videos`、`dy_comfy_list` |
-| 轮次和维护 | `dy_run`、`dy_remember`、`dy_cleanup` |
+| 状态和配置 | `cc_dy_status`、`cc_dy_config`、`cc_dy_selfcheck` |
+| Chrome 与登录 | `cc_dy_chrome_open`、`cc_dy_whoami`、`cc_dy_login_start`、`cc_dy_login_poll`、`cc_dy_login_sms`、`cc_dy_login_sms_submit` |
+| 视频采集和理解 | `cc_dy_feed`、`cc_dy_hot`、`cc_dy_hot_videos`、`cc_dy_search`、`cc_dy_video`、`cc_dy_comments`、`cc_dy_watch`、`cc_dy_thumb`、`cc_dy_my_posts` |
+| 评论和写动作 | `cc_dy_like`、`cc_dy_comment`、`cc_dy_reply`、`cc_dy_reply_round`、`cc_dy_reconcile_pending` |
+| 私信和分享 | `cc_dy_chat_send`、`cc_dy_chat_sticker`、`cc_dy_dm_inbox`、`cc_dy_dm_poll`、`cc_dy_dm_round`、`cc_dy_share` |
+| 投稿和生成 | `cc_dy_publish`、`cc_dy_my_videos`、`cc_dy_comfy_list` |
+| 轮次和维护 | `cc_dy_run`、`cc_dy_remember`、`cc_dy_cleanup` |
 
-[路由表](../src/douyin/server/routes.ts)保留 32 个精确路径，共用 `/api/douyin-duty` 前缀：
+[路由表](../src/douyin/server/routes.ts)保留 32 个精确路径，共用 `/api/custom-center/douyin` 前缀：
 
 | 方法 | 路径后缀 |
 | --- | --- |
@@ -76,7 +76,7 @@ HTTP 统一执行回环、来源、浏览器请求标记及服务端资源根检
 | GET / POST | `/config` |
 | POST | `/login/browser`、`/login/browser/close`、`/login/qr`、`/login/poll`、`/run`、`/persona`、`/publish`、`/dm/seen/clear`、`/dm/test`、`/stickers/tags`、`/stickers/test`、`/reply/round`、`/login/sms`、`/login/sms/submit`、`/setup`、`/selfcheck`、`/chrome/open`、`/log`、`/open` |
 
-设置保留日常、刷视频、互动、私信、表情包、记忆、高级七个页签及 `douyin-watched` 会话视图；
+设置保留日常、刷视频、互动、私信、表情包、记忆、高级七个页签及 `custom-center-douyin-watched` 会话视图；
 [字段归属](../src/douyin/client/fields.ts)覆盖 74 个公开配置字段并注册双语标签。
 配置保存通过差异补丁保留保存期间的新输入，服务器统一清洗字段并同步宿主配置。
 
@@ -134,17 +134,17 @@ pnpm --config.verify-deps-before-run=false douyin:check-package
 
 1. 停止旧插件的定时任务、后台会话、Python MCP 和使用旧目录的浏览器；确认没有活进程占用。
 2. 保留旧目录备份，构建新包。在任何新任务启动前执行 `pnpm douyin:import --legacy-stopped`；
-   需要时添加 `--source /旧目录 --target /新目录`，运行环境使用同一个 `DSH_DOUYIN_HOME`。
+   需要时添加 `--source /旧目录 --target /新目录`，运行环境使用同一个 `DSH_CUSTOM_CENTER_DOUYIN_HOME`。
 3. 检查导入清单、完成标记、冲突和虚拟环境重建标记。保留冲突双方，解决后重跑；不手工删除不明占用锁。
-4. 检查导入配置中的自动开关、固定联系人、额度、作品范围及自定义脚本差异。在同一运行 profile 中停用旧入口，
-   再通过官方 Bundle/profile 机制启用新包，保证只有一套抖音调度器和账号执行器。
+4. 检查导入配置中的自动开关、固定联系人、额度、作品范围、CDP 地址与端口及自定义脚本差异。
+   通过官方 Bundle/profile 机制启用新包；旧插件可以保留并同时加载，两套自动任务需分别配置，不能共用账本或假设跨插件去重。
 5. 在设置页重建 Python 环境，显式运行自检并核对登录账号；先检查状态、配置、视频列表和报告。
    扫码、短信和平台写动作只在账号本人明确授权后分别验收。
 6. 重新打开或刷新正式 GUI，检查七页签、会话视图、主题、窄屏布局、键盘切换、配置保存、取消和卸载。
    仅在只读检查及对应动作验收完成后开启需要的自动功能。
 7. 若回退，先停止新入口并等待进程和在途请求退出，保留新目录、未知发送记录及确认回执。
    重新启用旧入口前先核对新旧账本和永久去重记录；导入是单向复制，旧目录不会自动取得新动作记录，
-   不能在尚有未知发送时直接恢复自动重发。旧目录和新目录均保留，禁止并行运行两套入口。
+   不能在尚有未知发送时直接恢复自动重发。旧目录和新目录均保留。两套入口可在各自目录并行加载；同账号自动任务需避免重叠，导入操作期间来源必须停止。
 
 ## 批次与验证
 

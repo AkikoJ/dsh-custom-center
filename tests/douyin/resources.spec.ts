@@ -52,7 +52,7 @@ describe('packaged resources and explicit child environments', () => {
     const physical = execFileSync(python, ['-B', '-c', 'import pathlib,sys; print(pathlib.Path(sys.argv[1]).resolve())', root], { encoding: 'utf8' }).trim()
     expect(result).toEqual([physical, join(physical, 'config/config.json'), join(physical, 'cache/models')])
     const fallback = execFileSync(python, ['-B', '-c', code, resources.root], {
-      env: { ...process.env, DSH_DOUYIN_HOME: '', DSH_HOME: root }, encoding: 'utf8',
+      env: { ...process.env, DSH_CUSTOM_CENTER_DOUYIN_HOME: '', DSH_DOUYIN_HOME: '/legacy', DSH_HOME: root }, encoding: 'utf8',
     }).trim().split('\n')[0]
     expect(fallback).toBe(join(physical, 'dsh-custom-center/douyin'))
   })

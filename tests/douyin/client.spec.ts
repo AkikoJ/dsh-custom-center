@@ -25,20 +25,22 @@ describe('Douyin browser boundary and public UI contract', () => {
    for (const field of FIELDS.filter((field) => field.tab === tab)) { expect(dictionaries['en-US'][field.label]).toBe(field.en); expect(markup).toContain(field.label) }
   }
  })
- it('registers exactly the legacy page and conversation IDs and releases all effects', async () => {
+ it('registers independent page and conversation IDs and releases all effects', async () => {
   const ctx = new Context(), entries: string[] = [], disposed: string[] = [], locales: string[] = []
-  ctx.provide('slots', { inject: (_key: string, run: () => () => void) => run(), register: (entry: { id: string }) => { entries.push(entry.id); return () => { disposed.push(entry.id) } } })
+   const active = new Set([baseline.settingsId, baseline.conversationViewId])
+  ctx.provide('slots', { inject: (_key: string, run: () => () => void) => run(), register: (entry: { id: string }) => { if (active.has(entry.id)) throw new Error('duplicate slot: ' + entry.id); active.add(entry.id); entries.push(entry.id); return () => { active.delete(entry.id); disposed.push(entry.id) } } })
   ctx.provide('locale', { bind: () => (key: string) => key, register: (_ns: string, locale: string) => { locales.push(locale); return () => { locales.splice(locales.indexOf(locale), 1) } } })
   apply(ctx)
-  expect(entries).toEqual(['douyin-life', 'douyin-watched']); expect(locales).toEqual(['zh-CN','en-US'])
+  expect(entries).toEqual(['custom-center-douyin', 'custom-center-douyin-watched']); expect(locales).toEqual(['zh-CN','en-US'])
   await ctx.fiber.dispose(); expect(disposed.sort()).toEqual(entries.sort()); expect(locales).toEqual([])
+   expect([...active]).toEqual([baseline.settingsId, baseline.conversationViewId])
  })
  it('marks reads and writes, keeps credentials same-origin and preserves cancellation', async () => {
   const fetcher = vi.fn(async () => Response.json({ ok: true })); vi.stubGlobal('fetch', fetcher)
   const signal = new AbortController().signal
   await request('/status', undefined, signal); await request('/config', { patch: { perDay: 2 } }, signal)
-  expect(fetcher.mock.calls[0]).toEqual(['/api/douyin-duty/status', expect.objectContaining({ method: 'GET', credentials: 'same-origin', headers: { [MARKER_HEADER]: '1' }, signal })])
-  expect(fetcher.mock.calls[1]).toEqual(['/api/douyin-duty/config', expect.objectContaining({ method: 'POST', body: '{"patch":{"perDay":2}}', signal })])
+  expect(fetcher.mock.calls[0]).toEqual(['/api/custom-center/douyin/status', expect.objectContaining({ method: 'GET', credentials: 'same-origin', headers: { [MARKER_HEADER]: '1' }, signal })])
+  expect(fetcher.mock.calls[1]).toEqual(['/api/custom-center/douyin/config', expect.objectContaining({ method: 'POST', body: '{"patch":{"perDay":2}}', signal })])
  })
  it('shows explicit HTTP and application failures instead of treating them as success', async () => {
   vi.stubGlobal('fetch', vi.fn(async () => Response.json({ ok: false, error: 'quota exhausted' })))
@@ -49,7 +51,7 @@ describe('Douyin browser boundary and public UI contract', () => {
  it('loads thumbnails with the same marker and rejects arbitrary asset addresses', async () => {
   const fetcher = vi.fn(async () => new Response(new Blob(['png'], { type: 'image/png' }), { headers: { 'content-type': 'image/png' } })); vi.stubGlobal('fetch', fetcher)
   const signal = new AbortController().signal, url = await imageUrl('1234567890123456789', 'thumb', signal)
-  expect(fetcher.mock.calls[0]).toEqual(['/api/douyin-duty/thumb?id=1234567890123456789', expect.objectContaining({ headers: { [MARKER_HEADER]: '1' }, signal })]); URL.revokeObjectURL(url)
+  expect(fetcher.mock.calls[0]).toEqual(['/api/custom-center/douyin/thumb?id=1234567890123456789', expect.objectContaining({ headers: { [MARKER_HEADER]: '1' }, signal })]); URL.revokeObjectURL(url)
   await expect(imageUrl('../secret', 'cover', signal)).rejects.toThrow()
   expect(fetcher).toHaveBeenCalledOnce()
  })

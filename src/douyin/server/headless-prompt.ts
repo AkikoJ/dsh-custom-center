@@ -9,7 +9,7 @@ const TOOL_MAP: Record<string, string> = { dy_feed: 'douyin_feed', dy_search: 'd
 export function headlessPrompt(deps: { config: DouyinConfig; paths: DouyinPaths; ledger: Ledger; memory: Memory; reports: Reports }): string {
   const { config: cfg, paths, ledger, memory, reports } = deps
   let charter = existsSync(paths.file('duty.md')) ? readFileSync(paths.file('duty.md'), 'utf8').replaceAll('<家目录>', paths.root) : ''
-  for (const [from, to] of Object.entries(TOOL_MAP)) charter = charter.replaceAll(from, to)
+  for (const [from, to] of Object.entries(TOOL_MAP)) charter = charter.replaceAll(`cc_${from}`, to).replaceAll(from, to)
   const remaining = Math.max(0, cfg.perDay - ledger.picked())
   return [
     '你是这个账号的抖音助手，按下述章程和当前授权执行一轮。',

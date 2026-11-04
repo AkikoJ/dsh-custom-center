@@ -51,6 +51,7 @@
     "test": "vitest run",
     "douyin:import": "node lib/douyin-import.js",
     "douyin:check-package": "node scripts/douyin-package-check.mjs",
+    "douyin:check-coexistence": "node scripts/douyin-coexistence-check.mjs",
     "watch": "tsdown --watch"
   },
   "peerDependencies": {
@@ -99,6 +100,8 @@
     "README.zh.md",
     "LICENSE-douyin",
     "docs/douyin-migration.md",
+    "docs/douyin-coexistence.md",
+    "docs/douyin-parity-repair.md",
     "docs/adr/0003-douyin-runtime-and-import.md",
     "resources/douyin"
   ],

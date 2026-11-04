@@ -14,7 +14,7 @@ const manifest = JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--
   cwd: project, env: { ...process.env, npm_config_offline: 'true' }, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024,
 }))[0]
 const paths = new Set(manifest.files.map((file) => file.path))
-for (const file of ['lib/douyin.js', 'lib/client.js', 'lib/douyin-import.js', 'lib/douyin-headless-guard.js', 'lib/types/douyin/index.d.ts', 'cordis.patch.yml', 'README.zh.md', 'docs/douyin-migration.md', 'docs/adr/0003-douyin-runtime-and-import.md', 'LICENSE-douyin', 'resources/douyin/upstream.json', 'resources/douyin/mcp/mcp_server.py', 'resources/douyin/runtime_paths.py', 'resources/douyin/video-understanding/run.py', 'resources/douyin/prompts/duty.md']) assert(paths.has(file), `missing packaged file: ${file}`)
+for (const file of ['lib/douyin.js', 'lib/client.js', 'lib/douyin-import.js', 'lib/douyin-headless-guard.js', 'lib/types/douyin/index.d.ts', 'cordis.patch.yml', 'README.zh.md', 'docs/douyin-migration.md', 'docs/douyin-coexistence.md', 'docs/douyin-parity-repair.md', 'docs/adr/0003-douyin-runtime-and-import.md', 'LICENSE-douyin', 'resources/douyin/upstream.json', 'resources/douyin/mcp/mcp_server.py', 'resources/douyin/runtime_paths.py', 'resources/douyin/video-understanding/run.py', 'resources/douyin/prompts/duty.md']) assert(paths.has(file), `missing packaged file: ${file}`)
 assert(![...paths].some((file) => /(^|\/)(?:__pycache__|node_modules|\.venv|vendor)(?:\/|$)|\.pyc$/.test(file)), 'development caches entered package')
 execFileSync('tar', ['-xzf', join(temporary, manifest.filename), '-C', temporary])
 const installed = join(temporary, 'package')
@@ -37,15 +37,15 @@ const host = await import(pathToFileURL(join(installed, 'lib/douyin.js')).href)
 const guard = await import(pathToFileURL(join(installed, 'lib/douyin-headless-guard.js')).href)
 assert.equal(typeof guard.apply, 'function')
 const ctx = new Context(), tools = new Map(), routes = new Map()
-const previous = process.env.DSH_DOUYIN_HOME
-process.env.DSH_DOUYIN_HOME = target
+const previous = process.env.DSH_CUSTOM_CENTER_DOUYIN_HOME
+process.env.DSH_CUSTOM_CENTER_DOUYIN_HOME = target
 try {
   ctx.provide('tools', { register(tool) { assert(!tools.has(tool.name)); tools.set(tool.name, tool); return () => tools.delete(tool.name) } })
   ctx.provide('webServer', { register(route) { assert(!routes.has(route.path)); routes.set(route.path, route); return () => routes.delete(route.path) } })
   ctx.provide('connection', { requestRejection: () => undefined })
   host.apply(ctx, { perDay: 0, noon: false, night: false, peakValley: false, dmAutoReply: false, autoReply: false, msgAllowTo: '' })
   assert.equal(tools.size, 35); assert.equal(routes.size, 32)
-  const status = await tools.get('dy_status').execute({}, { signal: new AbortController().signal })
+  const status = await tools.get('cc_dy_status').execute({}, { signal: new AbortController().signal })
   assert.equal(status.build.upstream.commit, 'aaf9f9a862afafd45a15acf32789da97688de695')
   assert.equal(readFileSync(join(target, 'runtime/mcp_server.py'), 'utf8'), '# user script\n')
   assert(readFileSync(join(target, 'runtime/mcp_server.py.new'), 'utf8').includes('FastMCP'))
@@ -53,7 +53,7 @@ try {
   assert.equal(tools.size, 0); assert.equal(routes.size, 0)
 } finally {
   await ctx.fiber.dispose()
-  if (previous === undefined) delete process.env.DSH_DOUYIN_HOME; else process.env.DSH_DOUYIN_HOME = previous
+  if (previous === undefined) delete process.env.DSH_CUSTOM_CENTER_DOUYIN_HOME; else process.env.DSH_CUSTOM_CENTER_DOUYIN_HOME = previous
 }
 let client
 const modules = new Set()
@@ -70,6 +70,6 @@ assert.equal(typeof client.apply, 'function')
 assert(modules.has('react'))
 const resourceRoot = join(installed, 'resources/douyin')
 const python = process.env.DOUYIN_TEST_PYTHON || 'python3'
-const output = execFileSync(python, ['-B', join(resourceRoot, 'video-understanding/run.py'), 'doctor'], { cwd: tmpdir(), env: { ...process.env, DSH_DOUYIN_HOME: target, DOUYIN_RESOURCE_ROOT: resourceRoot }, encoding: 'utf8' })
+const output = execFileSync(python, ['-B', join(resourceRoot, 'video-understanding/run.py'), 'doctor'], { cwd: tmpdir(), env: { ...process.env, DSH_CUSTOM_CENTER_DOUYIN_HOME: target, DOUYIN_RESOURCE_ROOT: resourceRoot }, encoding: 'utf8' })
 assert.equal(JSON.parse(output).ok, true)
 console.log(JSON.stringify({ ok: true, package: manifest.filename, files: manifest.files.length, tools: 35, routes: 32, imports: [...modules], temporary: realpathSync(temporary), runtimeFiles: readdirSync(join(target, 'runtime')), sourceStillPresent: existsSync(source) }, null, 2))

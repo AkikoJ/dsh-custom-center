@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def data_home():
-    explicit = os.environ.get("DSH_DOUYIN_HOME", "").strip()
+    explicit = os.environ.get("DSH_CUSTOM_CENTER_DOUYIN_HOME", "").strip()
     if explicit:
         return Path(explicit).expanduser().resolve()
     base = Path(os.environ.get("DSH_HOME", "").strip() or Path.home() / ".dsh")

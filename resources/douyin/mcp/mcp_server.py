@@ -25,7 +25,7 @@
 
 家目录
 ------
-统一数据根由 runtime_paths 定义，支持 DSH_DOUYIN_HOME 和 DSH_HOME。
+统一数据根由 runtime_paths 定义，支持 DSH_CUSTOM_CENTER_DOUYIN_HOME 和 DSH_HOME。
     browser/          Playwright 持久化 profile
     cache/login-qr.png 最近一次二维码
 """

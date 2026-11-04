@@ -23,6 +23,6 @@ export function apply(raw: Context) {
   return createElement(Translation.Provider, { value: t }, children)
  }
  const register = (name: 'settings.section' | 'conversation.view', id: string, label: string, component: typeof Settings) => ctx.effect(() => ctx.slots.inject(name, () => ctx.slots.register({ name, id, order: 31, label: () => t(label) }, () => createElement(Localized, { children: createElement(component) }))))
- register('settings.section', PLUGIN_ID, '刷抖音', Settings)
- register('conversation.view', CONVERSATION_VIEW_ID, '抖音视频', ConversationVideos)
+ register('settings.section', PLUGIN_ID, '刷抖音（中心版）', Settings)
+ register('conversation.view', CONVERSATION_VIEW_ID, '抖音视频（中心版）', ConversationVideos)
 }
