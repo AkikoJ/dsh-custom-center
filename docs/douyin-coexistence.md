@@ -37,7 +37,7 @@
 
 离线测试使用真实 Cordis 生命周期和旧版冻结合同建立冲突检测注册器，先占用旧版 35 个工具和 32 条路由，再装卸中心版，检查旧注册完整保留。浏览器端同样在旧设置和会话视图已占位时注册中心版；另有双设置行保存隔离、客户端请求前缀、章程转换和专用 Chrome 参数测试。
 
-已通过 `pnpm typecheck`、309 项测试、`pnpm build` 和 `pnpm douyin:check-package`。在中心版源码仓库中另可运行：
+已通过 `pnpm typecheck`、43 个文件 / 353 项测试、`pnpm build` 和 `pnpm douyin:check-package`。在中心版源码仓库中另可运行：
 
 ```sh
 pnpm douyin:check-coexistence /path/to/dsh_douyin_tools
@@ -45,4 +45,4 @@ pnpm douyin:check-coexistence /path/to/dsh_douyin_tools
 
 该脚本在临时目录加载旧仓库与中心版构建产物的真实宿主入口，分别验证「先旧后新」和「先新后旧」。本次两种顺序均成功注册 70 个工具、旧版 1 个 HTTP 前缀路由与中心版 32 条精确路由；卸载中心版后旧版注册保留，网络请求和子进程启动次数均为 0。
 
-当前 profile 的两套 bundle 都已链接安装，均处于停用状态；本次没有改变启用状态，也未完成真实 GUI 或账号验收。功能与界面的完整对齐仍按[修复清单](douyin-parity-repair.md)单独推进；本次共存修复不表示其中的缺失功能已经补齐。
+此前共存验证记录中，两套 bundle 已链接安装且均停用；本轮没有修改运行 profile 或启用状态，也未完成真实 GUI 或账号验收。本轮 F01–F09、U01–U02 及确认的界面遗漏已实施，逐项离线证据和现场待验收边界见[修复验收记录](douyin-parity-repair.md)，不能以共存通过替代功能或视觉一致性验收。

@@ -40,6 +40,23 @@ async function http(runtime: DouyinRuntime, path: string, method = 'GET', data?:
 const execution = (signal = new AbortController().signal) => ({ signal }) as ToolRunContext
 
 describe('Douyin host contracts and lifecycle', () => {
+  it.each([true, false])('resolves saved localRound=%s equally through HTTP and tool overrides', async (saved) => {
+    const { runtime } = fixture({ localRound: saved })
+    const local = vi.spyOn(runtime.local, 'run').mockResolvedValue({ ok: true, picked: 0 } as never)
+    const headless = vi.spyOn(runtime.headless, 'run').mockResolvedValue({ ok: true, started: true })
+    const run = createToolDefinitions(runtime).find((tool) => tool.name === 'cc_dy_run')!
+    for (const mode of [undefined, 'local', 'headless']) {
+      const isLocal = mode ? mode === 'local' : saved
+      for (const invoke of [() => run.execute(mode ? { mode } : {}, execution()), () => http(runtime, '/run', 'POST', mode ? { mode } : {})]) {
+        local.mockClear(); headless.mockClear(); await invoke()
+        expect(local).toHaveBeenCalledTimes(isLocal ? 1 : 0); expect(headless).toHaveBeenCalledTimes(isLocal ? 0 : 1)
+      }
+    }
+    local.mockClear(); headless.mockClear()
+    expect(await run.execute({ mode: 'bad' }, execution())).toMatchObject({ ok: false, error: expect.stringContaining('local/headless') })
+    expect((await http(runtime, '/run', 'POST', { mode: 'bad' })).json()).toMatchObject({ ok: false })
+    expect(local).not.toHaveBeenCalled(); expect(headless).not.toHaveBeenCalled()
+  })
   it('propagates disposal through nested execution contexts before draining platform calls', async () => {
     const { runtime, invoke } = fixture()
     let signal: AbortSignal | undefined

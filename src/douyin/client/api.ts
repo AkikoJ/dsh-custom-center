@@ -4,12 +4,13 @@ import { MARKER_HEADER } from '../../shared/request.js'
 export type Data = Record<string, unknown>
 export const record = (value: unknown): Data => value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Data : {}
 export const rows = (value: unknown): Data[] => Array.isArray(value) ? value.map(record) : []
+export class RequestFailure extends Error { constructor(message: string, readonly result: Data) { super(message) } }
 export async function request(path: string, data?: Data, signal?: AbortSignal): Promise<Data> {
   const response = await fetch(API_PREFIX + path, { method: data ? 'POST' : 'GET', credentials: 'same-origin',
     headers: { [MARKER_HEADER]: '1', ...(data ? { 'content-type': 'application/json' } : {}) },
     ...(data ? { body: JSON.stringify(data) } : {}), signal })
   const result = record(await response.json())
-  if (!response.ok || result.ok === false) throw new Error(String(result.error || result.hint || response.statusText || 'Request failed'))
+  if (!response.ok || result.ok === false) throw new RequestFailure(String(result.error || result.hint || response.statusText || 'Request failed'), result)
   return result
 }
 export function platformUrl(value: unknown, id: unknown): string | undefined {

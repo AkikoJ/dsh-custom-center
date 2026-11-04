@@ -15,6 +15,9 @@ coverage/
 .cache/
 .turbo/
 .vite/
+__pycache__/
+*.pyc
+*.pyo
 
 # Logs
 *.log

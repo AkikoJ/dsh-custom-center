@@ -11,6 +11,7 @@ import { createMemory } from '../../src/douyin/server/memory.js'
 import { createRuntimeState } from '../../src/douyin/server/state.js'
 import { createReports } from '../../src/douyin/server/reports.js'
 import { createDmHistory, type DmRecord } from '../../src/douyin/server/dm-history.js'
+import { createSharedMemory } from '../../src/douyin/server/shared-memory.js'
 import { createDm } from '../../src/douyin/server/dm.js'
 import { createDmWatcher } from '../../src/douyin/server/dm-watcher.js'
 import { latestInbound } from '../../src/douyin/server/dm-reply.js'
@@ -23,20 +24,48 @@ function fixture() {
   const paths = douyinPaths(root), cfg = { ...DEFAULTS, msgAllowTo: 'Friend', dmReply: true, replyRandom: false }
   let date = new Date(2026, 10, 3, 12), rows: Record<string, unknown>[] = [{ messageId: 'm1', direction: 'inbound', text: '在吗', name: 'Friend', peerId: 'peer' }]
   let verified = true
+  const shared = { context: '共享角色上下文 SHARED-CONTEXT', recent: '共享最近记录 SHARED-RECENT', failContext: false, failRecent: false, failWrite: false }
   const ledger = createLedger(paths, () => date), history = createDmHistory(paths, () => date)
   const invoke = vi.fn(async (name: string, args: Record<string, unknown>) => {
+    if (name === 'memory_context') { if (shared.failContext) throw new Error('context offline'); return { ok: true, context: shared.context } }
+    if (name === 'memory_recent') { if (shared.failRecent) throw new Error('recent offline'); return { ok: true, items: shared.recent ? [{ content: shared.recent }] : [] } }
+    if (name === 'memory_write' && shared.failWrite) throw new Error('write offline')
     if (name === 'douyin_dm_snapshot' || name === 'douyin_inbox') return { ok: true, items: rows }
     if (name === 'douyin_chat_send') return verified ? { ok: true, verified: true } : { ok: true, verified: false }
     return { ok: true }
   })
   const executor = createActionExecutor({ config: () => cfg, ledger, history: createReplyHistory(paths, ledger), invoke, ownedVideoIds: async () => [] })
-  const generate = vi.fn(async () => '在呢[憨笑]'), run = vi.fn(async (_reason: string, _options?: TaskOptions) => ({ ok: true, started: true }))
-  const memory = createMemory(paths, createRuntimeState(paths), () => date)
-  const dm = createDm({ config: () => cfg, ledger, history, memory, reports: createReports(paths, ledger), call: executor.call, generate, run, busy: () => false })
-  return { root, paths, cfg, ledger, history, invoke, executor, generate, run, memory, dm, setRows: (value: typeof rows) => { rows = value }, setVerified: (value: boolean) => { verified = value }, setDate: (value: Date) => { date = value } }
+  const generate = vi.fn(async (_system: string, _user: string) => '在呢[憨笑]'), run = vi.fn(async (_reason: string, _options?: TaskOptions) => ({ ok: true, started: true }))
+  const sharedMemory = createSharedMemory(executor.call)
+  const memory = createMemory(paths, createRuntimeState(paths), () => date, sharedMemory.writeDm)
+  const dm = createDm({ config: () => cfg, ledger, history, memory, reports: createReports(paths, ledger), call: executor.call, generate, run, busy: () => false, sharedMemory: sharedMemory.context })
+  return { shared, root, paths, cfg, ledger, history, invoke, executor, generate, run, memory, dm, setRows: (value: typeof rows) => { rows = value }, setVerified: (value: boolean) => { verified = value }, setDate: (value: Date) => { date = value } }
 }
 
 describe('persistent direct-message history', () => {
+  it.each(['context', 'recent', 'local'] as const)('uses distinct %s memory fixtures for fast replies', async (source) => {
+    const f = fixture(); f.memory.append('本地专用记录 LOCAL-ONLY'); f.memory.savePersona('人工本地人设 LOCAL-PERSONA')
+    if (source !== 'context') f.shared.failContext = true
+    if (source === 'local') f.shared.failRecent = true
+    expect(await f.dm.poll()).toMatchObject({ replied: 1 })
+    const prompt = f.generate.mock.calls[0][0]
+    expect(prompt).toContain('LOCAL-PERSONA')
+    expect(prompt).toContain(source === 'context' ? 'SHARED-CONTEXT' : source === 'recent' ? 'SHARED-RECENT' : 'LOCAL-ONLY')
+    if (source !== 'local') expect(prompt).not.toContain('LOCAL-ONLY')
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write').map(([, args]) => args.content)).toEqual(['主人: 在吗（私信 · Friend）', '大肥鱼: 在呢[憨笑]（私信 · Friend）'])
+  })
+  it.each(['', '  \n  '])('falls back on empty shared results %j and never writes unconfirmed sends', async (empty) => {
+    const f = fixture(); f.shared.context = empty; f.shared.recent = empty; f.memory.append('LOCAL-EMPTY-FALLBACK'); f.setVerified(false)
+    expect(await f.dm.poll()).toMatchObject({ replied: 0 })
+    expect(f.generate.mock.calls[0][0]).toContain('LOCAL-EMPTY-FALLBACK')
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write')).toHaveLength(0)
+  })
+  it('keeps the confirmed receipt and local record when shared writes fail', async () => {
+    const f = fixture(); f.shared.failWrite = true
+    expect(await f.dm.poll()).toMatchObject({ replied: 1 })
+    expect(f.memory.read().join('')).toContain('在呢')
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write')).toHaveLength(2)
+  })
   it('keeps the cursor after daily logs age out and clearing seen does not remove send deduplication', () => {
     const f = fixture(), entry: DmRecord = { day: f.ledger.day(), name: 'Friend', text: 'hi', key: 'key', messageId: 'm', kind: 'text', at: Date.now(), status: 'unknown', replied: false, tries: 1 }
     f.history.put(entry)
@@ -93,6 +122,7 @@ describe('direct-message reply orchestration', () => {
     expect(f.generate).not.toHaveBeenCalled(); expect(f.history.read()[0].replied).toBe(false)
     await options.onFinish?.({ code: 0 })
     expect(f.history.read()[0]).toMatchObject({ status: 'unknown', replied: false })
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write')).toHaveLength(0)
   })
   it('accepts a matching task receipt only once and rejects a different recipient', async () => {
     const f = fixture(); f.cfg.dmFastReply = false
@@ -102,6 +132,16 @@ describe('direct-message reply orchestration', () => {
     await done({ code: 0, lastReply: { nickname: 'Friend', text: 'late' } })
     expect(f.history.read()[0].replied).toBe(false)
     expect(f.memory.read()).toEqual([])
+  })
+  it('writes both sides to shared memory once after a verified headless reply', async () => {
+    const f = fixture(); f.cfg.dmFastReply = false; f.cfg.memory = false
+    await f.dm.poll(); const done = f.run.mock.calls[0][1]!.onFinish!
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write')).toHaveLength(0)
+    await done({ code: 0, lastReply: { nickname: 'Friend', text: 'confirmed headless' } })
+    expect(f.history.read()[0].replied).toBe(true)
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write')).toHaveLength(2)
+    await done({ code: 0, lastReply: { nickname: 'Friend', text: 'confirmed headless' } })
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'memory_write')).toHaveLength(2)
   })
   it('enforces contact and daily quotas for incoming strangers through the shared executor', async () => {
     const f = fixture(); f.cfg.msgAllowTo = ''; f.cfg.dmReplyPerDay = 1

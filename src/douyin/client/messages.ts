@@ -1,9 +1,11 @@
+import { PARITY_MESSAGES } from './parity-messages.js'
 import { createContext, useContext } from 'react'
 export type Translate = (key: string) => string
 export const Translation = createContext<Translate>((key) => key)
 export const useText = () => useContext(Translation)
 export const NS = 'custom-center-douyin'
 const pairs = [
+ ...PARITY_MESSAGES,
  ['刷抖音（中心版）', 'Douyin (Custom Center)'], ['抖音视频（中心版）', 'Douyin videos (Custom Center)'],
  ['刷抖音','Douyin'], ['抖音视频','Douyin videos'], ['日常','Daily'], ['刷视频','Feed'], ['互动','Interactions'], ['私信','Messages'], ['表情包','Stickers'], ['记忆','Memory'], ['高级','Advanced'],
  ['保存更改','Save changes'], ['保存中','Saving'], ['已保存','Saved'], ['有未保存的更改','Unsaved changes'], ['刷新','Refresh'], ['加载中','Loading'], ['重试','Retry'], ['执行中','Working'], ['完成','Done'], ['取消','Cancel'],

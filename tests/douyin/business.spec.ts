@@ -123,10 +123,19 @@ describe('comment reply orchestration through the shared executor', () => {
       return { ok: false }
     })
     const executor = createActionExecutor({ config: () => f.config, ledger: f.ledger, history: f.history, invoke, ownedVideoIds: async () => ['123456'] })
-    const generate = vi.fn(async () => 'a reply'), persist = vi.fn(async () => {})
-    const replies = createReplies({ config: () => f.config, ledger: f.ledger, history: f.history, memory: f.memory, call: executor.call, generate, describe: async () => '', persist })
-    return { ...f, comments, invoke, executor, generate, persist, replies }
+    const generate = vi.fn(async (_system: string, _user: string) => 'a reply'), sharedMemory = vi.fn(async () => '共享评论上下文 COMMENT-SHARED'), persist = vi.fn(async () => {})
+    const replies = createReplies({ config: () => f.config, ledger: f.ledger, history: f.history, memory: f.memory, call: executor.call, generate, describe: async () => '', persist, sharedMemory })
+    return { ...f, comments, invoke, executor, generate, sharedMemory, persist, replies }
   }
+  it.each([true, false])('uses shared comment memory when available=%s, otherwise local memory', async (available) => {
+    const f = repliesFixture(); f.memory.append('评论本地上下文 COMMENT-LOCAL')
+    if (!available) f.sharedMemory.mockRejectedValue(new Error('unavailable'))
+    f.comments[0].text = '今天心情很好'
+    expect(await f.replies.round({ count: 1 })).toMatchObject({ sent: 1 })
+    const prompt = f.generate.mock.calls[0][0]
+    expect(prompt).toContain(available ? 'COMMENT-SHARED' : 'COMMENT-LOCAL')
+    expect(prompt).not.toContain(available ? 'COMMENT-LOCAL' : 'COMMENT-SHARED')
+  })
   it('refuses sensitive topics, skips unread images, and preserves permanent reply deduplication', async () => {
     const f = repliesFixture()
     const result = await f.replies.round({ count: 3 })

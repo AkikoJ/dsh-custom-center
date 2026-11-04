@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import type { VideoFile } from './comfy.js'
 
 const videoToken = (file: VideoFile) => createHash('sha256').update(JSON.stringify([file.path, file.size, file.mtime])).digest('hex')
+import { runManual } from './run-mode.js'
 import { API_PREFIX } from '../contracts.js'
 import { MARKER_HEADER, isLoopbackAddress } from '../../shared/request.js'
 import type { WebRoute } from '../../shared/host-env.js'
@@ -48,19 +49,19 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
       const saved = await r.configuration.persist(patch)
       return { ok: true, config: r.config(), saved: saved.clean, host: saved.host }
     },
-    '/memory': () => ({ ok: true, lines: r.memory.read(60).reverse(), mdDir: r.paths.memory, persona: r.memory.persona(), personaPath: r.paths.file('persona.md') }),
+    '/memory': () => ({ ok: true, lines: r.memory.read(60).reverse(), mdDir: r.paths.memory, persona: r.memory.persona(), metadata: r.memory.metadata(), personaPath: r.paths.file('persona.md') }),
     '/watched': (_data, query) => r.reports.watched(Number(query.get('days')) || 14),
     '/comfy/list': (_data, query) => { const list = r.comfy.list(Number(query.get('limit')) || undefined); return { ok: true, ...list, items: list.items.map((file) => ({ ...file, token: videoToken(file) })) } },
     '/dm': () => ({ ...r.dm.status(), watcher: r.watcher.state }),
     '/stickers': r.stickers.list,
-    '/report/latest': () => ({ ok: true, report: r.reports.latest() }),
+    '/report/latest': (_data, query) => ({ ok: true, report: r.reports.read(query.get('date') || undefined), dates: r.reports.dates() }),
     '/setup/log': () => ({ ok: true, ...r.setup.state(), tail: ownedTail(r.paths, 'setup.log') }),
     '/log/tail': () => ({ ok: true, tail: ownedTail(r.paths, 'duty.log'), log: r.paths.file('duty.log') }),
     '/login/browser': () => r.browser.visible(true),
     '/login/browser/close': () => r.browser.visible(false),
     '/login/qr': r.browser.qr,
     '/login/poll': r.browser.poll,
-    '/run': (data) => data.mode === 'headless' ? r.headless.run('http') : r.local.run({ manual: true }),
+    '/run': (data) => runManual(r.config(), data.mode, () => r.local.run({ manual: true }), () => r.headless.run('http')),
     '/persona': (data) => { const text = String(data.text || ''); if (!text.trim()) throw new HttpFailure(400, '人设不能为空'); return r.memory.savePersona(text) },
     '/publish': (data) => {
       if ('video_path' in data || 'path' in data || 'url' in data) throw new HttpFailure(400, '请从宿主输出列表选择视频')

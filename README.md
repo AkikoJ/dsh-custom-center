@@ -19,8 +19,16 @@ navigation (alongside General, Models, Plugins, ...).
 The migration is pinned to dsh-douyin-life 0.2.9, commit
 `aaf9f9a862afafd45a15acf32789da97688de695`. The bundle preserves the 35 tools,
 74 public config fields, 32 HTTP paths, seven settings tabs and conversation video view.
-Known feature and UI gaps remain tracked in the [parity repair checklist](docs/douyin-parity-repair.md).
+F01–F09, U01–U02 and the identified seven-tab content and interaction omissions
+are implemented: optional shared character/timeline/cleanup with local fallback,
+confirmed DM memory writeback, saved run modes, combined likes, bounded QR polling,
+readable historical reports, observation updates and content-based share notes/stickers.
+The [parity acceptance record](docs/douyin-parity-repair.md) distinguishes passing
+offline checks from pending live GUI, shared-service and account acceptance.
+This does not claim visual or real-account equivalence.
 Account actions remain subject to their switches, quotas and explicit authorization.
+The current repair passes typecheck, all 353 tests in 43 files, build, package checks
+and both coexistence load orders. No runtime profile was changed for this repair.
 See the [migration record](docs/douyin-migration.md) for scope, mapping, offline
 acceptance and the cutover/rollback checklist. After building, run
 `pnpm douyin:check-package` to pack and extract the release into a temporary directory,

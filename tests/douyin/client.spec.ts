@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { Context } from '@deepseek-ai/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import baseline from './fixtures/upstream-contract.json'
-import { apply } from '../../src/douyin/client/index.js'
+import { apply, inject } from '../../src/douyin/client/index.js'
 import { FIELDS } from '../../src/douyin/client/fields.js'
 import { dictionaries } from '../../src/douyin/client/messages.js'
 import { ConfigFields } from '../../src/douyin/client/controls.js'
@@ -26,7 +26,8 @@ describe('Douyin browser boundary and public UI contract', () => {
   }
  })
  it('registers independent page and conversation IDs and releases all effects', async () => {
-  const ctx = new Context(), entries: string[] = [], disposed: string[] = [], locales: string[] = []
+  expect(inject).not.toContain('connection')
+   const ctx = new Context(), entries: string[] = [], disposed: string[] = [], locales: string[] = []
    const active = new Set([baseline.settingsId, baseline.conversationViewId])
   ctx.provide('slots', { inject: (_key: string, run: () => () => void) => run(), register: (entry: { id: string }) => { if (active.has(entry.id)) throw new Error('duplicate slot: ' + entry.id); active.add(entry.id); entries.push(entry.id); return () => { active.delete(entry.id); disposed.push(entry.id) } } })
   ctx.provide('locale', { bind: () => (key: string) => key, register: (_ns: string, locale: string) => { locales.push(locale); return () => { locales.splice(locales.indexOf(locale), 1) } } })

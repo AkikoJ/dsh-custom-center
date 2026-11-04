@@ -17,15 +17,16 @@ export function groupVideos(items: Data[]) {
  for (const item of items) { const day = String(item.day || ''); groups.set(day, [...(groups.get(day) || []), item]) }
  return [...groups].sort(([a], [b]) => b.localeCompare(a))
 }
-export function WatchedVideos() {
+export function WatchedVideos({ collapsible = false }: { collapsible?: boolean }) {
+ const [expanded, setExpanded] = useState(!collapsible)
  const t = useText(), resource = useResource('/watched?days=14'), items = rows(resource.data?.items)
- return <section><div className="dy-toolbar"><h2>{t('最近刷过的视频')}</h2><button onClick={resource.refresh}>{t('刷新')}</button></div>
- <Feedback error={resource.error} busy={!resource.data && !resource.error ? 'load' : ''} />
+ return <section><div className="dy-toolbar"><h2>{t('最近刷过的视频')}</h2>{collapsible && <button aria-expanded={expanded} onClick={() => setExpanded((value) => !value)}>{t(expanded ? '收起' : '看它刷过的视频')} · {items.length}</button>}<button onClick={resource.refresh}>{t('刷新')}</button></div>
+ {expanded && <><Feedback error={resource.error} busy={!resource.data && !resource.error ? 'load' : ''} />
  {resource.data && !items.length && <p>{t('暂无记录')}</p>}
  {groupVideos(items).map(([day, videos]) => <section key={day}><h3>{day || t('未知日期')} · {videos.length}</h3><div className="dy-videos">{videos.map((video, index) => {
   const id = String(video.aweme_id || ''), url = platformUrl(video.url, id)
   const content = <><Preview id={id} /><div className="dy-caption"><strong>{String(video.title || id)}</strong><p>{[video.tier, video.stat].filter(Boolean).map(String).join(' · ')}</p></div></>
   return url ? <a key={id + index} className="dy-video" href={url} target="_blank" rel="noreferrer">{content}</a> : <article key={id + index} className="dy-video">{content}</article>
  })}</div></section>)}
- </section>
+ </>}</section>
 }

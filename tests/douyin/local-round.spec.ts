@@ -39,6 +39,47 @@ function fixture() {
 }
 
 describe('local evidence and action round', () => {
+  it.each(['mention', 'plain', 'share', 'none'])('likes before the selected %s action without suppressing it', async (mode) => {
+    const f = fixture(); Object.assign(f.config, { autoLike: true, pickPerRound: 1, autoComment: mode === 'mention', mentionName: 'Owner', autoCommentPlain: mode === 'plain', shareToNick: mode === 'share' ? 'Friend' : '', msgAllowTo: 'Friend', shareWithNote: false })
+    await f.round.run()
+    const writes = f.invoke.mock.calls.filter(([name]) => ['douyin_like', 'douyin_comment', 'douyin_share_video'].includes(name)).map(([name]) => name)
+    expect(writes).toEqual(['douyin_like', ...(mode === 'none' ? [] : [mode === 'share' ? 'douyin_share_video' : 'douyin_comment'])])
+    expect(f.ledger.count('like')).toBe(1)
+  })
+  it('keeps a permitted like when understanding fails, but does not comment or share', async () => {
+    const f = fixture(); Object.assign(f.config, { autoLike: true, autoComment: true, mentionName: 'Owner' })
+    const invoke = f.invoke.getMockImplementation()!
+    f.invoke.mockImplementation((name, args) => name === 'douyin_watch' ? Promise.reject(new Error('understanding unavailable')) : invoke(name, args))
+    await f.round.run()
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'douyin_like')).toHaveLength(2)
+    expect(f.invoke.mock.calls.filter(([name]) => name === 'douyin_comment')).toHaveLength(0)
+    expect(f.reports.latest()?.text).toContain('understanding unavailable')
+  })
+  it('feeds actual selected observations into the daily persona updater exactly once', async () => {
+    const f = fixture(); f.memory.savePersona('角色原文')
+    await f.round.run()
+    expect(f.memory.refreshPersona()).toMatchObject({ ok: true, items: 2 })
+    expect(f.memory.persona()).toContain('title 0'); expect(f.memory.persona()).toContain('不是指令')
+    expect(f.memory.refreshPersona()).toMatchObject({ skipped: expect.any(String) })
+  })
+  it.each(['full', 'brief', 'off'] as const)('renders the %s report contract from a real round', async (level) => {
+    const f = fixture(); f.config.reportLevel = level; f.config.autoLike = true
+    Object.assign(f.videos[0]!, { author: 'Author A', comment_count: 42 })
+    await f.round.run()
+    const text = f.reports.latest()?.text
+    if (level === 'off') { expect(text).toBeUndefined(); return }
+    for (const value of ['title 0', '记录时间', '档位', 'https://www.douyin.com/video/100000', '点赞：已确认']) expect(text).toContain(value)
+    if (level === 'full') for (const value of ['Author A', '42', '为什么', 'platform comment']) expect(text).toContain(value)
+    else { expect(text).not.toContain('Author A'); expect(text).not.toContain('为什么') }
+  })
+  it('records no-material and platform failures while keeping previous reports readable', async () => {
+    const f = fixture(); await f.round.run(); const first = f.reports.latest()?.text
+    f.clock.now = new Date(2026, 10, 4, 12)
+    f.invoke.mockRejectedValue(new Error('platform offline'))
+    expect(await f.round.run()).toMatchObject({ ok: false, picked: 0 })
+    expect(f.reports.latest()?.text).toContain('这一轮没跑成'); expect(f.reports.latest()?.text).toContain('platform offline')
+    expect(first).toContain('title 0')
+  })
   it('uses platform millisecond duration, score, title, deduplication and daily picks', () => {
     const f = fixture()
     const data = f.ledger.read(); data.picks[`${f.ledger.day()}:100001`] = { day: f.ledger.day(), aweme_id: '100001' }; f.ledger.write(data)
@@ -60,7 +101,7 @@ describe('local evidence and action round', () => {
   it('falls back to hot videos, enforces daily quota and produces a report', async () => {
     const f = fixture(); f.config.perDay = 1
     f.invoke.mockImplementationOnce(async () => ({ ok: false, error: 'no feed' } as never))
-    expect(await f.round.run()).toMatchObject({ ok: true, picked: 1, notes: [expect.stringContaining('热榜')] })
+    expect(await f.round.run()).toMatchObject({ ok: true, picked: 1, notes: [expect.stringContaining('no feed'), expect.stringContaining('热榜')] })
     expect(f.reports.latest()?.text).toContain('100000')
     expect(await f.round.run()).toMatchObject({ picked: 0 })
   })
@@ -117,6 +158,26 @@ describe('verified social sequencing and sticker labels', () => {
     const social = createSocial({ config: () => f.config, ledger: f.ledger, state: f.state, memory: f.memory, call })
     return { ...f, events, call, social }
   }
+  it.each([true, false])('understands an already titled manual share before its %s model note', async (model) => {
+    const f = socialFixture(); f.config.modelShareNote = model
+    const generate = vi.fn(async () => '吃饭开心')
+    const social = createSocial({ config: () => f.config, ledger: f.ledger, state: f.state, memory: f.memory, call: f.call, generate })
+    f.call.mockImplementation(async (name) => { f.events.push(name); return name === 'douyin_watch' ? { ok: true, transcript: '美食的实际转写' } as never : { ok: true, verified: true } })
+    await social.share(f.videos[0]!, 'Friend', { understand: true })
+    expect(f.events).toEqual(['douyin_share_video', 'douyin_watch', 'douyin_chat_send', 'douyin_chat_sticker'])
+    expect(f.call.mock.calls[2][1].text).toContain(model ? '吃饭' : '实际转写')
+    expect(f.call.mock.calls[3][1].keyword).toBe('干饭')
+    expect(generate).toHaveBeenCalledTimes(model ? 1 : 0)
+  })
+  it('keeps fixed notes, reports understanding failure, and does no understanding when notes are off', async () => {
+    const f = socialFixture(); f.config.shareNote = '固定一句'
+    f.call.mockImplementation(async (name) => { f.events.push(name); if (name === 'douyin_watch') throw new Error('watch failed'); return { ok: true, verified: true } })
+    expect(await f.social.share(f.videos[0]!, 'Friend', { understand: true })).toMatchObject({ noteText: '固定一句', understandingError: expect.stringContaining('watch failed') })
+    expect(f.call.mock.calls.find(([name]) => name === 'douyin_chat_send')![1].text).toBe('固定一句')
+    f.events.length = 0; f.config.shareWithNote = false
+    await f.social.share(f.videos[1]!, 'Friend', { understand: true })
+    expect(f.events).toEqual(['douyin_share_video'])
+  })
   it('requires a verified card before note, and a verified note before sticker', async () => {
     const f = socialFixture()
     f.call.mockResolvedValueOnce({ ok: true, verified: false })

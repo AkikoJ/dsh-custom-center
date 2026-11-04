@@ -9,6 +9,7 @@ import { createActionExecutor, type Invoke } from './action-executor.js'
 import { createBrowser } from './browser.js'
 import { createSetup } from './setup.js'
 import { createContent } from './content.js'
+import { createSharedMemory } from './shared-memory.js'
 import { createMemory } from './memory.js'
 import { createReports } from './reports.js'
 import { createComfy } from './comfy.js'
@@ -72,15 +73,16 @@ export function createDouyinRuntime(deps: RuntimeDependencies = {}) {
     if (!stoppingListener) currentExecution().signal?.throwIfAborted()
     return executor.call(name, args, options)
   }
-  const memory = createMemory(paths, state, now), reports = createReports(paths, ledger), content = createContent(config, call)
+  const shared = createSharedMemory(call, log)
+  const memory = createMemory(paths, state, now, shared.writeDm), reports = createReports(paths, ledger), content = createContent(config, call)
   const browser = createBrowser({ paths, config, persist, invoke: call, restart: python.restart, env: python.env }, state)
   const setup = createSetup(paths, python, persist), comfy = createComfy({ config, log }), publication = createPublication(config, ledger, comfy, call)
   const images = createImageAccess({ paths, config, fetch: createImageFetcher(), attachments: deps.attachments ?? (() => undefined), credentials: deps.credentials ?? (() => undefined), log })
   const text = createTextModel({ config, services: deps.services ?? (() => ({})), images, log })
-  const replies = createReplies({ config, ledger, history, memory, call, generate: text.generate, describe: (url) => images.describe(url, currentExecution().signal), persist })
+  const replies = createReplies({ config, ledger, history, memory, call, generate: text.generate, describe: (url) => images.describe(url, currentExecution().signal), persist, sharedMemory: shared.recent })
   const headless = createHeadless({ paths, config, ledger, state, runtime: python, call, prompt: () => headlessPrompt({ config: config(), paths, ledger, memory, reports }), log })
   const busy = () => headless.busy() || local.busy() || setup.running()
-  const dm = createDm({ config, ledger, history: createDmHistory(paths, now), memory, reports, call, generate: text.generate, run: headless.run, busy, sharedMemory: deps.sharedMemory, log })
+  const dm = createDm({ config, ledger, history: createDmHistory(paths, now), memory, reports, call, generate: text.generate, run: headless.run, busy, sharedMemory: deps.sharedMemory ?? shared.context, log })
   const social = createSocial({ config, ledger, state, memory, call, generate: text.generate })
   const local = createLocalRound({ config, ledger, state, memory, reports, content, social, call })
   const cleanup = createCleanup(paths, busy, state), stickers = createStickers(paths)

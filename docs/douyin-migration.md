@@ -106,7 +106,7 @@ HTTP 统一执行回环、来源、浏览器请求标记及服务端资源根检
 
 ## 最终验收与边界
 
-2026-11-04 的最终离线验收覆盖类型检查、38 个测试文件的 307 项测试、声明及宿主/浏览器构建。
+2026-11-04 的本轮离线验收覆盖类型检查、43 个测试文件的 353 项测试、声明及宿主/浏览器构建。F01–F09、U01–U02 和确认的七页签内容/交互遗漏已修复；逐项实现、测试和现场待验收状态见[修复验收记录](douyin-parity-repair.md)。共享角色卡/时间线/清理、本地回退、确认后的共享写回、默认运行模式、点赞组合、扫码轮询、历史日报及内容驱动分享均有代码与行为验证，尚不构成视觉或账号完全一致声明。
 架构检查覆盖手写 TS/TSX 与测试 800 行上限、无环依赖、功能边界、无入口反向导入及浏览器无 Node 依赖。
 
 ```sh
@@ -114,6 +114,7 @@ pnpm --config.verify-deps-before-run=false typecheck
 pnpm --config.verify-deps-before-run=false test
 pnpm --config.verify-deps-before-run=false build
 pnpm --config.verify-deps-before-run=false douyin:check-package
+pnpm douyin:check-coexistence ../dsh_douyin_tools
 ```
 
 [打包验收脚本](../scripts/douyin-package-check.mjs)以离线模式执行 npm pack，将实际发布包解压到仓库外临时目录，
@@ -121,7 +122,7 @@ pnpm --config.verify-deps-before-run=false douyin:check-package
 使用宿主 SDK 与服务替身装卸 35 个工具和 32 条路由，执行只读状态工具核对固定提交，
 两次运行独立导入并确认旧目录字节不变、自定义脚本保留且出现 `.new`，从其他 cwd 运行随包视频 doctor。
 浏览器工厂通过共享 React、JSX runtime 与 UI primitive 模块替身加载；这一步不渲染页面。
-脚本保留临时目录并打印位置，便于核对包内容；没有安装运行 profile 或访问真实账号。
+脚本保留临时目录并打印位置，便于核对包内容；没有安装运行 profile 或访问真实账号。共存检查同时验证两种加载顺序和中心版卸载后旧入口保留，不要求停用旧插件。
 
 已验证的是业务与生命周期离线行为及发布物可加载性。真实 Chromium 页面选择器、扫码/短信、平台卡片回执、
 模型提供方、ComfyUI 服务和正式 GUI 的视觉/交互需要部署环境验收。

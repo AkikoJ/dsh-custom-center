@@ -1,4 +1,5 @@
 import type { ToolDefinition, ToolRuntime } from '@deepseek-ai/dsh-tools'
+import { runManual } from './run-mode.js'
 import { TOOL_CONTRACTS } from '../contracts.js'
 import type { DouyinRuntime } from './runtime.js'
 import { withExecution } from './execution-context.js'
@@ -27,7 +28,7 @@ export function toolHandlers(runtime: DouyinRuntime) {
     cc_dy_dm_round: r.dm.round,
     cc_dy_share: async (a) => {
       const video = a.title ? a : { ...resultObject(await r.content.video(a)), aweme_id: a.aweme_id }
-      return r.social.share(video, String(a.to || r.config().shareToNick))
+      return r.social.share(video, String(a.to || r.config().shareToNick), { understand: true })
     },
     cc_dy_thumb: r.content.thumb,
     cc_dy_my_posts: r.content.posts,
@@ -48,7 +49,7 @@ export function toolHandlers(runtime: DouyinRuntime) {
     },
     cc_dy_publish: r.publication.publish,
     cc_dy_comfy_list: (a) => r.comfy.list(Number(a.limit) || undefined),
-    cc_dy_run: (a) => a.mode === 'headless' ? r.headless.run('manual') : r.local.run({ manual: true }),
+    cc_dy_run: (a) => runManual(r.config(), a.mode, () => r.local.run({ manual: true }), () => r.headless.run('manual')),
     cc_dy_selfcheck: r.status.selfcheck,
   }
   return handlers
