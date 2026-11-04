@@ -31,7 +31,7 @@
 | lib/actions.mjs、账本及写入守卫 | server/actions.ts、ledger.ts、action-policy.ts、action-executor.ts |
 | lib/mcp.mjs、process.mjs、action-proxy.mjs | server/mcp.ts、process.ts、action-proxy.ts |
 | lib/dsh-cli.mjs、headless overlay 和启动 | server/headless.ts、cli.ts |
-| index.js Chrome/CDP、登录、采集 | server/browser.ts、tools/ 下的登录和内容工具 |
+| index.js Chrome/CDP、登录、采集 | [browser.ts](../src/douyin/server/browser.ts)、[content.ts](../src/douyin/server/content.ts) |
 | index.js 私信、回复、发布、ComfyUI | server/ 下按业务职责拆分，共用执行守卫 |
 | index.js 定时器、清理、日报、记忆 | server/scheduler.ts、cleanup.ts、reports.ts、memory.ts |
 | client.js 页面状态、七页签、视频视图 | client/ 下 TS/TSX 模块，通过中心浏览器入口装配 |
@@ -41,7 +41,7 @@
 | package.json 上游版本和元信息 | resources/douyin/upstream.json |
 | 源测试、自检、文档、资源、许可证 | tests/douyin/、docs/、resources/douyin/、LICENSE-douyin |
 
-独立宿主入口使用 dsh-custom-center/douyin，Loader 行及设置页仍为 douyin-life，会话视图仍为 douyin-watched，HTTP 前缀仍为 /api/douyin-duty。未完成模块在前期批次保持未挂载。
+独立宿主入口使用 dsh-custom-center/douyin，Loader 行及设置页仍为 douyin-life，会话视图仍为 douyin-watched，HTTP 前缀仍为 /api/douyin-duty。最终 Bundle 已装配全部模块；下方批次记录中的“未挂载”是各阶段历史状态。
 
 ## 必要适配
 
@@ -52,6 +52,99 @@
 HTTP 统一执行回环、来源、浏览器请求标记及服务端资源根检查。工具原有显式路径功能保留。界面资源访问随之同步调整。
 
 上游版本独立存储，不能将目标包 0.1.0 用作上游版本。Python、提示词、视频理解和 CLI 定位在打包后独立验证。
+
+## 最终工具与路由映射
+
+全部工具仍使用原 `dy_` 名称，参数和默认值与[冻结快照](../tests/douyin/fixtures/upstream-contract.json)核对；
+注册入口见 [tools.ts](../src/douyin/server/tools.ts)。下表按业务归属列出全部 35 项。
+
+| 目标职责 | 保留工具 |
+| --- | --- |
+| 状态和配置 | `dy_status`、`dy_config`、`dy_selfcheck` |
+| Chrome 与登录 | `dy_chrome_open`、`dy_whoami`、`dy_login_start`、`dy_login_poll`、`dy_login_sms`、`dy_login_sms_submit` |
+| 视频采集和理解 | `dy_feed`、`dy_hot`、`dy_hot_videos`、`dy_search`、`dy_video`、`dy_comments`、`dy_watch`、`dy_thumb`、`dy_my_posts` |
+| 评论和写动作 | `dy_like`、`dy_comment`、`dy_reply`、`dy_reply_round`、`dy_reconcile_pending` |
+| 私信和分享 | `dy_chat_send`、`dy_chat_sticker`、`dy_dm_inbox`、`dy_dm_poll`、`dy_dm_round`、`dy_share` |
+| 投稿和生成 | `dy_publish`、`dy_my_videos`、`dy_comfy_list` |
+| 轮次和维护 | `dy_run`、`dy_remember`、`dy_cleanup` |
+
+[路由表](../src/douyin/server/routes.ts)保留 32 个精确路径，共用 `/api/douyin-duty` 前缀：
+
+| 方法 | 路径后缀 |
+| --- | --- |
+| GET | `/update/check`、`/status`、`/thumb`、`/memory`、`/watched`、`/cover`、`/comfy/list`、`/dm`、`/stickers`、`/report/latest`、`/setup/log`、`/log/tail` |
+| GET / POST | `/config` |
+| POST | `/login/browser`、`/login/browser/close`、`/login/qr`、`/login/poll`、`/run`、`/persona`、`/publish`、`/dm/seen/clear`、`/dm/test`、`/stickers/tags`、`/stickers/test`、`/reply/round`、`/login/sms`、`/login/sms/submit`、`/setup`、`/selfcheck`、`/chrome/open`、`/log`、`/open` |
+
+设置保留日常、刷视频、互动、私信、表情包、记忆、高级七个页签及 `douyin-watched` 会话视图；
+[字段归属](../src/douyin/client/fields.ts)覆盖 74 个公开配置字段并注册双语标签。
+配置保存通过差异补丁保留保存期间的新输入，服务器统一清洗字段并同步宿主配置。
+
+## 旧目录映射
+
+下列目标均相对统一数据根，完整映射由 [paths.ts](../src/douyin/server/paths.ts)维护。
+
+| 原名称 | 新位置 |
+| --- | --- |
+| `config.json` | `config/config.json` |
+| `ledger.json`、`day-ledger/` | `ledger/ledger.json`、`ledger/days/` |
+| `replied-cids.jsonl`、`replied-users.jsonl` 及旧文本索引 | `ledger/`，保留跨日去重 |
+| `state.json`、`dm-cursors.json`、`dm-sent.json`、`dm-log/` | `state/`，保留旧私信数据形状与持久游标 |
+| `out/` | `reports/` |
+| `memory/` | `memory/` |
+| `duty.md`、`persona.md`、提示词哈希和备份 | `prompts/` |
+| `mcp_server.py`、脚本哈希和备份 | `runtime/` |
+| `browser/` | `browser/`，不作为可清理缓存 |
+| `thumbs/`、`media/`、`models/`、`shots/`、表情和临时目录 | `cache/` 对应子目录 |
+| 日志 | `logs/` |
+| `.venv/` | 不复制，安装后在 `python/.venv/` 重建 |
+| 其余持久文件 | `state/legacy/`，保留原相对路径 |
+
+自定义脚本和人设保留；新版受管脚本写入 `.new` 供人工比较。
+导入仅重写指向旧应用自有路径的配置，外部 Chrome、工作区、ComfyUI 和自定义路径保持原值。
+发生冲突时不覆盖目标，退出码为 2；处理冲突后用相同参数重跑，导入清单记录校验进度。
+
+## 最终验收与边界
+
+2026-11-04 的最终离线验收覆盖类型检查、38 个测试文件的 307 项测试、声明及宿主/浏览器构建。
+架构检查覆盖手写 TS/TSX 与测试 800 行上限、无环依赖、功能边界、无入口反向导入及浏览器无 Node 依赖。
+
+```sh
+pnpm --config.verify-deps-before-run=false typecheck
+pnpm --config.verify-deps-before-run=false test
+pnpm --config.verify-deps-before-run=false build
+pnpm --config.verify-deps-before-run=false douyin:check-package
+```
+
+[打包验收脚本](../scripts/douyin-package-check.mjs)以离线模式执行 npm pack，将实际发布包解压到仓库外临时目录，
+确认入口、声明、许可证、元信息和 Python/提示词资源齐全，且不包含 vendor、虚拟环境或 Python 字节码。
+使用宿主 SDK 与服务替身装卸 35 个工具和 32 条路由，执行只读状态工具核对固定提交，
+两次运行独立导入并确认旧目录字节不变、自定义脚本保留且出现 `.new`，从其他 cwd 运行随包视频 doctor。
+浏览器工厂通过共享 React、JSX runtime 与 UI primitive 模块替身加载；这一步不渲染页面。
+脚本保留临时目录并打印位置，便于核对包内容；没有安装运行 profile 或访问真实账号。
+
+已验证的是业务与生命周期离线行为及发布物可加载性。真实 Chromium 页面选择器、扫码/短信、平台卡片回执、
+模型提供方、ComfyUI 服务和正式 GUI 的视觉/交互需要部署环境验收。
+本机缺少 faster-whisper，未下载模型；视频 doctor 成功仅表明诊断入口可执行，不能替代视频转写就绪检查。
+既有 Skills 测试的 React key spread 提示与本次迁移无关，测试保持通过。
+
+## 切换与回退
+
+以下步骤是部署操作说明，本次没有执行：
+
+1. 停止旧插件的定时任务、后台会话、Python MCP 和使用旧目录的浏览器；确认没有活进程占用。
+2. 保留旧目录备份，构建新包。在任何新任务启动前执行 `pnpm douyin:import --legacy-stopped`；
+   需要时添加 `--source /旧目录 --target /新目录`，运行环境使用同一个 `DSH_DOUYIN_HOME`。
+3. 检查导入清单、完成标记、冲突和虚拟环境重建标记。保留冲突双方，解决后重跑；不手工删除不明占用锁。
+4. 检查导入配置中的自动开关、固定联系人、额度、作品范围及自定义脚本差异。在同一运行 profile 中停用旧入口，
+   再通过官方 Bundle/profile 机制启用新包，保证只有一套抖音调度器和账号执行器。
+5. 在设置页重建 Python 环境，显式运行自检并核对登录账号；先检查状态、配置、视频列表和报告。
+   扫码、短信和平台写动作只在账号本人明确授权后分别验收。
+6. 重新打开或刷新正式 GUI，检查七页签、会话视图、主题、窄屏布局、键盘切换、配置保存、取消和卸载。
+   仅在只读检查及对应动作验收完成后开启需要的自动功能。
+7. 若回退，先停止新入口并等待进程和在途请求退出，保留新目录、未知发送记录及确认回执。
+   重新启用旧入口前先核对新旧账本和永久去重记录；导入是单向复制，旧目录不会自动取得新动作记录，
+   不能在尚有未知发送时直接恢复自动重发。旧目录和新目录均保留，禁止并行运行两套入口。
 
 ## 批次与验证
 
@@ -72,3 +165,4 @@ HTTP 统一执行回环、来源、浏览器请求标记及服务端资源根检
 13. 七页签、74 个公开字段、会话视频视图与 Bundle 声明：完成。类型检查、298 项测试与双端构建通过。中心浏览器入口挂载独立抖音 fiber，保留 douyin-life 与 douyin-watched；所有新文案注册中英字典，沿用宿主主题令牌。设置保留草稿及保存期间新输入；键盘支持左右键、Home、End 切换页签。视频图片使用带来源标记的认证请求与对象 URL，卸载时取消并释放；原片地址限制为 HTTPS 抖音作品。登录、固定联系人私信和表情测试、收藏标签、记忆、人设、环境维护与文件凭据投稿均复用宿主操作。投稿先选择列表项目，再明确确认草稿或正式发布。新增离线合同、注册卸载、翻译和请求边界测试；未安装 profile、刷新当前 GUI、启动浏览器或使用真实账号。
 14. 取消、超时与卸载期间的进程收尾：完成。类型检查、304 项测试与双端构建通过。命令和 MCP 超时或取消后等待 close，必要时升级 SIGKILL，确认退出后才拒绝在途调用；运行环境切换串行等待旧进程结束。卸载信号穿透嵌套执行上下文，安装及 ComfyUI 请求继承取消；事件监听停止保留清理通道。新增延迟退出替身验证、预取消、卸载与工作流取消测试，补齐工具白名单末尾换行拒绝。推荐轮次拒绝非有限评分输入，并在取消或卸载后停止热榜回退。首次全量测试发现预取消由异步拒绝变为同步抛错，已恢复原接口并复验。未启动平台账号或真实工作流。
 15. 资源部署、文件打开、导入锁恢复及后台代理排空复核：完成。类型检查、307 项测试及双端构建通过。资源采用私有临时文件和原子发布，拒绝目录、脚本、哈希、备份及新版侧文件符号链接，保护用户自定义脚本；读取文件核对描述符 inode、设备及物理位置。导入恢复锁加入独占恢复目录，不抢占不明恢复过程。后台任务持有独立取消信号，结束时先取消在途平台操作，再撤销并排空代理、等待进程退出与回调；新增挂起平台替身验证停止能完整结束。未操作真实账号或运行 profile。
+16. 发布物验收及交付文档：完成。类型检查、307 项测试、双端构建及 `douyin:check-package` 通过。实际 npm 发布包在仓库外解压，验证宿主装卸、固定版本状态、独立重复导入、自定义资源保留、浏览器工厂及随包 doctor；校验许可证、声明、双语指南和迁移文档随包发布。显式声明仅内联官方 SDK 小型值构造器，Cordis/Schemastery 仍由宿主提供。补齐全部工具、路由、目录映射及切换/回退说明，并同步领域词汇和当前架构。未修改源仓库、推送、安装或切换 profile。

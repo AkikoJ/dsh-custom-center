@@ -7,10 +7,8 @@
  *   the DSH Web GUI's __ModuleLoader__ expects. The module table entries are
  *   external; everything else is inlined.
  *
- * CSS Modules and the shared dsh-web build preset are intentionally not wired
- * yet: this scaffold has no UI code. When the client half grows React views,
- * add a CSS-modules plugin (lightningcss) or move the project into the dsh-web
- * monorepo and use its shared/tsdown.client.ts preset instead of copying it.
+ * Feature styles are scoped strings registered by their browser components.
+ * The standalone client shares React and shell modules through the loader table.
  */
 import type { UserConfig } from 'tsdown'
 
@@ -42,6 +40,7 @@ const host: UserConfig = {
   dts: false,
   clean: false,
   deps: {
+    onlyBundle: ['@deepseek-ai/dsh-brand', '@deepseek-ai/dsh-credentials', '@deepseek-ai/dsh-llm'],
     neverBundle: [
       '@deepseek-ai/cordis',
       '@deepseek-ai/schemastery',

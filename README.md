@@ -2,8 +2,8 @@
 
 [中文](README.zh.md)
 
-A standalone **DSH Web GUI plugin** that adds three dedicated pages to the
-Settings sidebar: **Appearance**, **Context & Compaction** and **Skills**.
+A standalone **DSH Web GUI plugin** that adds four dedicated pages to the
+Settings sidebar: **Appearance**, **Context & Compaction**, **Skills** and **Douyin**.
 Appearance reskins the DeepSeek Harness UI with a custom image/video wallpaper
 whose palette is sampled from the picture; Context & Compaction sets the model
 context window and the automatic compaction policy; Skills manages DSH's own
@@ -17,10 +17,14 @@ navigation (alongside General, Models, Plugins, ...).
 ## Douyin migration
 
 The migration is pinned to dsh-douyin-life 0.2.9, commit
-`aaf9f9a862afafd45a15acf32789da97688de695`. The first batch records the
-upstream license and frozen contracts; it does not activate account automation.
-See the [migration record](docs/douyin-migration.md) for scope, mapping and
-validation status.
+`aaf9f9a862afafd45a15acf32789da97688de695`. The bundle preserves the 35 tools,
+74 public config fields, 32 HTTP paths, seven settings tabs and conversation video view.
+Account actions remain subject to their switches, quotas and explicit authorization.
+See the [migration record](docs/douyin-migration.md) for scope, mapping, offline
+acceptance and the cutover/rollback checklist. After building, run
+`pnpm douyin:check-package` to pack and extract the release into a temporary directory,
+exercise both entries and resumable import, and run the packaged video doctor.
+It uses local substitutes and does not install a runtime profile.
 
 The data root is `DSH_DOUYIN_HOME`, then
 `<DSH_HOME>/dsh-custom-center/douyin`, then `~/.dsh/dsh-custom-center/douyin`.
@@ -36,14 +40,14 @@ Import preserves the old directory, refuses target conflicts, verifies file hash
 and resumes from its manifest on retry. Exit code 2 means unresolved conflicts;
 no completion marker is written until every file is verified. Rebuild the Python
 environment through setup after switching; the old virtual environment is not copied.
-The runtime feature remains unmounted during these implementation batches.
+The standalone host entry is declared in the bundle patch.
 Packaged Python MCP, video-understanding commands and prompts use the same root.
 Child processes receive explicit cache/model/temporary paths. Runtime deployment
 preserves custom scripts and persona text; newer scripts are staged as `.new` files.
 The shared account executor now serializes writes across processes, reserves uncertain
 sends, records only verified receipts, and preserves reply deduplication across days.
-Its offline tests use temporary state and backend substitutes; account automation is
-still unmounted until the remaining business and UI migration is complete.
+Its offline tests use temporary state and backend substitutes; runtime profile installation
+and real-account acceptance remain separate deployment steps.
 Browser login orchestration, ComfyUI workflow outputs, monthly memory, reports and
 owned-resource cleanup are now separate modules with offline lifecycle and path checks.
 Interpreter and MCP lifecycle, cancellable dependency setup, content reads, publication
@@ -150,11 +154,12 @@ Legibility over a photo is checked rather than assumed:
 | Part | State |
 | --- | --- |
 | Bundle manifest | `dsh.bundle.patch` points at `cordis.patch.yml` |
-| Loader row | `ui-custom-center` -> package `dsh-custom-center` |
+| Loader row | `ui-custom-center` -> package `dsh-custom-center`; `douyin-life` -> `dsh-custom-center/douyin` |
 | Host half | `src/index.ts`: `Config.enabled` / `Config.skills` settings page plus the wallpaper library routes (`src/appearance/server/library.ts`), the context/compaction routes (`src/tuning/server/routes.ts`) and the skills child plugin (`src/skills/index.ts`, injects `skills`, `tools`, `sessions`) |
 | Browser half | `src/client/index.ts`: registers the Appearance and Context & Compaction `settings.section` pages and mounts the Skills page as a child plugin (`src/skills/client.ts`, injects `locale`) |
 | Feature logic | `src/appearance/` (colour, palette, sampling, media rules), `src/tuning/` (model window and compaction), and existing tests |
 | Shared boundary | `src/shared/`: plugin config, cross-feature page/control styles, browser/host adapters, request marker and loopback check |
+| Douyin | [Standalone host](src/douyin/index.ts) owns tools, routes and automation; [browser child](src/douyin/client/index.ts) registers seven settings tabs and the watched-video conversation view through the center entry. |
 | Build | `tsc` declarations + `tsdown` host/client bundles |
 
 The browser half registers into the `settings.section` slot (full settings
@@ -165,7 +170,7 @@ lacks a service it needs, only the Skills page is missing.
 ## Code structure
 
 Source is organized by feature: appearance (`appearance`), context and compaction
-(`tuning`), and skills (`skills`). Each feature separates browser UI and interaction
+(`tuning`), skills (`skills`), and Douyin (`douyin`). Each feature separates browser UI and interaction
 (`client/`), host services and side effects (`server/`), and data contracts and pure
 rules that do not depend on either environment. Cross-feature foundations live in
 `shared/`. The package entries, `src/index.ts` and `src/client/index.ts`, only assemble
@@ -355,8 +360,8 @@ dsh plugin --profile web add link:$(pwd)
 # refresh the DSH Web GUI afterwards
 ```
 
-After the refresh, open Settings — **Appearance**, **Context & Compaction** and
-**Skills** entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
+After the refresh, open Settings — **Appearance**, **Context & Compaction**,
+**Skills** and **Douyin** entries appear in the sidebar. In Appearance, choose an image/video wallpaper,
 press Preview to try it (changes apply live), then Save to keep it; Restore
 default clears everything. In Context & Compaction, adjust the model window and
 compaction values, then press Save. In Skills, open **Other agents** to

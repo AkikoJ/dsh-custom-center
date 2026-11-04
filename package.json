@@ -50,6 +50,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "douyin:import": "node lib/douyin-import.js",
+    "douyin:check-package": "node scripts/douyin-package-check.mjs",
     "watch": "tsdown --watch"
   },
   "peerDependencies": {
@@ -95,7 +96,10 @@
     "README.zh.md",
     "LICENSE",
     "LICENSE-skills-manager",
+    "README.zh.md",
     "LICENSE-douyin",
+    "docs/douyin-migration.md",
+    "docs/adr/0003-douyin-runtime-and-import.md",
     "resources/douyin"
   ],
   "license": "MIT",

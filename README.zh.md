@@ -2,8 +2,8 @@
 
 [English](README.md)
 
-一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增三个独立页面：「外观」、
-「上下文与压缩」和「技能」。「外观」用自定义图片 / 视频壁纸给 DeepSeek Harness
+一个独立的 **DSH Web GUI 插件**，在设置侧边栏里新增四个独立页面：「外观」、
+「上下文与压缩」、「技能」和「刷抖音」。「外观」用自定义图片 / 视频壁纸给 DeepSeek Harness
 界面换肤，配色自动跟随画面主色调；「上下文与压缩」设置模型上下文窗口与自动压缩
 阈值；「技能」管理 DSH 自己的技能，并展示其他 Agent 的技能供你同步到 DSH（改自
 [dsh-skills-manager](https://github.com/MichengAI/dsh-skills-manager)）。
@@ -14,8 +14,11 @@
 ## 抖音迁移
 
 迁移固定在 dsh-douyin-life 0.2.9、提交
-`aaf9f9a862afafd45a15acf32789da97688de695`。首批记录上游许可证与完整合同，
-尚不激活账号自动化。范围、映射和验证状态见[迁移记录](docs/douyin-migration.md)。
+`aaf9f9a862afafd45a15acf32789da97688de695`。Bundle 保留 35 个工具、74 个公开配置字段、
+32 条 HTTP 路径、七个页签和会话视频视图；账号动作仍受开关、额度及明确授权约束。
+范围、映射、离线验收及切换/回退清单见[迁移记录](docs/douyin-migration.md)。
+构建后运行 `pnpm douyin:check-package`，在临时目录打包和解压发布物，验证双端入口、
+可恢复导入及随包视频 doctor。该检查使用本地替身，不安装运行 profile。
 
 数据根依次使用 `DSH_DOUYIN_HOME`、`<DSH_HOME>/dsh-custom-center/douyin`、
 `~/.dsh/dsh-custom-center/douyin`。先停止旧插件、浏览器和后台任务，再构建并执行：
@@ -28,11 +31,11 @@ pnpm douyin:import --legacy-stopped
 
 导入保留旧目录，拒绝覆盖目标冲突，校验文件哈希，重试时从清单恢复。
 退出码 2 表示存在未解决冲突；全部文件校验完成后才写完成标记。
-切换后通过安装流程重建 Python 环境，旧虚拟环境不复制。当前实现批次暂不挂载运行功能。
+切换后通过安装流程重建 Python 环境，旧虚拟环境不复制。Bundle 已声明独立抖音宿主入口。
 随包 Python MCP、视频理解命令和提示词使用同一数据根；子进程显式接收缓存、模型及临时目录。
 运行资源部署保留自定义脚本和人设，新版脚本另存为 `.new` 文件。
 统一账号执行模块已支持跨进程序列化、未确认发送的额度预留、仅凭确认回执记账及跨日回复去重。
-离线测试使用临时状态和平台替身；其余业务与界面迁移完成前仍不挂载账号自动化。
+离线测试使用临时状态和平台替身；运行 profile 安装及真实账号验收属于另行执行的部署步骤。
 浏览器登录编排、ComfyUI 工作流输出、按月记忆、日报及自有资源清理已拆为独立模块，
 并通过离线生命周期和路径边界检查。
 解释器及 MCP 生命周期、可取消依赖安装、内容读取、投稿前置检查和短回复轮次也已拆分；
@@ -98,11 +101,12 @@ Bundle 已声明独立抖音宿主行，中心浏览器入口已接入七页签�
 | 部分 | 状态 |
 | --- | --- |
 | Bundle 清单 | `dsh.bundle.patch` 指向 `cordis.patch.yml` |
-| Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center` |
+| Loader 行 | `ui-custom-center` -> 包名 `dsh-custom-center`；`douyin-life` -> `dsh-custom-center/douyin` |
 | Host 半区 | `src/index.ts`：`Config.enabled` / `Config.skills` 设置页 + 壁纸库路由（`src/appearance/server/library.ts`）+ 上下文/压缩路由（`src/tuning/server/routes.ts`）+ 技能子插件（`src/skills/index.ts`，注入 `skills`、`tools`、`sessions`） |
 | 浏览器半区 | `src/client/index.ts`：注册「外观」「上下文与压缩」两个 `settings.section` 页面，并以子插件挂载「技能」页（`src/skills/client.ts`，注入 `locale`） |
 | 功能逻辑 | `src/appearance/`（配色、皮肤、取色、媒体规则）、`src/tuning/`（模型窗口与压缩）及既有测试 |
 | 共享边界 | `src/shared/`：插件配置、跨功能页面/控件样式、浏览器/宿主适配、请求标记与回环判断 |
+| 抖音 | [独立宿主](src/douyin/index.ts)负责工具、路由及自动化；[浏览器子插件](src/douyin/client/index.ts)通过中心入口注册七页签和会话视频视图。 |
 | 构建 | `tsc` 声明 + `tsdown` host/client 产物 |
 
 浏览器半区注册到 `settings.section` 插槽（带独立导航条目的完整设置页），
@@ -111,7 +115,7 @@ Bundle 已声明独立抖音宿主行，中心浏览器入口已接入七页签�
 
 ## 代码结构
 
-源码按外观（`appearance`）、调优（`tuning`）、技能（`skills`）三个功能组织。
+源码按外观（`appearance`）、调优（`tuning`）、技能（`skills`）、抖音（`douyin`）四个功能组织。
 每个功能内部再区分浏览器界面与交互（`client/`）、宿主服务与副作用（`server/`），
 以及不依赖运行环境的数据合同和纯规则。跨功能基础能力放在 `shared/`。
 `src/index.ts` 和 `src/client/index.ts` 是包的两个入口，只负责装配；Skills 保留独立子插件入口。
@@ -294,7 +298,7 @@ dsh plugin --profile web add link:$(pwd)
 # 完成后刷新 DSH Web 界面
 ```
 
-刷新后打开「设置」，侧边栏会出现「外观」「上下文与压缩」「技能」三个条目。在「外观」里点
+刷新后打开「设置」，侧边栏会出现「外观」「上下文与压缩」「技能」「刷抖音」四个条目。在「外观」里点
 「选择图片 / 视频」设置壁纸，先「预览」（预览中所有更改立即生效），满意再「保存」；
 「恢复默认」会清除全部设置。在「上下文与压缩」里调整模型窗口与压缩参数后点「保存」。在「技能」页打开「其他 Agent」页签，
 可以查看其他 Agent 的技能，并把需要的同步到 DSH。

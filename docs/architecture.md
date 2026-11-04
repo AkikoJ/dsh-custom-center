@@ -1,10 +1,12 @@
 # 当前代码架构与文件职责
 
-更新日期：2026-10-30。本页描述职责拆分后的实际源码；本轮范围和验证见
-[职责重构验证记录](responsibility-refactoring-validation.md)。
+更新日期：2026-11-04。本页描述实际源码；原重构验证见
+[职责重构验证记录](responsibility-refactoring-validation.md)，抖音范围和最终验证见
+[迁移记录](douyin-migration.md)。
 
-项目按外观、调优、技能三个功能组织，每个功能内部区分浏览器、宿主和纯逻辑。
-保留 Host / Browser 两个包入口及 Skills 原有子插件边界；入口只装配服务、页面、路由和清理函数。
+项目按外观、调优、技能、抖音四个功能组织，每个功能内部区分浏览器、宿主和纯逻辑。
+保留中心 Host / Browser 包入口及 Skills 子插件边界；抖音使用独立 Host 导出及中心 Browser 子插件。
+入口只装配服务、页面、路由和清理函数。
 此次在 ADR-0002 的功能目录基础上继续拆分内部职责；ADR 和此前方案保留当时的历史含义。
 
 ## 依赖方向
@@ -19,7 +21,7 @@ flowchart TD
   BC --> S
 ```
 
-- 外观、调优、技能之间不互相引用；共用基础能力放在 `shared/`。
+- 外观、调优、技能、抖音之间不互相引用；共用基础能力放在 `shared/`。
 - `shared/` 不反向依赖功能和入口；功能实现不运行时引用入口，也不使用转发空壳维持旧内部路径。
 - 浏览器运行时依赖不得到达 `server/`、Node 内置模块或宿主适配；跨端只共享数据合同、纯规则和纯类型。
 - SDK 类型继续来自正式 npm 包；公共 SDK 缺失的宿主接口由本地窄接口描述。
@@ -179,6 +181,29 @@ HTTP 与 create_skill 必须使用同一个 commands 实例，不得分别创建
 post、打开目录和分类批量操作共用同一个 inflightRef。详情读取沿用原 busy 行为。
 不要把独立 hook 再聚合成覆盖全页行为的万能 manager。
 
+## 抖音
+
+详细的外部合同、旧目录映射、验收及切换过程见[迁移记录](douyin-migration.md)。
+
+| 职责 | 实现 |
+| --- | --- |
+| Host 装配 | [入口](../src/douyin/index.ts)只创建运行实例并注册工具、路由、配置桥和卸载回调；不包含业务流程。 |
+| Browser 装配 | [浏览器入口](../src/douyin/client/index.ts)注册设置及会话插槽、双语字典；[设置页](../src/douyin/client/Settings.tsx)组合七个页签。 |
+| 外部合同 | [contracts.ts](../src/douyin/contracts.ts)固定工具名、参数与插槽 ID；[config.ts](../src/douyin/config.ts)保留 74 个公开字段。 |
+| 运行与环境 | [runtime.ts](../src/douyin/server/runtime.ts)组合业务依赖并负责取消和排空；[paths.ts](../src/douyin/server/paths.ts)解析唯一数据根；[resources.ts](../src/douyin/server/resources.ts)部署受管资源。 |
+| 账号写动作 | [actions.ts](../src/douyin/server/actions.ts)负责跨进程锁；[action-policy.ts](../src/douyin/server/action-policy.ts)负责授权、额度与边界；[action-executor.ts](../src/douyin/server/action-executor.ts)负责平台调用、确认与未知结果；[ledger.ts](../src/douyin/server/ledger.ts)保留账本。 |
+| 平台与进程 | [python-runtime.ts](../src/douyin/server/python-runtime.ts)选择运行环境并串行切换；[mcp.ts](../src/douyin/server/mcp.ts)管理协议与子进程；[browser.ts](../src/douyin/server/browser.ts)编排登录。 |
+| 业务编排 | [content.ts](../src/douyin/server/content.ts)、[replies.ts](../src/douyin/server/replies.ts)、[dm.ts](../src/douyin/server/dm.ts)、[publication.ts](../src/douyin/server/publication.ts)、[social.ts](../src/douyin/server/social.ts)共用执行器，分别拥有采集、回复、私信、投稿和分享规则。 |
+| 自动轮次 | [local-round.ts](../src/douyin/server/local-round.ts)拥有本机轮次；[headless.ts](../src/douyin/server/headless.ts)拥有后台会话；[scheduler.ts](../src/douyin/server/scheduler.ts)只负责窗口、抖动、重试和串行调度。 |
+| 模型与图片 | [text-model.ts](../src/douyin/server/text-model.ts)适配官方 LLM；[image-fetch.ts](../src/douyin/server/image-fetch.ts)验证网络和图片；[image-access.ts](../src/douyin/server/image-access.ts)连接官方附件与固定视觉端点。 |
+| 导入 | [import-cli.ts](../src/douyin/import-cli.ts)独立启动；[import-plan.ts](../src/douyin/server/import-plan.ts)生成映射；[import-legacy.ts](../src/douyin/server/import-legacy.ts)负责校验、冲突与恢复。 |
+| HTTP 与工具 | [routes.ts](../src/douyin/server/routes.ts)处理请求认证及服务端资源凭据；[tools.ts](../src/douyin/server/tools.ts)处理官方工具合同和可信执行上下文；两者调用同一业务实例。 |
+
+浏览器配置草稿与请求状态归 [state.ts](../src/douyin/client/state.ts)，通用控件归
+[controls.tsx](../src/douyin/client/controls.tsx)，日常、维护、投稿和视频浏览各有独立组件。
+Python 与提示词只位于 [resources/douyin](../resources/douyin/)，不作为 TypeScript 依赖倒灌。
+后台子进程通过短期代理访问允许的业务工具，并通过独立守卫拒绝其他工具。
+
 ## 保持原行为的约定
 
 - 外观 save 在持久化完成前更新 saved/draft/live；保存失败吞掉并记录，reset 的持久化失败继续传播。
@@ -193,4 +218,5 @@ post、打开目录和分类批量操作共用同一个 inflightRef。详情读�
 
 `pnpm typecheck` 使用 noEmit 类型检查；`pnpm test` 覆盖功能、宿主合同、生命周期与架构边界。
 纯重构时先跑这些检查，并核对改动涉及的资源和异步时序。
-构建必须获得用户明确要求或批准；本轮没有执行构建，真实宿主视觉/HMR 和最终 bundle 不属于已验证结果。
+当前迁移按用户要求执行 `pnpm build` 及 `pnpm douyin:check-package`；
+实际发布物在仓库外临时目录装卸验证。真实宿主视觉/HMR 和账号操作不属于已验证结果。
