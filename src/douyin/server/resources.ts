@@ -1,5 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { existsSync, linkSync, lstatSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs'
+import { randomUUID } from 'node:crypto'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 import type { DouyinPaths } from './paths.js'
@@ -20,29 +21,48 @@ export function douyinResources(moduleUrl = import.meta.url) {
 export type DouyinResources = ReturnType<typeof douyinResources>
 const hash = (text: string) => createHash('sha256').update(text).digest('hex')
 
+/** Reject links below the configured runtime root, including existing sidecars. */
+function checkPath(root: string, target: string) {
+  let current = resolve(root)
+  for (const part of relative(current, resolve(target)).split(sep)) {
+    if (part === '..') throw new Error('资源路径超出运行目录')
+    if (!part) continue
+    current = join(current, part)
+    try { if (lstatSync(current).isSymbolicLink()) throw new Error('资源路径含符号链接') }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
+  }
+}
+function publish(target: string, text: string, exclusive = false) {
+  const temporary = `${target}.${randomUUID()}.tmp`
+  try {
+    writeFileSync(temporary, text, { flag: 'wx', mode: 0o600 })
+    if (exclusive) linkSync(temporary, target); else renameSync(temporary, target)
+  } finally { if (existsSync(temporary)) unlinkSync(temporary) }
+}
 /** Only known unmodified assets upgrade automatically; custom text gets a sidecar. */
-export function deployAsset(source: string, target: string, hashFile?: string): 'fresh' | 'same' | 'upgraded' | 'kept' {
+export function deployAsset(source: string, target: string, hashFile?: string, root = dirname(target)): 'fresh' | 'same' | 'upgraded' | 'kept' {
+  for (const file of [target, target + '.bak', target + '.new', ...(hashFile ? [hashFile] : [])]) checkPath(root, file)
   const incoming = readFileSync(source, 'utf8')
   mkdirSync(dirname(target), { recursive: true, mode: 0o700 })
   const previous = hashFile && existsSync(hashFile) ? readFileSync(hashFile, 'utf8').trim() : ''
   if (!existsSync(target)) {
-    writeFileSync(target, incoming, { flag: 'wx', mode: 0o600 })
-    if (hashFile) writeFileSync(hashFile, hash(incoming), { mode: 0o600 })
+    publish(target, incoming, true)
+    if (hashFile) publish(hashFile, hash(incoming))
     return 'fresh'
   }
   const existing = readFileSync(target, 'utf8')
   if (existing === incoming) {
-    if (hashFile) writeFileSync(hashFile, hash(incoming), { mode: 0o600 })
+    if (hashFile) publish(hashFile, hash(incoming))
     return 'same'
   }
   if (hashFile && hash(existing) === previous) {
-    writeFileSync(target + '.bak', existing, { mode: 0o600 })
-    writeFileSync(target, incoming, { mode: 0o600 })
-    writeFileSync(hashFile, hash(incoming), { mode: 0o600 })
+    publish(target + '.bak', existing)
+    publish(target, incoming)
+    publish(hashFile, hash(incoming))
     return 'upgraded'
   }
   if (!existsSync(target + '.new') || readFileSync(target + '.new', 'utf8') !== incoming) {
-    writeFileSync(target + '.new', incoming, { mode: 0o600 })
+    publish(target + '.new', incoming)
   }
   return 'kept'
 }
@@ -50,12 +70,13 @@ export function deployAsset(source: string, target: string, hashFile?: string): 
 export function prepareRuntime(paths: DouyinPaths, resources = douyinResources()) {
   for (const directory of [paths.cache, paths.runtime, paths.logs, paths.memory, paths.reports, dirname(paths.python),
     join(paths.root, 'state', 'legacy'), paths.prompts, paths.file('.tmp')]) {
+    checkPath(paths.root, directory)
     mkdirSync(directory, { recursive: true, mode: 0o700 })
   }
   const script = paths.file('mcp_server.py')
-  const deployed = deployAsset(resources.mcp, script, paths.file('mcp.sha256'))
-  deployAsset(resources.duty, paths.file('duty.md'), paths.file('charter.sha256'))
-  if (!existsSync(paths.file('persona.md'))) deployAsset(resources.persona, paths.file('persona.md'))
+  const deployed = deployAsset(resources.mcp, script, paths.file('mcp.sha256'), paths.root)
+  deployAsset(resources.duty, paths.file('duty.md'), paths.file('charter.sha256'), paths.root)
+  if (!existsSync(paths.file('persona.md'))) deployAsset(resources.persona, paths.file('persona.md'), undefined, paths.root)
   return {
     script, deployed,
     env(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {

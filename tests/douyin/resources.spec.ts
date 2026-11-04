@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -25,6 +25,21 @@ describe('packaged resources and explicit child environments', () => {
     deployAsset(resources.persona, owned, hash)
     expect(deployAsset(resources.duty, owned, hash)).toBe('upgraded')
     expect(readFileSync(owned + '.bak', 'utf8')).toBe(readFileSync(resources.persona, 'utf8'))
+  })
+  it('refuses linked runtime directories and deployment sidecars without touching their targets', () => {
+    for (const kind of ['directory', 'target', 'hash', 'backup', 'new']) {
+      const root = mkdtempSync(join(tmpdir(), 'douyin-resources-links-')), paths = douyinPaths(root)
+      const outside = join(root, 'outside'); mkdirSync(outside)
+      const external = join(outside, 'external'); writeFileSync(external, 'keep')
+      if (kind === 'directory') { symlinkSync(outside, paths.runtime); expect(() => prepareRuntime(paths)).toThrow('符号链接') }
+      else {
+        mkdirSync(paths.runtime)
+        const file = paths.file('mcp_server.py'), hash = paths.file('mcp.sha256')
+        symlinkSync(external, kind === 'target' ? file : kind === 'hash' ? hash : file + (kind === 'backup' ? '.bak' : '.new'))
+        expect(() => deployAsset(resources.mcp, file, hash, root)).toThrow('符号链接')
+      }
+      expect(readFileSync(external, 'utf8')).toBe('keep')
+    }
   })
   it('Python and Node resolve identical explicit and DSH fallback roots', () => {
     const root = mkdtempSync(join(tmpdir(), 'douyin-python-path-'))

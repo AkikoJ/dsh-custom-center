@@ -22,6 +22,12 @@ describe('独立导入命令与崩溃恢复', () => {
     recovered()
   })
 
+  it('不抢占不明的锁恢复过程', () => {
+    const root = mkdtempSync(join(tmpdir(), 'douyin-import-recovery-')), lock = join(root, '.lock')
+    writeFileSync(lock, JSON.stringify({ pid: process.pid })); mkdirSync(lock + '.recovery')
+    expect(() => acquireImportLock(lock)).toThrow('ambiguous')
+    expect(JSON.parse(readFileSync(lock, 'utf8')).pid).toBe(process.pid)
+  })
   it('恢复时拒绝被篡改的目标路径', () => {
     const root = mkdtempSync(join(tmpdir(), 'douyin-import-manifest-'))
     const source = join(root, 'old'), target = join(root, 'new')

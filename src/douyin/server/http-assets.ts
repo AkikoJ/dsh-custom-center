@@ -13,9 +13,11 @@ export function readOwned(root: string, file: string, maxBytes: number, tail = f
   let current = base
   for (const part of relative(base, target).split(sep)) { current = resolve(current, part); if (lstatSync(current).isSymbolicLink()) throw new Error('资源路径含符号链接') }
   if (!within(physical, realpathSync(target))) throw new Error('资源路径超出插件目录')
+  const expected = lstatSync(target), location = realpathSync(target)
   const descriptor = openSync(target, constants.O_RDONLY | constants.O_NOFOLLOW)
   try {
     const stat = fstatSync(descriptor)
+    if (stat.dev !== expected.dev || stat.ino !== expected.ino || realpathSync(target) !== location || !within(physical, location)) throw new Error('资源在打开期间发生变化')
     if (!stat.isFile()) throw new Error('资源不是普通文件')
     if (!tail && stat.size > maxBytes) throw new Error('资源超过大小限制')
     const size = Math.min(maxBytes, stat.size), data = Buffer.alloc(size)

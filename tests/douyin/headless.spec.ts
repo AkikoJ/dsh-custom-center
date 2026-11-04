@@ -81,6 +81,20 @@ describe('headless overlay and prompt', () => {
 })
 
 describe('headless lifecycle and controlled proxy', () => {
+  it('cancels active proxy operations before waiting for shutdown', async () => {
+    const f = fixture(); let signal: AbortSignal | undefined
+    f.call.mockImplementationOnce(() => new Promise((resolve) => {
+      signal = currentExecution().signal
+      signal!.addEventListener('abort', () => resolve({ ok: false, status: 'cancelled' }), { once: true })
+    }))
+    await f.headless.run('manual')
+    const pending = f.proxy().invoke('douyin_like', { aweme_id: '123456' })
+    await vi.waitFor(() => expect(signal).toBeDefined())
+    await f.headless.stop()
+    await pending
+    expect(signal!.aborted).toBe(true)
+    expect(f.headless.busy()).toBe(false)
+  })
   it('keeps single-flight ownership, awaits callbacks and removes proxy credentials on completion', async () => {
     const f = fixture('process.exit(0)')
     let release!: () => void

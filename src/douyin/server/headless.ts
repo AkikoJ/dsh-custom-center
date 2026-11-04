@@ -31,7 +31,7 @@ interface HeadlessDependencies {
   log?(message: string): void
 }
 interface Running {
-  runId: string; child?: ChildProcess; overlay?: string; proxy?: Awaited<ReturnType<typeof createActionProxy>>
+  runId: string; abort: AbortController; child?: ChildProcess; overlay?: string; proxy?: Awaited<ReturnType<typeof createActionProxy>>
   timer?: ReturnType<typeof setTimeout>; killTimer?: ReturnType<typeof setTimeout>
   finishing?: Promise<void>; closed?: Promise<void>; outcome: TaskOutcome; options: TaskOptions; claimed?: boolean
 }
@@ -48,6 +48,7 @@ export function createHeadless(deps: HeadlessDependencies) {
     run.outcome = { ...run.outcome, code, ...(error ? { error } : {}) }
     run.finishing = (async () => {
       clearTimeout(run.timer)
+      run.abort.abort(new Error(error || '后台任务已结束'))
       // Revoke the proxy first and wait for in-flight guarded operations before accepting a receipt.
       await run.proxy?.close()
       if (run.overlay) {
@@ -64,7 +65,7 @@ export function createHeadless(deps: HeadlessDependencies) {
     })().catch((finishError) => log('后台任务收尾失败：' + errorMessage(finishError))).finally(() => { if (active === run) active = undefined })
     return run.finishing
   }
-  const execute = (run: Running, name: string, args: ToolArgs) => withActionLock(paths.root, () => withExecution({ ...run.options.context, origin: 'headless', runId: run.runId, force: false }, async () => {
+  const execute = (run: Running, name: string, args: ToolArgs) => withActionLock(paths.root, () => withExecution({ ...run.options.context, signal: run.options.context?.signal ? AbortSignal.any([run.abort.signal, run.options.context.signal]) : run.abort.signal, origin: 'headless', runId: run.runId, force: false }, async () => {
     if (run.finishing || disposed) return { ok: false, blocked: true, error: '后台任务已结束' }
     const recipient = run.options.recipient
     if (recipient && ['douyin_chat_send', 'douyin_chat_sticker'].includes(name)) {
@@ -109,7 +110,7 @@ export function createHeadless(deps: HeadlessDependencies) {
   const run = async (reason = 'window', options: TaskOptions = {}): Promise<TaskStart> => {
     if (disposed) return { ok: false, started: false, error: '后台任务服务已卸载' }
     if (active) return { ok: false, started: false, runId: active.runId, error: '已有后台轮次在运行' }
-    const task: Running = { runId: randomUUID(), options, outcome: { code: 1 } }
+    const task: Running = { runId: randomUUID(), abort: new AbortController(), options, outcome: { code: 1 } }
     active = task
     try {
       const cfg = deps.config()
