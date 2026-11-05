@@ -3,7 +3,7 @@ import type { ToolDefinition, JsonSchemaNode } from '@deepseek-ai/dsh-tools'
 export const PLUGIN_ID = 'custom-center-douyin'
 export const CONVERSATION_VIEW_ID = 'custom-center-douyin-watched'
 export const API_PREFIX = '/api/custom-center/douyin'
-export const TABS = [['home', '首页'], ['daily', '日常'], ['pref', '刷视频'], ['like', '互动'], ['dm', '私信'], ['sticker', '表情包'], ['persona', '人设'], ['adv', '高级']] as const
+export const TABS = [['home', '首页'], ['dm', '私信'], ['daily', '日常'], ['pref', '刷视频'], ['like', '互动'], ['sticker', '表情包'], ['persona', '人设'], ['adv', '高级']] as const
 export type ToolContract = Pick<ToolDefinition, 'name' | 'description' | 'parameters'>
 const text = (description: string): JsonSchemaNode => ({ type: 'string', description })
 const number = (description: string): JsonSchemaNode => ({ type: 'number', description })
@@ -15,6 +15,7 @@ export const TOOL_CONTRACTS: readonly ToolContract[] = [
   contract('cc_dy_chrome_open', '打开个性化中心专用 Chrome；登录态与旧抖音插件独立。', { port: number('调试端口；默认使用 cdpPort 或 9223') }),
   contract('cc_dy_config', '查看或修改刷抖音设置，返回有效配置。', { patch: { type: 'object', additionalProperties: true, description: '要修改的公开配置字段；省略则只读' } }),
   contract('cc_dy_whoami', '查看抖音登录账号与登录状态。'),
+  contract('cc_dy_logout', '退出抖音登录并清除抖音浏览器会话。'),
   contract('cc_dy_login_start', '打开登录流程并返回二维码，扫码后用 cc_dy_login_poll 检查结果。遇到图形验证时在当前窗口完成。'),
   contract('cc_dy_login_poll', '检查扫码结果；need_sms 时接着调用 cc_dy_login_sms，保留当前二维码。'),
   contract('cc_dy_login_sms', '在扫码后的验证弹层依次请求短信验证码，随后用 cc_dy_login_sms_submit 提交。', { phone: text('本人确认的 11 位手机号；弹层已显示号码时省略') }),

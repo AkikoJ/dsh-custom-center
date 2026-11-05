@@ -99,6 +99,14 @@ export function createBrowser(deps: BrowserDependencies, state: RuntimeStateStor
     await deps.restart()
     return { ok: true, hint: show ? '浏览器窗口已打开，请在其中完成登录' : '已切回后台无头模式' }
   }
+  const logout = async () => {
+    const data = await result('douyin_logout')
+    if (existsSync(paths.file('.login-browser'))) {
+      rmSync(paths.file('.login-browser'), { force: true })
+      await deps.restart()
+    }
+    return data
+  }
   const whoami = () => result('douyin_check_credential')
   const account = async () => {
     const data = await whoami(), current = state.read()
@@ -107,7 +115,7 @@ export function createBrowser(deps: BrowserDependencies, state: RuntimeStateStor
       checkedAt: String(current.loginCheckedAt || ''), evidence: data.evidence, hint: data.hint, ...(data.error ? { error: data.error } : {}),
     }
   }
-  return { cdpBase, chrome, probe, running, open, markLogin, qr, visible, account,
+  return { cdpBase, chrome, probe, running, open, markLogin, qr, visible, logout, account,
     whoami, poll: () => result('douyin_login_poll'),
     sms: (phone: string) => result('douyin_login_sms', { phone }), submit: (code: string) => result('douyin_login_sms_submit', { code }),
   }

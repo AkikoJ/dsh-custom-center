@@ -8,12 +8,12 @@ const bounds: Record<string, [number, number, number]> = {
   sharePerDay: [0, 50, 0], pickPerRound: [1, 5, 1], watchSeconds: [15, 600, 90],
   watchFrames: [3, 48, 10], skipOverMin: [1, 600, 60], skimOverMin: [1, 120, 5],
   plainCommentPerDay: [0, 30, 0], dmAutoIntervalSec: [5, 120, 15],
-  dmReplyPerContact: [1, 10, 1], dmReplyPerDay: [0, 100, 0], streakPerDay: [0, 20, 0],
+  dmReplyPerContact: [0, Number.MAX_SAFE_INTEGER, 0], dmReplyPerDay: [0, Number.MAX_SAFE_INTEGER, 0], streakPerDay: [0, 20, 0],
   publishPerDay: [0, 20, 0], cdpPort: [1024, 65535, 9223],
 }
 const lengths: Record<string, number> = {
   personaPrompt: 4000, comfyWorkflow: 400000, myNickname: 40, shareNote: 80,
-  msgAllowTo: 200, dmReplyOnlyTo: 120, dmFastProvider: 40, dmFastModel: 120,
+  msgAllowTo: 200, dmReplyOnlyTo: 2000, dmFastProvider: 40, dmFastModel: 120,
   dmFastReasoning: 20, shareToNick: 40, streakNick: 40, publishTitle: 120,
   publishTags: 200, headlessModel: 80,
 }
@@ -29,7 +29,7 @@ export function normalizeConfig(source: unknown, base: DouyinConfig = DEFAULTS):
       if (Array.isArray(value)) out[key] = value.filter((item): item is string => typeof item === 'string')
     } else if (typeof initial === 'number') {
       const number = Number(value)
-      if (Number.isInteger(number) && number >= 0) out[key] = number
+      if (Number.isSafeInteger(number) && number >= 0) out[key] = number
     } else if (typeof value === typeof initial) out[key] = value as ConfigValue
   }
   return out as DouyinConfig
@@ -43,7 +43,7 @@ export function clampPatch(input: unknown): Partial<DouyinConfig> {
     if (!Object.hasOwn(DEFAULTS, key)) throw new Error(`未知配置字段：${key}`)
     const initial = DEFAULTS[key as keyof DouyinConfig]
     if (typeof initial === 'boolean' && typeof value !== 'boolean') throw new Error(`${key} 必须是布尔值`)
-    if (typeof initial === 'number' && (typeof value !== 'number' || !Number.isInteger(value) || value < 0)) throw new Error(`${key} 必须是非负整数`)
+    if (typeof initial === 'number' && (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0)) throw new Error(`${key} 必须是非负整数`)
     if (typeof initial === 'string' && typeof value !== 'string') throw new Error(`${key} 必须是字符串`)
     if (Array.isArray(initial) && (!Array.isArray(value) || value.some((item) => typeof item !== 'string'))) throw new Error(`${key} 必须是字符串数组`)
     if (bounds[key]) {

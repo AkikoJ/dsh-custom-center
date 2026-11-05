@@ -25,11 +25,12 @@ describe('抖音路径与配置', () => {
     expect(() => legacyRelativePath('/absolute')).toThrow()
   })
 
-  it('保留 73 个公共字段的默认值和 volatile 元信息', () => {
-    expect(Object.keys(Config.dict ?? {})).toEqual(baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name))
+  it('保留上游公共字段并增加显式无限额配置', () => {
+    expect(Object.keys(Config.dict ?? {}).sort()).toEqual([...baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name), 'dmReplyPerContactUnlimited', 'dmReplyPerDayUnlimited'].sort())
     for (const field of Object.values(Config.dict ?? {})) expect(field.meta?.volatile).toBe(true)
     expect(normalizeConfig({ autoLike: { value: true }, perDay: -1, keywords: ['猫', 2] }))
       .toMatchObject({ autoLike: false, perDay: 5, keywords: ['猫'] })
+    expect(clampPatch({ dmReplyPerContactUnlimited: true, dmReplyPerDayUnlimited: true, dmReplyPerContact: 0, dmReplyPerDay: 2000 })).toMatchObject({ dmReplyPerContactUnlimited: true, dmReplyPerDayUnlimited: true, dmReplyPerContact: 0, dmReplyPerDay: 2000 })
     expect(DEFAULTS.autoPublish).toBe(false)
     expect(DEFAULTS.publishDraft).toBe(true)
   })

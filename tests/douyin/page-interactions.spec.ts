@@ -7,6 +7,8 @@ vi.mock('react', async (original) => ({ ...await original<typeof import('react')
  useEffect(effect: () => void | (() => void)) { const dispose = effect(); if (dispose) harness.disposers.push(dispose) },
 }))
 vi.mock('../../src/douyin/client/state.js', () => ({ useResource: (path: string) => ({ data: harness.resources[path] ?? null, error: '', refresh: harness.refresh }), useActions: () => ({ busy: '', error: '', result: null, run: harness.run }) }))
+import { ContactTags, contactTags } from '../../src/douyin/client/DmSettings.js'
+import { Switch, DetailIcon } from '../../src/shared/form-controls.js'
 import { PersonaPanel } from '../../src/douyin/client/PersonaPanel.js'
 import { Daily } from '../../src/douyin/client/Daily.js'
 import { Home } from '../../src/douyin/client/Home.js'
@@ -21,6 +23,35 @@ function render<T>(component: () => T) { harness.cursor = 0; return component() 
 function button(tree: unknown, label: string) { const value = nodes(tree).find((node) => node.type === 'button' && text(node) === label); if (!value) throw new Error('Button missing: ' + label); return value.props! }
 beforeEach(() => { for (const dispose of harness.disposers.splice(0)) dispose(); harness.values = []; harness.cursor = 0; harness.resources = {}; harness.refresh.mockReset(); harness.run.mockReset() })
 describe('visible page interactions', () => {
+ it('adds recipient tags on Enter, ignores IME confirmation, deduplicates and removes a contact', () => {
+   let value = 'Friend', changed = vi.fn((next: string) => { value = next })
+   const view = () => ContactTags({ id: 'contacts', value, onChange: changed })
+   let tree = render(view)
+   nodes(tree).find((node) => node.type === 'input')!.props!.onChange({ target: { value: '中文昵称' } })
+   tree = render(view)
+   const enter = { key: 'Enter', nativeEvent: { isComposing: true }, preventDefault: vi.fn(), stopPropagation: vi.fn() }
+   nodes(tree).find((node) => node.type === 'input')!.props!.onKeyDown(enter)
+   expect(changed).not.toHaveBeenCalled()
+   enter.nativeEvent.isComposing = false
+   nodes(tree).find((node) => node.type === 'input')!.props!.onKeyDown(enter)
+   expect(value).toBe('Friend\n中文昵称'); expect(enter.preventDefault).toHaveBeenCalledOnce()
+   tree = render(view)
+   nodes(tree).find((node) => node.type === 'button' && node.props?.['aria-label'] === '删除联系人 Friend')!.props!.onClick()
+   expect(value).toBe('中文昵称')
+   expect(contactTags('Friend, friend，中文昵称\n中文昵称')).toEqual(['Friend', '中文昵称'])
+ })
+ it('exposes switch state and toggles explanatory details with Escape support', () => {
+   const onChange = vi.fn(), toggle = Switch({ checked: false, onChange, 'aria-label': '巡检' })
+   expect(toggle.props.role).toBe('switch'); expect(toggle.props['aria-checked']).toBe(false)
+   toggle.props.onClick(); expect(onChange).toHaveBeenCalledExactlyOnceWith(true)
+   const view = () => DetailIcon({ label: '说明', children: '说明正文' })
+   let tree = render(view), trigger = nodes(tree).find((node) => node.type === 'button')!
+   expect(trigger.props!['aria-expanded']).toBe(false)
+   trigger.props!.onClick(); tree = render(view)
+   expect(nodes(tree).find((node) => node.type === 'button')!.props!['aria-expanded']).toBe(true)
+   tree.props.onKeyDown({ key: 'Escape', stopPropagation: vi.fn() }); tree = render(view)
+   expect(nodes(tree).find((node) => node.props?.className === 'cc-detail-content')!.props!.hidden).toBe(true)
+ })
  it('loads and saves manual persona using only the independent persona API', async () => {
   harness.resources['/persona'] = { persona: '原始人设' }; harness.run.mockResolvedValue({ ok: true })
   render(PersonaPanel); let tree = render(PersonaPanel)
@@ -36,18 +67,18 @@ describe('visible page interactions', () => {
   harness.resources['/status'] = { doing: {} }
   harness.resources['/report/latest'] = { dates: ['2026-11-04', '2026-11-01'], report: { text: 'LATEST-REPORT' } }
   harness.resources['/report/latest?date=2026-11-01'] = { dates: ['2026-11-04', '2026-11-01'], report: { text: 'OLD-REPORT' } }
-  let tree = render(() => Daily({ dirty: false })); expect(text(tree)).not.toContain('LATEST-REPORT')
+  let tree = render(() => Daily({ dirty: false })); expect(text(tree)).not.toContain('LATEST-REPORT'); expect(text(tree)).not.toContain('连接与运行详情')
   button(tree, '查看日报').onClick(); tree = render(() => Daily({ dirty: false })); expect(text(tree)).toContain('LATEST-REPORT')
   const selector = nodes(tree).find((node) => node.type === 'select')!; expect(text(selector)).toContain('2026-11-01')
   selector.props!.onChange({ target: { value: '2026-11-01' } }); tree = render(() => Daily({ dirty: false }))
-  expect(text(tree)).toContain('OLD-REPORT'); expect(text(tree)).not.toContain('LATEST-REPORT')
+  expect(text(tree)).toContain('OLD-REPORT'); expect(text(tree)).not.toContain('LATEST-REPORT'); expect(text(tree)).not.toContain('连接与运行详情')
   button(tree, '收起日报').onClick(); expect(text(render(() => Daily({ dirty: false })))).not.toContain('OLD-REPORT')
  })
- it('uses GET for update checks and the saved default for manual runs; dirty configuration disables running', async () => {
+ it('keeps manual runs on the saved default and disables them while configuration is dirty', async () => {
   harness.resources['/status'] = {}; harness.run.mockResolvedValue({ ok: true })
   let tree = render(() => Daily({ dirty: true })); expect(button(tree, '立即刷一轮').disabled).toBe(true)
-  tree = render(() => Daily({ dirty: false })); await button(tree, '检查更新').onClick(); await Promise.resolve()
-  expect(harness.run).toHaveBeenLastCalledWith('/update/check', undefined)
+  tree = render(() => Daily({ dirty: false })); expect(text(tree)).not.toContain('连接与运行详情'); expect(nodes(tree).some((node) => node.type === 'button' && text(node) === '检查更新')).toBe(false)
+
   await button(tree, '立即刷一轮').onClick(); expect(harness.run).toHaveBeenLastCalledWith('/run', {})
  })
  it('shows the verified account name and online state on the homepage', () => {
@@ -55,7 +86,7 @@ describe('visible page interactions', () => {
   harness.resources['/account'] = { loggedIn: true, nickname: '真实昵称', hasAvatar: false }
   const tree = render(() => Home({ dirty: false, onConfigure: vi.fn() }))
   expect(text(tree)).toContain('真实昵称'); expect(text(tree)).toContain('在线'); expect(text(tree)).not.toContain('登录方式与验证')
-   expect(text(tree)).not.toContain('手机号'); expect(text(tree)).not.toContain('截图登录'); expect(text(tree)).not.toContain('关闭前台登录并切回后台'); expect(text(tree)).not.toContain('正在处理登录'); expect(text(tree)).not.toContain('执行中')
+   expect(text(tree)).not.toContain('手机号'); expect(text(tree)).not.toContain('截图登录'); expect(text(tree)).not.toContain('关闭前台登录并切回后台'); expect(text(tree)).not.toContain('正在处理登录'); expect(text(tree)).not.toContain('执行中'); expect(text(tree)).toContain('退出登录')
    expect(text(tree)).not.toContain('今日概况'); expect(text(tree)).not.toContain('立即刷一轮'); expect(text(tree)).not.toContain('查看日报'); expect(text(tree)).not.toContain('连接与运行详情'); expect(text(tree)).not.toContain('最近刷过的视频')
    expect(nodes(tree).filter((node) => node.type === AccountAvatar)).toHaveLength(1)
    expect(text(tree)).not.toContain('关闭登录窗口')
@@ -64,7 +95,7 @@ describe('visible page interactions', () => {
    harness.resources['/status'] = { loggedIn: false }
    harness.resources['/account'] = { loggedIn: false, nickname: '未登录账号', hasAvatar: false }
    const tree = render(() => Home({ dirty: false, onConfigure: vi.fn() }))
-   expect(text(tree)).toContain('登录方式与验证'); expect(text(tree)).toContain('手机号'); expect(text(tree)).toContain('浏览器登录')
+   expect(text(tree)).toContain('登录方式与验证'); expect(text(tree)).toContain('手机号'); expect(text(tree)).toContain('浏览器登录'); expect(text(tree)).not.toContain('退出登录')
   })
   it('renders only abnormal environment items with official downloads and hides a healthy result', () => {
   harness.resources['/environment'] = { ok: false, issues: [{ id: 'chrome', name: 'Chrome 浏览器与 MCP 连接', fix: '下载 Chrome', download: { label: '下载 Chrome', url: 'https://www.google.com/chrome/' } }] }

@@ -156,7 +156,7 @@ describe('shared account execution', () => {
   })
 
   it('authorizes incoming messages by trusted contact and message id with per-contact caps', async () => {
-    const f = fixture({ dmReply: true, dmReplyPerContact: 1, dmReplyPerDay: 10 })
+    const f = fixture({ dmReply: true, dmReplyOnlyTo: 'friend', dmReplyPerContact: 1, dmReplyPerDay: 10 })
     const args = { nickname: 'friend', text: '你好', inbound: true }
     expect((await f.executor.call('douyin_chat_send', args)).blocked).toBe(true)
     expect((await withExecution({ origin: 'timer', inbound: { contact: 'someone else', messageId: 'm1' } }, () => f.executor.call('douyin_chat_send', args))).blocked).toBe(true)
@@ -165,14 +165,48 @@ describe('shared account execution', () => {
     expect(f.ledger.read().dm.stable).toMatchObject({ count: 1, lastMessageId: 'm1', exempt: false })
   })
 
-  it('keeps allowlisted incoming contacts exempt without bypassing the reply switch', async () => {
-    const f = fixture({ msgAllowTo: 'friend', dmReplyPerContact: 0, dmReplyPerDay: 0 })
+  it('keeps reply recipients independent and applies quotas equally to outbound contacts', async () => {
+    const f = fixture({ msgAllowTo: 'friend', dmReplyOnlyTo: 'friend', dmReplyPerContact: 0, dmReplyPerDay: 0 })
     const send = (messageId: string) => withExecution({ origin: 'timer', inbound: { contact: 'friend', messageId } }, () => f.executor.call('douyin_chat_send', { nickname: 'friend', text: '你好' }))
     expect((await send('m1')).blocked).toBe(true)
     f.config.dmReply = true
+    expect((await send('m1')).blocked).toBe(true)
+    f.config.dmReplyPerDayUnlimited = true
+    expect((await send('m1')).blocked).toBe(true)
+    f.config.dmReplyPerContactUnlimited = true
     expect((await send('m1')).verified).toBe(true)
+    f.config.msgAllowTo = ''
     expect((await send('m2')).verified).toBe(true)
-    expect(f.ledger.read().dm.friend).toMatchObject({ count: 2, exempt: true })
+    expect(f.ledger.read().dm.friend).toMatchObject({ count: 2, exempt: false })
+    f.config.dmReplyOnlyTo = ''
+    expect((await send('m3')).blocked).toBe(true)
+    expect((await f.executor.call('douyin_chat_send', { nickname: 'friend', text: '主动消息' })).blocked).toBe(true)
+  })
+
+  it('enforces each finite quota independently and counts uncertain sends with normalized names', async () => {
+    const f = fixture({ dmReply: true, dmReplyOnlyTo: 'friend,other', dmReplyPerContact: 1, dmReplyPerDay: 1 }, async () => ({ ok: true, verified: false }))
+    const send = (name: string, messageId: string) => withExecution({ origin: 'timer', inbound: { contact: name, messageId } }, () => f.executor.call('douyin_chat_send', { nickname: name, text: '你好' }))
+    expect((await send('Friend', 'm1')).status).toBe('unknown')
+    f.config.dmReplyPerDayUnlimited = true
+    expect((await send(' friend ', 'm2')).blocked).toBe(true)
+    f.config.dmReplyPerDayUnlimited = false; f.config.dmReplyPerContactUnlimited = true
+    expect((await send('other', 'm3')).blocked).toBe(true)
+    f.config.dmReplyPerDayUnlimited = true
+    expect((await send('friend', 'm4')).status).toBe('unknown')
+    expect(f.invoke).toHaveBeenCalledTimes(2)
+  })
+
+  it('counts legacy exempt replies while excluding streak records from the daily reply quota', async () => {
+    const f = fixture({ dmReply: true, dmReplyOnlyTo: 'friend', dmReplyPerDay: 1, dmReplyPerContactUnlimited: true })
+    const data = f.ledger.read()
+    data.dm.friend = { day: f.ledger.day(), name: 'friend', exempt: true, count: 1 }
+    data.dm['streak:today'] = { day: f.ledger.day(), count: 20 }
+    f.ledger.write(data)
+    const send = () => withExecution({ origin: 'timer', inbound: { contact: 'friend', messageId: 'new' } }, () => f.executor.call('douyin_chat_send', { nickname: 'friend', text: '你好' }))
+    expect((await send()).blocked).toBe(true)
+    delete data.dm.friend; f.ledger.write(data)
+    expect((await send()).verified).toBe(true)
+    expect(f.invoke).toHaveBeenCalledOnce()
   })
 
   it('shares the comment round cap across mentioned and plain headless comments', async () => {

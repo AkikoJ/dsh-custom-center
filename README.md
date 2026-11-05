@@ -16,13 +16,15 @@ navigation (alongside General, Models, Plugins, ...).
 
 ## Douyin migration
 
+Reply contacts are independent of outbound contacts. Add a nickname with Enter and remove its tag with ×. An empty reply list disables automatic replies. Per-contact and total daily limits each have an explicit Unlimited switch; existing zero quotas retain their pause behavior. Fast reply provider, model and reasoning settings use dropdowns from the host model catalog. Messages is the second tab. It uses the shared themed selection-only dropdown and a single-border recipient tag input. Reusable switches and detail disclosures keep the message page compact.
+
 The eight Douyin settings tabs share a compact layout with underline navigation and
 small desktop controls. The first tab is **Home** and contains only the current account
-avatar, nickname, online state, browser/QR/SMS sign-in, and runtime setup issues. Healthy
+avatar, nickname, online state, browser/QR/SMS sign-in, sign-out, and runtime setup issues. Healthy
 environment checks stay hidden; missing Chrome, Python, FFmpeg, ComfyUI or the transcription
-model includes a download link. Daily statistics, runs, reports, connection details and
-watched videos are on **Daily**, not Home. The bundle provides 34 tools, 73 public config
-fields, 34 HTTP paths, eight settings tabs and conversation video view.
+model includes a download link. Daily statistics, runs, reports and
+watched videos are on **Daily**, not Home; connection and runtime details have been removed. The bundle provides 35 tools, 75 public config
+fields, 35 HTTP paths, eight settings tabs and conversation video view.
 Memory features have been removed at the user's request. The Persona tab edits a local,
 manual persona with backups; messages, comments and headless tasks use that persona
 and the role prompt. There are no shared-memory RPCs, memory database access,
@@ -40,7 +42,7 @@ It uses local substitutes and does not install a runtime profile.
 
 The old plugin can remain installed and run alongside Custom Center. The center uses
 Loader/settings ID `custom-center-douyin`, view `custom-center-douyin-watched`,
-34 `cc_dy_*` tools and `/api/custom-center/douyin`; its navigation label is
+35 `cc_dy_*` tools and `/api/custom-center/douyin`; its navigation label is
 **Douyin (Custom Center)**. Chrome uses a private profile and defaults to port `9223`.
 The old plugin keeps its own names. See the [coexistence guide](docs/douyin-coexistence.md)
 for upgrade details, imported CDP settings and independent automation limits.
@@ -92,12 +94,12 @@ Local feed rounds now persist selections before interacting, enforce quotas and 
 require transcript evidence, and stop at date changes or disposal. Verified cards precede
 notes and stickers. Window inspections, streaks, sticker labels and status checks are
 separate modules with bounded retries and awaited shutdown.
-The standalone `dsh-custom-center/douyin` host entry now assembles 34 tools and
-34 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
+The standalone `dsh-custom-center/douyin` host entry now assembles 35 tools and
+35 exact HTTP paths under its independent prefix and one lifecycle. Registration failures roll back, shutdown
 waits for active requests, and HTTP assets require authenticated loopback requests
 with the browser marker. Output selections carry host-issued file tokens; stale
 selections require a refresh. Upstream update checks are informational and preserve
-the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 73 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. The linked bundle is installed and enabled in this profile. Live GUI and real-account acceptance remain outstanding.
+the pinned source. The bundle now declares a dedicated Douyin host row; the center browser entry registers all seven tabs and the conversation video view. All 75 public fields have localized labels. The UI includes configuration drafts, sign-in, fixed-recipient tests, favorite tags and publication confirmation. The linked bundle is installed and enabled in this profile. Live GUI and real-account acceptance remain outstanding.
 
 ## Features
 

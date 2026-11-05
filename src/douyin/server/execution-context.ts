@@ -5,7 +5,7 @@ export interface ExecutionContext {
   runId?: string
   signal?: AbortSignal
   force?: boolean
-  inbound?: { contact: string; messageId: string; peerId?: string }
+  inbound?: { contact: string; messageId: string; peerId?: string; source?: 'watcher' }
   replyTarget?: { user: string; text: string }
   action?: 'streak'
   actionKey?: string

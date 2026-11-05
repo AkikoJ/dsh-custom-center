@@ -19,7 +19,7 @@ const roots: string[] = []
 afterEach(() => { vi.useRealTimers(); for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }) })
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'douyin-dm-')); roots.push(root)
-  const paths = douyinPaths(root), cfg = { ...DEFAULTS, msgAllowTo: 'Friend', dmReply: true, replyRandom: false }
+  const paths = douyinPaths(root), cfg = { ...DEFAULTS, msgAllowTo: '', dmReplyOnlyTo: 'Friend', dmReply: true, replyRandom: false }
   let date = new Date(2026, 10, 3, 12), rows: Record<string, unknown>[] = [{ messageId: 'm1', direction: 'inbound', text: '在吗', name: 'Friend', peerId: 'peer' }]
   let verified = true
   const ledger = createLedger(paths, () => date), history = createDmHistory(paths, () => date)
@@ -119,17 +119,17 @@ describe('direct-message reply orchestration', () => {
     await done({ code: 0, lastReply: { nickname: 'Friend', text: 'confirmed headless' } })
   })
   it('enforces contact and daily quotas for incoming strangers through the shared executor', async () => {
-    const f = fixture(); f.cfg.msgAllowTo = ''; f.cfg.dmReplyPerDay = 1
+    const f = fixture(); f.cfg.msgAllowTo = ''; f.cfg.dmReplyOnlyTo = 'Stranger,Other'; f.cfg.dmReplyPerDay = 1
     f.setRows([{ messageId: 's1', direction: 'inbound', preview: '你好', name: 'Stranger', peerId: 's' }, { messageId: 's2', direction: 'inbound', preview: '在吗', name: 'Other', peerId: 'o' }])
     expect(await f.dm.round()).toMatchObject({ replied: 1, usedToday: 1 })
     expect(await f.dm.round()).toMatchObject({ replied: 0 })
     expect(f.invoke.mock.calls.filter(([name]) => name === 'douyin_chat_send')).toHaveLength(1)
     expect(f.ledger.read().dm.s).toMatchObject({ lastMessageId: 's1', count: 1 })
   })
-  it('does no browser work with disabled automation or no whitelist intersection', async () => {
+  it('does no browser work with disabled automation or no reply contacts', async () => {
     const f = fixture(); f.cfg.dmAutoReply = false
     expect(await f.dm.poll()).toMatchObject({ skipped: expect.any(String) })
-    f.cfg.dmAutoReply = true; f.cfg.dmReplyOnlyTo = 'Other'
+    f.cfg.dmAutoReply = true; f.cfg.dmReplyOnlyTo = ''
     expect(await f.dm.poll()).toMatchObject({ replied: 0 })
     expect(f.invoke).not.toHaveBeenCalled()
   })
@@ -140,14 +140,14 @@ describe('direct-message event watcher', () => {
     const cfg = { ...DEFAULTS, msgAllowTo: '' }, call = vi.fn(async () => ({ ok: true, changed: false })), poll = vi.fn(async () => ({ ok: true }))
     const watcher = createDmWatcher({ config: () => cfg, call, poll, busy: () => false })
     expect(await watcher.tick()).toBe(10000); expect(call).not.toHaveBeenCalled()
-    cfg.msgAllowTo = 'Friend'
+    cfg.dmReplyOnlyTo = 'Friend'
     await watcher.tick(); expect(poll).toHaveBeenCalledTimes(1)
     expect(call).toHaveBeenLastCalledWith('douyin_dm_events', { wait_seconds: 0.01, acknowledge: true }, { timeoutMs: 45000 })
     await watcher.tick(); expect(poll).toHaveBeenCalledTimes(1)
     await watcher.dispose(); expect(watcher.state.connected).toBe(false)
   })
   it('retains dirty state while busy and retries failures with bounded backoff', async () => {
-    const cfg = { ...DEFAULTS, msgAllowTo: 'Friend', dmDuringHeadless: false }, poll = vi.fn(async () => ({ ok: false, error: 'offline' }))
+    const cfg = { ...DEFAULTS, msgAllowTo: '', dmReplyOnlyTo: 'Friend', dmDuringHeadless: false }, poll = vi.fn(async () => ({ ok: false, error: 'offline' }))
     let busy = true
     const watcher = createDmWatcher({ config: () => cfg, call: async () => ({ ok: true }), poll, busy: () => busy })
     expect(await watcher.tick()).toBe(1000); expect(poll).not.toHaveBeenCalled()

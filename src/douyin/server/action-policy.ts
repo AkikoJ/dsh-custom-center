@@ -15,6 +15,10 @@ export function allowInitiate(config: Pick<DouyinConfig, 'msgAllowTo'>, name: st
   const key = normalizeNickname(name)
   return !!key && config.msgAllowTo.split(/[,，、\r\n]+/).some((value) => normalizeNickname(value) === key)
 }
+export function allowReply(config: Pick<DouyinConfig, 'dmReplyOnlyTo'>, name: string): boolean {
+  const key = normalizeNickname(name)
+  return !!key && config.dmReplyOnlyTo.split(/[,，、\r\n]+/).some((value) => normalizeNickname(value) === key)
+}
 export interface ActionPlan {
   kind: ActionKind
   key: string
@@ -87,8 +91,8 @@ export async function planAction(name: string, supplied: ToolArgs, inputs: Polic
     const kind = context.action === 'streak' ? 'streak' : inbound ? 'dmReply' : 'message'
     Object.assign(plan, { kind, key: context.actionKey || (inbound ? `dm:${context.inbound!.messageId}:${peer}` : kind === 'streak' ? `streak:${ledger.day()}:${peer}` : `message:${randomUUID()}`) })
     if (inbound) {
-      plan.cap = allowInitiate(config, peer) ? Infinity : config.dmReplyPerDay
-      plan.used = Object.entries(ledger.read().dm).filter(([key, record]) => !key.startsWith('streak:') && record.day === ledger.day() && !record.exempt).reduce((total, [, record]) => total + Number(record.count || 0), 0)
+      plan.cap = config.dmReplyPerDayUnlimited ? Infinity : config.dmReplyPerDay
+      plan.used = Object.entries(ledger.read().dm).filter(([key, record]) => !key.startsWith('streak:') && record.day === ledger.day()).reduce((total, [, record]) => total + Number(record.count || 0), 0)
     } else if (kind === 'streak') {
       plan.cap = config.streakPerDay
       plan.used = Object.values(ledger.read().actions).filter((action) => action.kind === 'streak' && action.day === ledger.day() && action.status === 'succeeded').length
@@ -96,7 +100,7 @@ export async function planAction(name: string, supplied: ToolArgs, inputs: Polic
       plan.key = `headless-message:${ledger.day()}:${peer}:${createHash('sha256').update(JSON.stringify(args)).digest('hex')}`
       if (name === 'douyin_chat_sticker') plan.key += ':' + randomUUID()
     }
-    allowed = !!peer && (inbound ? config.dmReply : allowInitiate(config, peer))
+    allowed = !!peer && (inbound ? allowReply(config, peer) && (context.inbound?.source === 'watcher' ? config.dmAutoReply : config.dmReply) : allowInitiate(config, peer))
   }
   plan.args = args
   if (!force && (!allowed || plan.used >= plan.cap || plan.cap === 0)) plan.error = plan.used >= plan.cap ? '当日配额已用完' : '对应动作未授权'

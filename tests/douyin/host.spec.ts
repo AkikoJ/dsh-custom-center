@@ -78,10 +78,11 @@ describe('Douyin host contracts and lifecycle', () => {
     await runtime.dispose(); await task
     expect(signal!.aborted).toBe(true)
   })
-  it('matches all 34 tool names and parameter keys without starting Python', async () => {
+  it('matches the upstream tool names plus the explicit logout tool without starting Python', async () => {
     const { runtime, invoke } = fixture(), definitions = createToolDefinitions(runtime)
-    expect(definitions.map((d) => d.name)).toEqual(baseline.tools.filter((tool) => tool.name !== 'dy_remember').map((d) => `cc_${d.name}`))
-    for (const tool of definitions) {
+    expect(definitions.map((d) => d.name).filter((name) => name !== 'cc_dy_logout')).toEqual(baseline.tools.filter((tool) => tool.name !== 'dy_remember').map((d) => `cc_${d.name}`))
+    expect(definitions.find((d) => d.name === 'cc_dy_logout')?.parameters.properties).toEqual({})
+    for (const tool of definitions.filter((definition) => definition.name !== 'cc_dy_logout')) {
       const original = baseline.tools.find((d) => `cc_${d.name}` === tool.name)!
       expect(Object.keys(tool.parameters.properties ?? {}).sort()).toEqual(Object.keys(original.parameters.properties).sort())
       expect(tool.output).toBeDefined()
@@ -95,7 +96,7 @@ describe('Douyin host contracts and lifecycle', () => {
     expect(removed).toEqual(['cc_dy_config', 'cc_dy_chrome_open', 'cc_dy_status'])
     removed.length = 0
     const stop = registerTools({ register: (tool) => () => removed.push(tool.name) }, runtime)
-    stop(); stop(); expect(removed).toHaveLength(34); expect(removed[0]).toBe('cc_dy_selfcheck')
+    stop(); stop(); expect(removed).toHaveLength(35); expect(removed[0]).toBe('cc_dy_selfcheck')
   })
   it('derives tool authorization from execution context, strips payload force and adds configured mention', async () => {
     const { runtime, invoke } = fixture({ mentionName: 'owner' }), tools = createToolDefinitions(runtime)
@@ -129,9 +130,9 @@ describe('Douyin host contracts and lifecycle', () => {
 })
 
 describe('Douyin HTTP boundary', () => {
-  it('keeps all 34 exact paths with loopback, authentication and marker fences', async () => {
+  it('keeps all exact paths with loopback, authentication and marker fences', async () => {
     const { runtime, invoke } = fixture()
-    const additional = ['/account', '/account/avatar', '/environment'].map((path) => API_PREFIX + path)
+    const additional = ['/account', '/account/avatar', '/environment', '/login/logout'].map((path) => API_PREFIX + path)
     expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual([...baseline.routes.filter((path) => !path.endsWith('/memory')).map((path) => path.replace('/api/douyin-duty', API_PREFIX)), ...additional].sort())
     for (const [options, reject] of [[{ marker: false }, undefined], [{ remote: '10.0.0.2' }, undefined], [{}, 401]] as const) {
       const out = await http(runtime, '/config', 'GET', undefined, options, reject)

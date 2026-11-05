@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { DouyinConfig } from '../config.js'
 import { withActionLock, confirmed } from './actions.js'
-import { planAction, allowInitiate, WRITE_TOOLS, type ActionPlan, type ToolArgs } from './action-policy.js'
+import { planAction, normalizeNickname, WRITE_TOOLS, type ActionPlan, type ToolArgs } from './action-policy.js'
 import { safeReply } from './reply-text.js'
 import { currentExecution, type ExecutionContext } from './execution-context.js'
 import { object, type ActionRecord, type LedgerData } from './ledger-model.js'
@@ -45,7 +45,7 @@ function recordConfirmed(data: LedgerData, plan: ActionPlan, result: ToolResult,
   else if (plan.kind === 'dmReply') {
     const key = context.inbound?.peerId || plan.peer
     const previous = data.dm[key]
-    data.dm[key] = { ...stamp, name: plan.peer, count: (previous?.day === stamp.day ? Number(previous.count || 0) : 0) + 1, exempt: allowInitiate(config, plan.peer), lastMessageId: context.inbound?.messageId || '', lastReply: String(args.text || '') }
+    data.dm[key] = { ...stamp, name: plan.peer, count: (previous?.day === stamp.day ? Number(previous.count || 0) : 0) + 1, exempt: false, lastMessageId: context.inbound?.messageId || '', lastReply: String(args.text || '') }
   }
 }
 
@@ -77,10 +77,9 @@ export function createActionExecutor(deps: ExecutorDependencies) {
       const previous = data.actions[plan.key]
       if (previous && ['pending', 'unknown', 'succeeded'].includes(previous.status)) return { ok: false, already: true, status: previous.status, error: '该动作已经执行或待核对，禁止自动重发' }
       if (!force && plan.used + reservationCount(data, plan, ledger.day()) >= plan.cap) return { ok: false, blocked: true, error: '当日配额已用完或有待核对动作' }
-      if (plan.kind === 'dmReply' && !force && !allowInitiate(config, plan.peer)) {
-        const previous = data.dm[context.inbound?.peerId || plan.peer]
-        const used = previous?.day === ledger.day() ? Number(previous.count || 0) : 0
-        const reserved = Object.values(data.actions).filter((action) => action.kind === 'dmReply' && action.peer === plan.peer && action.day === ledger.day() && ['pending', 'unknown'].includes(action.status)).length
+      if (plan.kind === 'dmReply' && !force && !config.dmReplyPerContactUnlimited) {
+        const used = Object.entries(data.dm).filter(([key, row]) => !key.startsWith('streak:') && row.day === ledger.day() && (key === context.inbound?.peerId || normalizeNickname(row.name || key) === normalizeNickname(plan.peer))).reduce((sum, [, row]) => sum + Number(row.count || 0), 0)
+        const reserved = Object.values(data.actions).filter((action) => action.kind === 'dmReply' && normalizeNickname(action.peer) === normalizeNickname(plan.peer) && action.day === ledger.day() && ['pending', 'unknown'].includes(action.status)).length
         if (used + reserved >= config.dmReplyPerContact) return { ok: false, blocked: true, error: '这位联系人今天的回复额度已用完' }
       }
       if (context.origin === 'headless') {

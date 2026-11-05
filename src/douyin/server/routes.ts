@@ -18,7 +18,7 @@ import { openDirectory, ownedTail, thumbnail } from './http-assets.js'
 
 export const HTTP_METHODS: Readonly<Record<string, readonly string[]>> = {
   '/update/check': ['GET'], '/status': ['GET'], '/account': ['GET'], '/account/avatar': ['GET'], '/environment': ['GET'], '/thumb': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
-  '/config': ['GET', 'POST'], '/login/browser': ['POST'], '/login/browser/close': ['POST'], '/login/qr': ['POST'], '/login/poll': ['POST'], '/run': ['POST'], '/persona': ['GET', 'POST'], '/publish': ['POST'], '/dm/seen/clear': ['POST'], '/dm/test': ['POST'], '/stickers/tags': ['POST'], '/stickers/test': ['POST'], '/reply/round': ['POST'], '/login/sms': ['POST'], '/login/sms/submit': ['POST'], '/setup': ['POST'], '/selfcheck': ['POST'], '/chrome/open': ['POST'], '/log': ['POST'], '/open': ['POST'],
+  '/config': ['GET', 'POST'], '/login/browser': ['POST'], '/login/browser/close': ['POST'], '/login/logout': ['POST'], '/login/qr': ['POST'], '/login/poll': ['POST'], '/run': ['POST'], '/persona': ['GET', 'POST'], '/publish': ['POST'], '/dm/seen/clear': ['POST'], '/dm/test': ['POST'], '/stickers/tags': ['POST'], '/stickers/test': ['POST'], '/reply/round': ['POST'], '/login/sms': ['POST'], '/login/sms/submit': ['POST'], '/setup': ['POST'], '/selfcheck': ['POST'], '/chrome/open': ['POST'], '/log': ['POST'], '/open': ['POST'],
 }
 class HttpFailure extends Error { constructor(readonly status: number, message: string) { super(message) } }
 function json(res: ServerResponse, status: number, body: unknown) {
@@ -60,6 +60,7 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
     '/log/tail': () => ({ ok: true, tail: ownedTail(r.paths, 'duty.log'), log: r.paths.file('duty.log') }),
     '/login/browser': () => r.browser.visible(true),
     '/login/browser/close': () => r.browser.visible(false),
+    '/login/logout': () => r.browser.logout(),
     '/login/qr': r.browser.qr,
     '/login/poll': r.browser.poll,
     '/run': (data) => runManual(r.config(), data.mode, () => r.local.run({ manual: true }), () => r.headless.run('http')),

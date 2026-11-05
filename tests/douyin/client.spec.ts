@@ -10,16 +10,17 @@ import { ConfigFields } from '../../src/douyin/client/controls.js'
 import { groupVideos } from '../../src/douyin/client/WatchedVideos.js'
 import { platformUrl, request, imageUrl, accountAvatar } from '../../src/douyin/client/api.js'
 import { TABS } from '../../src/douyin/contracts.js'
+import { loadReplyModels } from '../../src/douyin/client/model-catalog.js'
 import { MARKER_HEADER } from '../../src/shared/request.js'
 
 afterEach(() => vi.unstubAllGlobals())
 describe('Douyin browser boundary and public UI contract', () => {
  it('covers every public setting once across eight tabs with balanced translations and labeled controls', () => {
-  expect(FIELDS.map((field) => field.key).sort()).toEqual(baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name).sort())
-  expect(new Set(FIELDS.map((field) => field.key)).size).toBe(73)
-  expect(TABS.map(([id]) => id)).toEqual(['home','daily','pref','like','dm','sticker','persona','adv'])
+  expect(FIELDS.map((field) => field.key).sort()).toEqual([...baseline.config.filter((field) => field.name !== 'memory').map((field) => field.name), 'dmReplyPerContactUnlimited', 'dmReplyPerDayUnlimited'].sort())
+  expect(new Set(FIELDS.map((field) => field.key)).size).toBe(75)
+  expect(TABS.map(([id]) => id)).toEqual(['home','dm','daily','pref','like','sticker','persona','adv'])
    expect(TABS[0][1]).toBe('首页')
-   expect(TABS[1][1]).toBe('日常')
+   expect(TABS[1][1]).toBe('私信')
   expect(Object.keys(dictionaries['en-US']).sort()).toEqual(Object.keys(dictionaries['zh-CN']).sort())
   for (const [tab] of TABS) {
    const markup = renderToStaticMarkup(createElement(ConfigFields, { tab, draft: {}, set: () => {} }))
@@ -60,6 +61,17 @@ describe('Douyin browser boundary and public UI contract', () => {
    const avatar = await accountAvatar(signal)
    expect(fetcher.mock.calls[1]).toEqual(['/api/custom-center/douyin/account/avatar', expect.objectContaining({ headers: { [MARKER_HEADER]: '1' }, signal })])
    URL.revokeObjectURL(avatar)
+ })
+ it('loads configured model choices through the protected same-origin catalog and rejects HTTP failures', async () => {
+   vi.stubGlobal('document', { baseURI: 'http://localhost/api/' })
+   const fetcher = vi.fn(async (_url: URL, _init: RequestInit) => Response.json({ models: [{ provider: 'p', model: 'm', name: 'Model' }, { model: 1 }], route: { provider: 'p', model: 'm' } }))
+   vi.stubGlobal('fetch', fetcher)
+   const signal = new AbortController().signal
+   expect(await loadReplyModels(signal)).toEqual({ models: [{ provider: 'p', model: 'm', name: 'Model' }], route: { provider: 'p', model: 'm' } })
+   expect(String(fetcher.mock.calls[0]![0])).toBe('http://localhost/api/custom-center/tuning')
+   expect(fetcher.mock.calls[0]![1]).toMatchObject({ credentials: 'same-origin', headers: { [MARKER_HEADER]: '1' }, signal })
+   vi.stubGlobal('fetch', vi.fn(async () => Response.json({ error: 'unavailable' }, { status: 503 })))
+   await expect(loadReplyModels(signal)).rejects.toThrow('unavailable')
  })
  it('orders dates and accepts only safe platform work links', () => {
   expect(groupVideos([{ day: '2026-01-01' }, { day: '2026-02-01' }, { day: '2026-01-01' }]).map(([day, list]) => [day, list.length])).toEqual([['2026-02-01',1],['2026-01-01',2]])

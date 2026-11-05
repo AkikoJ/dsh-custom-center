@@ -18,7 +18,7 @@ export function createDmWatcher(deps: WatchDependencies) {
   const check = async (): Promise<number> => {
     const cfg = deps.config()
     if (disposed) return 0
-    if (!cfg.dmAutoReply || !cfg.msgAllowTo.trim()) {
+    if (!cfg.dmAutoReply || !cfg.dmReplyOnlyTo.trim()) {
       if (state.connected) { try { await deps.call('douyin_dm_events', { stop: true }, { timeoutMs: 5000 }) } catch { /* Disconnected already. */ } }
       state.connected = false; dirty = true
       return 10000

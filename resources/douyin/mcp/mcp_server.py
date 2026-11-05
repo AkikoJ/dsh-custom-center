@@ -3018,6 +3018,26 @@ async def douyin_hot_videos(sentence_id: str = "", word: str = "", num: int = 10
 
 
 @restricted_tool()
+async def douyin_logout() -> str:
+    """退出抖音登录：清除抖音及创作者中心的浏览器 Cookie，不影响其它网站。"""
+    async def _impl():
+        ctx = await _browser.context()
+        cleared = []
+        cookies = await ctx.cookies(["https://www.douyin.com", "https://creator.douyin.com"])
+        targets = [cookie for cookie in cookies if str(cookie.get("domain") or "").lstrip(".").endswith("douyin.com")]
+        for cookie in targets:
+            await ctx.clear_cookies(name=str(cookie.get("name") or ""), domain=str(cookie.get("domain") or ""), path=str(cookie.get("path") or "/"))
+        cleared = sorted({str(cookie.get("domain") or "") for cookie in targets})
+        try:
+            QR_PNG.unlink(missing_ok=True)
+        except Exception as exc:  # noqa: BLE001
+            log(f"清理登录二维码失败：{type(exc).__name__}: {exc}")
+        return {"ok": True, "loggedIn": False, "cleared": cleared, "hint": "已退出抖音登录"}
+
+    return j(await _guard(_impl, 45))
+
+
+@restricted_tool()
 async def douyin_login_sms(phone: str = "") -> str:
     """扫码后的二次验证：先点「收验证码」，再点「获取验证码」。
 

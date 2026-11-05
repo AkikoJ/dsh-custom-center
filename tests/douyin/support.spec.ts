@@ -20,6 +20,7 @@ afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'douyin-support-')); roots.push(root)
   const paths = douyinPaths(root), state = createRuntimeState(paths)
+  writeJson(paths.state, { day: '', count: 0, picked: 0, windows: {} })
   return { root, paths, state }
 }
 
@@ -147,6 +148,19 @@ describe('login credential tool contract', () => {
     await browser.whoami()
     expect(invoke).toHaveBeenCalledWith('douyin_check_credential', {}, { timeoutMs: 90000 })
   })
+  it('clears the account state and foreground marker when logging out', async () => {
+    const f = fixture(); mkdirSync(join(f.paths.root, 'state'), { recursive: true }); writeFileSync(f.paths.file('.login-browser'), '1')
+    f.state.bump({ loggedIn: true, nickname: '账号昵称', avatarUrl: 'https://p3.douyinpic.com/avatar.jpeg', uid: 'account-id' })
+    const invoke = vi.fn(async (name: string) => name === 'douyin_logout' ? { ok: true, loggedIn: false } : { ok: true })
+    const restart = vi.fn(async () => {})
+    const browser = createBrowser({ paths: f.paths, config: () => DEFAULTS, persist: async () => {}, invoke, restart, env: () => ({}) }, f.state)
+    expect(await browser.logout()).toMatchObject({ ok: true, loggedIn: false })
+    expect(invoke).toHaveBeenCalledWith('douyin_logout', {}, { timeoutMs: 90000 })
+    expect(f.state.read()).toMatchObject({ loggedIn: false, nickname: '', avatarUrl: '', uid: '' })
+    expect(existsSync(f.paths.file('.login-browser'))).toBe(false)
+    expect(restart).toHaveBeenCalledTimes(1)
+  })
+
   it('persists the verified account identity without exposing its CDN address to the page', async () => {
     const f = fixture(), invoke = vi.fn(async (): Promise<Record<string, unknown>> => ({ ok: true, loggedIn: true, nickname: '  账号昵称  ', avatarUrl: 'https://p3.douyinpic.com/avatar.jpeg', uid: 'account-id' }))
     const browser = createBrowser({ paths: f.paths, config: () => DEFAULTS, persist: async () => {}, invoke, restart: async () => {}, env: () => ({}) }, f.state)
@@ -156,6 +170,7 @@ describe('login credential tool contract', () => {
     invoke.mockResolvedValueOnce({ ok: true, loggedIn: false })
     expect(await browser.account()).toMatchObject({ loggedIn: false, nickname: '', hasAvatar: false })
   })
+
 })
 
 describe('incoming message identity and context', () => {

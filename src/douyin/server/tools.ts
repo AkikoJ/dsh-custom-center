@@ -13,6 +13,7 @@ export function toolHandlers(runtime: DouyinRuntime) {
     cc_dy_chrome_open: (a) => r.browser.open(Number(a.port) || undefined),
     cc_dy_config: async (a) => a.patch === undefined ? { ok: true, config: r.config() } : { ok: true, ...await r.configuration.persist(a.patch), config: r.config() },
     cc_dy_whoami: r.browser.whoami,
+    cc_dy_logout: r.browser.logout,
     cc_dy_login_start: r.browser.qr,
     cc_dy_login_poll: r.browser.poll,
     cc_dy_login_sms: (a) => r.browser.sms(String(a.phone || '')),
