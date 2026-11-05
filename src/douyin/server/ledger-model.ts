@@ -1,5 +1,5 @@
 export type ActionStatus = 'pending' | 'unknown' | 'succeeded' | 'failed'
-export type ActionKind = 'like' | 'comment' | 'plain' | 'reply' | 'share' | 'publish' | 'dmReply' | 'streak' | 'message'
+export type ActionKind = 'like' | 'comment' | 'plain' | 'reply' | 'share' | 'publish' | 'dmReply' | 'dmSticker' | 'streak' | 'message'
 export interface DatedRecord {
   day?: string
   at?: string

@@ -16,15 +16,24 @@ navigation (alongside General, Models, Plugins, ...).
 
 ## Douyin migration
 
+The global sidebar includes a read-only Douyin messages panel, grouped by contact. It reads up to 120 daily log files (each retains at most 300 records), not the full platform inbox. New fast replies retain the actual text request, provider, model and image count; ordinary replies retain the initial task prompt and tool status, not the agent's complete system context. URLs in saved prompts are hidden. Earlier records without prompts are marked accordingly. These local logs contain private conversation and persona data; protect the local data directory.
+
+Inbound replies may include one sticker after the text has a confirmed send receipt. The sticker has its own stable action key, does not consume another text-reply allowance or overwrite the last reply, and is not automatically resent after a confirmed or unknown outcome.
+
 Reply contacts are independent of outbound contacts. Add a nickname with Enter and remove its tag with ×. An empty reply list disables automatic replies. Per-contact and total daily limits each have an explicit Unlimited switch; existing zero quotas retain their pause behavior. Fast reply provider, model and reasoning settings use dropdowns from the host model catalog. Messages is the second tab. It uses the shared themed selection-only dropdown and a single-border recipient tag input. Reusable switches and detail disclosures keep the message page compact.
 
 The eight Douyin settings tabs share a compact layout with underline navigation and
-small desktop controls. The first tab is **Home** and contains only the current account
-avatar, nickname, online state, browser/QR/SMS sign-in, sign-out, and runtime setup issues. Healthy
-environment checks stay hidden; missing Chrome, Python, FFmpeg, ComfyUI or the transcription
-model includes a download link. Daily statistics, runs, reports and
-watched videos are on **Daily**, not Home; connection and runtime details have been removed. The bundle provides 35 tools, 75 public config
-fields, 35 HTTP paths, eight settings tabs and conversation video view.
+small desktop controls. **Home** shows the account avatar, nickname, online state,
+browser/QR/SMS sign-in, sign-out, and a compact automatic-message-reply status with
+conversation and message-settings shortcuts. Disabled, missing contacts, connecting,
+healthy and failed states are distinguished. Only runtime setup issues are shown;
+missing Chrome, Python, FFmpeg, ComfyUI or the transcription model includes a download
+link. **Messages** contains reply configuration only; chat records are viewed in the
+sidebar's Douyin messages panel. **Advanced** keeps message testing and cursor
+maintenance collapsed by default. The old daily-message list and recent-reply list
+have been removed from settings; local history and deduplication data are retained.
+Daily statistics, runs, reports and watched videos remain on **Daily**. The bundle provides 35 tools, 75 public config
+fields, 36 HTTP paths, eight settings tabs and conversation video view.
 Memory features have been removed at the user's request. The Persona tab edits a local,
 manual persona with backups; messages, comments and headless tasks use that persona
 and the role prompt. There are no shared-memory RPCs, memory database access,

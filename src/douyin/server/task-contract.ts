@@ -5,6 +5,7 @@ export interface TaskOutcome {
   error?: string
   lastReply?: { nickname: string; text: string }
   dmSendUnknown?: boolean
+  tools?: { name: string; status: string }[]
 }
 export interface TaskOptions {
   prompt?: string

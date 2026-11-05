@@ -81,6 +81,10 @@ export function createHeadless(deps: HeadlessDependencies) {
     let result: unknown
     try { result = await deps.call(name, args, { timeoutMs: name === 'douyin_watch' ? 900000 : 300000 }) }
     catch (error) { if (name === 'douyin_chat_send') run.outcome.dmSendUnknown = true; throw error }
+    if (run.options.recipient) {
+      const tools = run.outcome.tools ??= []
+      if (tools.length < 50) tools.push({ name, status: object(result) && result.ok === false ? '失败' : '已返回' })
+    }
     if (name === 'douyin_chat_send') {
       if (confirmed(result)) run.outcome.lastReply = { nickname: String(args.nickname || ''), text: String(args.text || '').slice(0, 300) }
       else if (object(result) && (result.ok || ['unknown', 'partial'].includes(String(result.status)))) run.outcome.dmSendUnknown = true

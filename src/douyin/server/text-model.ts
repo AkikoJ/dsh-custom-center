@@ -50,6 +50,7 @@ export function createTextModel(deps: {
         for (const effort of [...new Set(efforts)]) {
           signal.throwIfAborted()
           const request: GenerateOptions = { provider, model, system: String(system).slice(0, 16000), messages: [{ role: 'user', content: [...images, { type: 'text', text: baseText + note }] }], maxTokens: Math.max(1, Math.min(options.maxTokens ?? 80, 512)), temperature: 0.9, signal, ...(effort ? { reasoningEffort: ReasoningEffortId(effort) } : {}) }
+          options.onRequest?.({ system: String(system).slice(0, 16000), user: baseText + note, provider, model, images: images.length })
           try {
             return await untilAbort((async () => {
               let output = '', complete = false

@@ -11,6 +11,8 @@ import { ContactTags, contactTags } from '../../src/douyin/client/DmSettings.js'
 import { Switch, DetailIcon } from '../../src/shared/form-controls.js'
 import { PersonaPanel } from '../../src/douyin/client/PersonaPanel.js'
 import { Daily } from '../../src/douyin/client/Daily.js'
+import { DmStatus } from '../../src/douyin/client/DmStatus.js'
+import { MessageMaintenance } from '../../src/douyin/client/Panels.js'
 import { Home } from '../../src/douyin/client/Home.js'
 import { AccountAvatar } from '../../src/douyin/client/AccountAvatar.js'
 import { Publication } from '../../src/douyin/client/Publication.js'
@@ -80,6 +82,33 @@ describe('visible page interactions', () => {
   tree = render(() => Daily({ dirty: false })); expect(text(tree)).not.toContain('连接与运行详情'); expect(nodes(tree).some((node) => node.type === 'button' && text(node) === '检查更新')).toBe(false)
 
   await button(tree, '立即刷一轮').onClick(); expect(harness.run).toHaveBeenLastCalledWith('/run', {})
+ })
+ it.each([
+  [false, 'friend', { connected: true }, '已关闭'],
+  [true, '', { connected: true }, '未配置回复联系人'],
+  [true, 'friend', { connected: false }, '监听连接中'],
+  [true, 'friend', { connected: true }, '运行正常'],
+  [true, 'friend', { connected: true, error: 'listener failed' }, '连接异常'],
+ ])('reports message readiness for enabled=%s and contacts=%s', (dmAutoReply, dmReplyOnlyTo, watcher, label) => {
+  const configure = vi.fn(), open = vi.fn()
+  const tree = render(() => DmStatus({ data: { dmAutoReply, dmReplyOnlyTo, watcher }, refresh: harness.refresh, onConfigure: configure, onOpenMessages: open }))
+  expect(text(tree)).toContain(label)
+  if (label !== '运行正常') expect(text(tree)).not.toContain('运行正常')
+  button(tree, '配置私信').onClick(); expect(configure).toHaveBeenCalledOnce()
+  button(tree, '查看对话').onClick(); expect(open).toHaveBeenCalledOnce()
+  button(tree, '刷新').onClick(); expect(harness.refresh).toHaveBeenCalledOnce()
+ })
+ it('keeps message maintenance collapsed and prevents testing unsaved contact settings', () => {
+  let tree = render(() => MessageMaintenance({ dirty: true }))
+  expect(nodes(tree).find((node) => node.type === 'details')!.props!.open).toBeUndefined()
+  nodes(tree).find((node) => node.type === 'input')!.props!.onChange({ target: { value: '测试' } })
+  tree = render(() => MessageMaintenance({ dirty: true }))
+  expect(button(tree, '测试私信').disabled).toBe(true)
+  expect(harness.run).not.toHaveBeenCalled()
+  tree = render(() => MessageMaintenance({ dirty: false }))
+  expect(button(tree, '测试私信').disabled).toBe(false)
+  button(tree, '测试私信').onClick()
+  expect(harness.run).toHaveBeenCalledExactlyOnceWith('/dm/test', { text: '测试' })
  })
  it('shows the verified account name and online state on the homepage', () => {
   harness.resources['/status'] = { loggedIn: true, doing: {} }

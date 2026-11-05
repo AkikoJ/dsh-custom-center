@@ -17,7 +17,7 @@ import { createImageFetcher } from './image-fetch.js'
 import { openDirectory, ownedTail, thumbnail } from './http-assets.js'
 
 export const HTTP_METHODS: Readonly<Record<string, readonly string[]>> = {
-  '/update/check': ['GET'], '/status': ['GET'], '/account': ['GET'], '/account/avatar': ['GET'], '/environment': ['GET'], '/thumb': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
+  '/update/check': ['GET'], '/dm/history': ['GET'], '/status': ['GET'], '/account': ['GET'], '/account/avatar': ['GET'], '/environment': ['GET'], '/thumb': ['GET'], '/watched': ['GET'], '/cover': ['GET'], '/comfy/list': ['GET'], '/dm': ['GET'], '/stickers': ['GET'], '/report/latest': ['GET'], '/setup/log': ['GET'], '/log/tail': ['GET'],
   '/config': ['GET', 'POST'], '/login/browser': ['POST'], '/login/browser/close': ['POST'], '/login/logout': ['POST'], '/login/qr': ['POST'], '/login/poll': ['POST'], '/run': ['POST'], '/persona': ['GET', 'POST'], '/publish': ['POST'], '/dm/seen/clear': ['POST'], '/dm/test': ['POST'], '/stickers/tags': ['POST'], '/stickers/test': ['POST'], '/reply/round': ['POST'], '/login/sms': ['POST'], '/login/sms/submit': ['POST'], '/setup': ['POST'], '/selfcheck': ['POST'], '/chrome/open': ['POST'], '/log': ['POST'], '/open': ['POST'],
 }
 class HttpFailure extends Error { constructor(readonly status: number, message: string) { super(message) } }
@@ -54,6 +54,7 @@ export function createDouyinRoutes(options: { runtime: DouyinRuntime; reject(req
     '/watched': (_data, query) => r.reports.watched(Number(query.get('days')) || 14),
     '/comfy/list': (_data, query) => { const list = r.comfy.list(Number(query.get('limit')) || undefined); return { ok: true, ...list, items: list.items.map((file) => ({ ...file, token: videoToken(file) })) } },
     '/dm': () => ({ ...r.dm.status(), watcher: r.watcher.state }),
+    '/dm/history': r.dm.conversationHistory,
     '/stickers': r.stickers.list,
     '/report/latest': (_data, query) => ({ ok: true, report: r.reports.read(query.get('date') || undefined), dates: r.reports.dates() }),
     '/setup/log': () => ({ ok: true, ...r.setup.state(), tail: ownedTail(r.paths, 'setup.log') }),

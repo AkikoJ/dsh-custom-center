@@ -6,8 +6,9 @@ import { Card, Feedback, Result } from './controls.js'
 import { useText } from './messages.js'
 import { AccountAvatar } from './AccountAvatar.js'
 import { Environment } from './Environment.js'
+import { DmStatus } from './DmStatus.js'
 
-export function Home({ dirty, onConfigure }: { dirty: boolean; onConfigure(): void }) {
+export function Home({ dirty, onConfigure, onConfigureMessages, onOpenMessages }: { dirty: boolean; onConfigure(): void; onConfigureMessages?: () => void; onOpenMessages?: () => void }) {
  const t = useText(), status = useResource('/status'), account = useResource('/account'), action = useActions(), [phone, setPhone] = useState(''), [code, setCode] = useState(''), id = useId()
  const data = status.data || {}, savedAccount = record(data.account)
  const [qr, setQr] = useState(''), [loginStatus, setLoginStatus] = useState(''), [loginResult, setLoginResult] = useState<Data | null>(null), [loginBusy, setLoginBusy] = useState(false), polling = useRef<(() => void) | undefined>(undefined), alive = useRef(true)
@@ -49,5 +50,6 @@ export function Home({ dirty, onConfigure }: { dirty: boolean; onConfigure(): vo
   </details>}
   {!online && loginStatus && <p role="status">{t(loginStatus)}</p>}{!online && safeQr && <img src={qr} className="dy-qr" alt={t('登录二维码')} />}
   {!online && <Feedback busy={loginBusy ? action.busy : ''} error={status.error || account.error} />}{!online && <Result value={loginResult} />}
+  <DmStatus data={status.data ? record(record(data.doing).replyTimer) : undefined} error={status.error} refresh={status.refresh} onConfigure={onConfigureMessages || onConfigure} onOpenMessages={onOpenMessages} />
  </Card><Environment dirty={dirty} onConfigure={onConfigure} /></>
 }

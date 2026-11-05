@@ -132,7 +132,7 @@ describe('Douyin host contracts and lifecycle', () => {
 describe('Douyin HTTP boundary', () => {
   it('keeps all exact paths with loopback, authentication and marker fences', async () => {
     const { runtime, invoke } = fixture()
-    const additional = ['/account', '/account/avatar', '/environment', '/login/logout'].map((path) => API_PREFIX + path)
+    const additional = ['/account', '/account/avatar', '/environment', '/login/logout', '/dm/history'].map((path) => API_PREFIX + path)
     expect(Object.keys(HTTP_METHODS).map((p) => API_PREFIX + p).sort()).toEqual([...baseline.routes.filter((path) => !path.endsWith('/memory')).map((path) => path.replace('/api/douyin-duty', API_PREFIX)), ...additional].sort())
     for (const [options, reject] of [[{ marker: false }, undefined], [{ remote: '10.0.0.2' }, undefined], [{}, 401]] as const) {
       const out = await http(runtime, '/config', 'GET', undefined, options, reject)

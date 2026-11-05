@@ -12,7 +12,7 @@ import { normalizeDmMessage } from './dm-messages.js'
 import { pickReply, safeReply, sensitiveComment, shortReply } from './reply-text.js'
 import { errorMessage } from './storage.js'
 
-export type GenerateText = (system: string, user: string, options?: { maxTokens?: number; images?: string[]; vision?: boolean }) => Promise<string>
+export type GenerateText = (system: string, user: string, options?: { maxTokens?: number; images?: string[]; vision?: boolean; onRequest?: (request: { system: string; user: string; provider: string; model: string; images: number }) => void }) => Promise<string>
 interface ReplyDependencies {
   config(): DouyinConfig
   ledger: Ledger

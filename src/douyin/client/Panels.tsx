@@ -1,18 +1,16 @@
 import { DetailIcon } from '../../shared/form-controls.js'
 import { useId, useState } from 'react'
-import { record, rows, type Data } from './api.js'
+import { rows, type Data } from './api.js'
 import { useResource, useActions } from './state.js'
 import { Card, Feedback, Result } from './controls.js'
 import { useText } from './messages.js'
-export function Messages({ dirty = false }: { dirty?: boolean }) {
- const t = useText(), state = useResource('/dm'), action = useActions(), [text, setText] = useState(''), id = useId()
- return <Card title="私信巡检状态" aside={<button type="button" onClick={state.refresh}>{t('刷新')}</button>}>
-  <div className="dy-dm-status"><span>{t('事件监听')} · {String(record(state.data?.watcher).error || (record(state.data?.watcher).connected ? t('已连接') : t('待连接或已关闭')))}</span><DetailIcon label={t('事件监听') + t('说明')}>{t('每 120 秒补漏；旧秒数配置不控制监听频率')}</DetailIcon></div>
-  <Feedback error={action.error || state.error} busy={action.busy} />
-  <h3>{t('今天的聊天记录')}</h3><div className="dy-dm-log">{rows(state.data?.log).length ? rows(state.data?.log).slice().reverse().map((item, index) => <article key={index}><strong>{String(item.name || '')}</strong> · {item.at ? new Date(Number(item.at)).toLocaleTimeString() : '—'}<p>{t('对方')}：{String(item.text || '')}</p><p>{t('我')}：{item.replied ? String(item.replyText || t('已确认回复，正文未记录')) : t('尚未确认回复')}</p></article>) : <p>{t('今天还没有私信记录')}</p>}</div>
-  <details className="dy-details"><summary>{t('最近回过的')}</summary>{rows(state.data?.recent).map((item) => <p key={String(item.peer)}>{String(item.name || item.peer)} · {String(item.day || '')} · {String(item.count || 0)} {t('次')} · {String(item.lastReply || '')}</p>)}</details>
-  <details className="dy-details"><summary>{t('测试与维护')}</summary><div className="dy-field-label"><label htmlFor={id}>{t('测试正文')}</label><DetailIcon label={t('测试私信') + t('说明')}>{t('发送给主动私信名单首位联系人')}</DetailIcon></div><input id={id} value={text} onChange={(event) => setText(event.target.value)} maxLength={100} />
-  <div className="dy-toolbar"><button disabled={!!action.busy || dirty || !text.trim()} onClick={async () => { if (await action.run('/dm/test', { text })) state.refresh() }}>{t('测试私信')}</button><button disabled={!!action.busy} onClick={async () => { if (await action.run('/dm/seen/clear', {})) state.refresh() }}>{t('清除已读索引')}</button><DetailIcon label={t('清除已读索引') + t('说明')}>{t('清除已读索引会重新扫描消息，永久发送去重仍保留。')}</DetailIcon></div>{dirty && <p role="status">{t('测试前请保存联系人配置')}</p>}</details><Result value={action.result} /></Card>
+export function MessageMaintenance({ dirty = false }: { dirty?: boolean }) {
+ const t = useText(), action = useActions(), [text, setText] = useState(''), id = useId()
+ return <details className="dy-details"><summary>{t('私信测试与维护')}</summary>
+  <div className="dy-field-label"><label htmlFor={id}>{t('测试正文')}</label><DetailIcon label={t('测试私信') + t('说明')}>{t('发送给主动私信名单首位联系人')}</DetailIcon></div><input id={id} value={text} onChange={(event) => setText(event.target.value)} maxLength={100} />
+  <div className="dy-toolbar"><button disabled={!!action.busy || dirty || !text.trim()} onClick={() => void action.run('/dm/test', { text })}>{t('测试私信')}</button><button disabled={!!action.busy} onClick={() => void action.run('/dm/seen/clear', {})}>{t('清除已读索引')}</button><DetailIcon label={t('清除已读索引') + t('说明')}>{t('清除已读索引会重新扫描消息，永久发送去重仍保留。')}</DetailIcon></div>{dirty && <p role="status">{t('测试前请保存联系人配置')}</p>}
+  <Feedback error={action.error} busy={action.busy} /><Result value={action.result} />
+ </details>
 }
 function Sticker({ item, file, save, disabled }: { item: Data; file: string; save(data: Data): Promise<Data | null>; disabled: boolean }) {
  const t = useText(), [tags, setTags] = useState(Array.isArray(item.tags) ? item.tags.join(', ') : ''), id = useId()
@@ -27,5 +25,5 @@ export function Stickers({ dirty = false }: { dirty?: boolean }) {
 export { PersonaPanel as Persona } from './PersonaPanel.js'
 export function Advanced({ dirty }: { dirty: boolean }) {
  const t = useText(), action = useActions()
- return <Card title="高级"><div className="dy-toolbar"><button disabled={!!action.busy} onClick={() => void action.run('/log/tail')}>{t('查看运行日志')}</button><button disabled={!!action.busy} onClick={() => void action.run('/update/check')}>{t('检查上游版本')}</button><button disabled={!!action.busy} onClick={() => void action.run('/open', { what: 'home' })}>{t('打开数据目录')}</button><button disabled={!!action.busy || dirty} onClick={() => void action.run('/run', { mode: 'headless' })}>{t('后台轮次')}</button></div><Feedback busy={action.busy} error={action.error} /><Result value={action.result} /></Card>
+ return <Card title="高级"><div className="dy-toolbar"><button disabled={!!action.busy} onClick={() => void action.run('/log/tail')}>{t('查看运行日志')}</button><button disabled={!!action.busy} onClick={() => void action.run('/update/check')}>{t('检查上游版本')}</button><button disabled={!!action.busy} onClick={() => void action.run('/open', { what: 'home' })}>{t('打开数据目录')}</button><button disabled={!!action.busy || dirty} onClick={() => void action.run('/run', { mode: 'headless' })}>{t('后台轮次')}</button></div><Feedback busy={action.busy} error={action.error} /><Result value={action.result} /><MessageMaintenance dirty={dirty} /></Card>
 }

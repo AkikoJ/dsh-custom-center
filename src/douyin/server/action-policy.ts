@@ -88,11 +88,16 @@ export async function planAction(name: string, supplied: ToolArgs, inputs: Polic
     allowed = !!aid && allowInitiate(config, peer)
   } else {
     const inbound = !!context.inbound?.messageId && normalizeNickname(context.inbound.contact) === normalizeNickname(peer)
-    const kind = context.action === 'streak' ? 'streak' : inbound ? 'dmReply' : 'message'
-    Object.assign(plan, { kind, key: context.actionKey || (inbound ? `dm:${context.inbound!.messageId}:${peer}` : kind === 'streak' ? `streak:${ledger.day()}:${peer}` : `message:${randomUUID()}`) })
+    const kind = context.action === 'streak' ? 'streak' : inbound ? name === 'douyin_chat_sticker' ? 'dmSticker' : 'dmReply' : 'message'
+    const baseKey = context.actionKey || (inbound ? `dm:${context.inbound!.messageId}:${peer}` : kind === 'streak' ? `streak:${ledger.day()}:${peer}` : `message:${randomUUID()}`)
+    Object.assign(plan, { kind, key: name === 'douyin_chat_sticker' && inbound ? `${baseKey}:sticker` : baseKey })
+    if (kind === 'dmSticker') {
+      const textAction = ledger.read().actions[baseKey]
+      if (textAction?.status !== 'succeeded' || textAction.tool !== 'douyin_chat_send' || normalizeNickname(textAction.peer) !== normalizeNickname(peer)) return { ...plan, error: '先确认文字回复，再补表情包' }
+    }
     if (inbound) {
-      plan.cap = config.dmReplyPerDayUnlimited ? Infinity : config.dmReplyPerDay
-      plan.used = Object.entries(ledger.read().dm).filter(([key, record]) => !key.startsWith('streak:') && record.day === ledger.day()).reduce((total, [, record]) => total + Number(record.count || 0), 0)
+      plan.cap = kind === 'dmSticker' || config.dmReplyPerDayUnlimited ? Infinity : config.dmReplyPerDay
+      plan.used = kind === 'dmSticker' ? 0 : Object.entries(ledger.read().dm).filter(([key, record]) => !key.startsWith('streak:') && record.day === ledger.day()).reduce((total, [, record]) => total + Number(record.count || 0), 0)
     } else if (kind === 'streak') {
       plan.cap = config.streakPerDay
       plan.used = Object.values(ledger.read().actions).filter((action) => action.kind === 'streak' && action.day === ledger.day() && action.status === 'succeeded').length

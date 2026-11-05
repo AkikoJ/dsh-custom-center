@@ -165,6 +165,30 @@ describe('shared account execution', () => {
     expect(f.ledger.read().dm.stable).toMatchObject({ count: 1, lastMessageId: 'm1', exempt: false })
   })
 
+  it('keeps inbound sticker actions separate from the confirmed text reply', async () => {
+    const f = fixture({ dmReply: true, dmReplyOnlyTo: 'friend', dmReplyPerContact: 1, dmReplyPerDay: 1 })
+    const context = { origin: 'headless' as const, actionKey: 'message:captured-inbound', inbound: { contact: 'friend', messageId: 'm1' } }
+    const sticker = (keyword = '大肥鱼') => withExecution(context, () => f.executor.call('douyin_chat_sticker', { nickname: 'friend', keyword, pick: 0 }))
+    expect(await sticker()).toMatchObject({ blocked: true })
+    expect(f.invoke).not.toHaveBeenCalled()
+    expect((await withExecution(context, () => f.executor.call('douyin_chat_send', { nickname: 'friend', text: '你好' }))).verified).toBe(true)
+    expect((await sticker()).verified).toBe(true)
+    expect(f.invoke).toHaveBeenCalledTimes(2)
+    expect(f.ledger.read().actions['message:captured-inbound:sticker']).toMatchObject({ kind: 'dmSticker', status: 'succeeded' })
+    expect(f.ledger.read().dm.friend).toMatchObject({ count: 1, lastReply: '你好' })
+    expect((await sticker('换一个标签')).already).toBe(true)
+    expect(f.invoke).toHaveBeenCalledTimes(2)
+  })
+  it('does not resend an inbound sticker with an unknown receipt', async () => {
+    const f = fixture({ dmReply: true, dmReplyOnlyTo: 'friend', dmReplyPerContact: 1, dmReplyPerDay: 1 }, async (name) => name === 'douyin_chat_send' ? { ok: true, verified: true } : { ok: false, status: 'unknown' })
+    const context = { origin: 'headless' as const, actionKey: 'message:unknown-sticker', inbound: { contact: 'friend', messageId: 'm1' } }
+    await withExecution(context, () => f.executor.call('douyin_chat_send', { nickname: 'friend', text: '你好' }))
+    expect(await withExecution(context, () => f.executor.call('douyin_chat_sticker', { nickname: 'friend', keyword: '大肥鱼' }))).toMatchObject({ status: 'unknown' })
+    expect(await withExecution(context, () => f.executor.call('douyin_chat_sticker', { nickname: 'friend', keyword: '其他标签' }))).toMatchObject({ already: true, status: 'unknown' })
+    expect(f.invoke).toHaveBeenCalledTimes(2)
+    expect(f.ledger.read().dm.friend).toMatchObject({ count: 1, lastReply: '你好' })
+  })
+
   it('keeps reply recipients independent and applies quotas equally to outbound contacts', async () => {
     const f = fixture({ msgAllowTo: 'friend', dmReplyOnlyTo: 'friend', dmReplyPerContact: 0, dmReplyPerDay: 0 })
     const send = (messageId: string) => withExecution({ origin: 'timer', inbound: { contact: 'friend', messageId } }, () => f.executor.call('douyin_chat_send', { nickname: 'friend', text: '你好' }))

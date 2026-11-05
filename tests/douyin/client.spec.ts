@@ -32,10 +32,10 @@ describe('Douyin browser boundary and public UI contract', () => {
   expect(inject).not.toContain('connection')
    const ctx = new Context(), entries: string[] = [], disposed: string[] = [], locales: string[] = []
    const active = new Set([baseline.settingsId, baseline.conversationViewId])
-  ctx.provide('slots', { inject: (_key: string, run: () => () => void) => run(), register: (entry: { id: string }) => { if (active.has(entry.id)) throw new Error('duplicate slot: ' + entry.id); active.add(entry.id); entries.push(entry.id); return () => { active.delete(entry.id); disposed.push(entry.id) } } })
+  ctx.provide('slots', { inject: (_key: string, run: () => () => void) => run(), register: (entry: { id?: string; key?: string; name: string }) => { const id = entry.name + ':' + (entry.id || entry.key); if (active.has(id)) throw new Error('duplicate slot: ' + id); active.add(id); entries.push(id); return () => { active.delete(id); disposed.push(id) } } })
   ctx.provide('locale', { bind: () => (key: string) => key, register: (_ns: string, locale: string) => { locales.push(locale); return () => { locales.splice(locales.indexOf(locale), 1) } } })
   apply(ctx)
-  expect(entries).toEqual(['custom-center-douyin', 'custom-center-douyin-watched']); expect(locales).toEqual(['zh-CN','en-US'])
+  expect(entries).toEqual(['settings.section:custom-center-douyin', 'conversation.view:custom-center-douyin-watched', 'sidebar.panellist:dsh-custom-center-douyin-messages', 'main:dsh-custom-center-douyin-messages']); expect(locales).toEqual(['zh-CN','en-US'])
   await ctx.fiber.dispose(); expect(disposed.sort()).toEqual(entries.sort()); expect(locales).toEqual([])
    expect([...active]).toEqual([baseline.settingsId, baseline.conversationViewId])
  })

@@ -31,8 +31,13 @@ export const CSS = controlCss + `
 .dy-page .dsh-cc-select-list{max-width:100%;width:100%}
 .dy-model-toggle{display:flex;align-items:center;gap:8px}
 .dy-model-toggle .cc-detail-content{left:auto;right:0}
-.dy-dm-log{max-height:340px;overflow:auto}
-.dy-dm-status{display:flex;align-items:center;gap:4px;color:var(--dsw-alias-label-secondary);font-size:12px}
+.dy-dm-status{border-top:1px solid var(--dsw-alias-border-l1);padding-top:12px;margin-top:12px}
+.dy-dm-status-row,.dy-dm-status-label,.dy-dm-status-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dy-dm-status-row{justify-content:space-between;gap:8px 16px}
+.dy-dm-status-label{min-width:0;font-size:12px;color:var(--dsw-alias-label-secondary)}
+.dy-dm-status-actions{gap:4px}
+.dy-page .dy-dm-status-actions button{min-height:30px;padding:4px 8px;font-size:12px;border-color:transparent;background:transparent}
+.dy-page .dy-dm-status-actions button:hover{background:var(--dsw-alias-interactive-bg-hover)}
 @container(max-width:700px){.dy-dm-grid{grid-template-columns:1fr;column-gap:0}}
 
 .dy-page{color:var(--dsw-alias-label-primary);font-family:inherit;font-size:13px;line-height:1.5;max-width:960px;width:100%;min-width:0;margin:0 auto;padding:20px;box-sizing:border-box;overflow-wrap:anywhere;container-type:inline-size}

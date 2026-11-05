@@ -29,7 +29,7 @@ function fixture() {
     return { ok: true }
   })
   const executor = createActionExecutor({ config: () => cfg, ledger, history: createReplyHistory(paths, ledger), invoke, ownedVideoIds: async () => [] })
-  const generate = vi.fn(async (_system: string, _user: string) => '在呢[憨笑]'), run = vi.fn(async (_reason: string, _options?: TaskOptions) => ({ ok: true, started: true }))
+  const generate = vi.fn<import('../../src/douyin/server/replies.js').GenerateText>(async (_system, _user) => '在呢[憨笑]'), run = vi.fn(async (_reason: string, _options?: TaskOptions) => ({ ok: true, started: true }))
   const persona = createPersona(paths)
   const dm = createDm({ config: () => cfg, ledger, history, persona, reports: createReports(paths, ledger), call: executor.call, generate, run, busy: () => false })
   return { root, paths, cfg, ledger, history, invoke, executor, generate, run, persona, dm, setRows: (value: typeof rows) => { rows = value }, setVerified: (value: boolean) => { verified = value }, setDate: (value: Date) => { date = value } }
@@ -85,6 +85,19 @@ describe('direct-message reply orchestration', () => {
     expect(await f.dm.poll()).toMatchObject({ replied: 0 })
     expect(f.invoke.mock.calls.filter(([name]) => name === 'douyin_chat_send')).toHaveLength(1)
   })
+  it('records actual fast requests while hiding attachment URLs', async () => {
+    const f = fixture()
+    f.generate.mockImplementationOnce(async (system, user, options) => {
+      options?.onRequest?.({ system, user: user + ' https://example.com/image?secret=token', provider: 'provider', model: 'model', images: 1 })
+      return '在呢[憨笑]'
+    })
+    await f.dm.poll()
+    const detail = f.history.read()[0].details?.[0]
+    expect(detail).toMatchObject({ mode: 'fast', provider: 'provider', model: 'model', images: 1 })
+    expect(detail?.user).toContain('[附件链接已隐藏]')
+    expect(detail?.user).not.toContain('secret=token')
+    expect(f.dm.conversationHistory().items).toHaveLength(1)
+  })
   it('holds uncertain sends across restarts instead of retrying or recording successful memory', async () => {
     const f = fixture(); f.setVerified(false)
     expect(await f.dm.poll()).toMatchObject({ ok: false, replied: 0 })
@@ -113,8 +126,8 @@ describe('direct-message reply orchestration', () => {
     const f = fixture(); f.cfg.dmFastReply = false; f.persona.save('HEADLESS-PERSONA')
     await f.dm.poll(); const done = f.run.mock.calls[0][1]!.onFinish!
     expect(f.run.mock.calls[0][1]!.prompt).toContain('HEADLESS-PERSONA')
-    await done({ code: 0, lastReply: { nickname: 'Friend', text: 'confirmed headless' } })
-    expect(f.history.read()[0].replied).toBe(true)
+    await done({ code: 0, lastReply: { nickname: 'Friend', text: 'confirmed headless' }, tools: [{ name: 'douyin_chat_send', status: '已返回' }] })
+    expect(f.history.read()[0]).toMatchObject({ replied: true, details: [{ mode: 'headless', user: expect.stringContaining('HEADLESS-PERSONA'), tools: [{ name: 'douyin_chat_send', status: '已返回' }] }] })
     expect(f.invoke.mock.calls.some(([name]) => name.startsWith('memory_'))).toBe(false)
     await done({ code: 0, lastReply: { nickname: 'Friend', text: 'confirmed headless' } })
   })

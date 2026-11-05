@@ -4,7 +4,7 @@ import { useConfiguration, useActions } from './state.js'
 import { ConfigFields, Card, Feedback, Result } from './controls.js'
 import { Daily } from './Daily.js'
 import { Home } from './Home.js'
-import { Messages, Stickers, Persona, Advanced } from './Panels.js'
+import { Stickers, Persona, Advanced } from './Panels.js'
 import { Publication } from './Publication.js'
 import { WatchedVideos } from './WatchedVideos.js'
 import { useText } from './messages.js'
@@ -13,7 +13,7 @@ import { CONTROL_CSS } from '../../shared/form-controls.js'
 import { CSS } from './styles.js'
 import { FIELDS, type Tab } from './fields.js'
 import { record } from './api.js'
-export function Settings() {
+export function Settings({ onOpenMessages }: { onOpenMessages?: () => void }) {
  const t = useText(), [tab, setTab] = useState<Tab>('home'), config = useConfiguration(), action = useActions(), id = useId()
  const navigate = (event: KeyboardEvent<HTMLDivElement>) => {
   const at = TABS.findIndex(([key]) => key === tab), next = event.key === 'ArrowRight' ? (at + 1) % TABS.length : event.key === 'ArrowLeft' ? (at + TABS.length - 1) % TABS.length : event.key === 'Home' ? 0 : event.key === 'End' ? TABS.length - 1 : -1
@@ -27,10 +27,10 @@ export function Settings() {
  {config.data && <>
  <div className="dy-tabs" role="tablist" aria-label={t('刷抖音')} onKeyDown={navigate}>{TABS.map(([key, label]) => <button key={key} id={id + key} role="tab" aria-selected={key === tab} aria-controls={id + 'panel'} tabIndex={key === tab ? 0 : -1} onClick={() => setTab(key)}>{t(label)}</button>)}</div>
  <section id={id + 'panel'} role="tabpanel" aria-labelledby={id + tab} tabIndex={0}>
- {tab === 'home' && <Home dirty={config.dirty} onConfigure={() => setTab('adv')} />}
+ {tab === 'home' && <Home dirty={config.dirty} onConfigure={() => setTab('adv')} onConfigureMessages={() => setTab('dm')} onOpenMessages={onOpenMessages} />}
   {tab === 'daily' && <Daily dirty={config.dirty} />}
  {tab !== 'home' && tab !== 'sticker' && tab !== 'dm' && <Card title={TABS.find(([key]) => key === tab)![1]}><ConfigFields tab={tab} draft={config.draft} set={config.set} /></Card>}
- {tab === 'dm' && <DmSettings draft={config.draft} set={config.set} />}{tab === 'daily' && <WatchedVideos collapsible />}{tab === 'dm' && <Messages dirty={config.dirty} />}{tab === 'sticker' && <Stickers dirty={config.dirty} />}{tab === 'persona' && <Persona />}{tab === 'adv' && <Advanced dirty={config.dirty} />}
+ {tab === 'dm' && <DmSettings draft={config.draft} set={config.set} />}{tab === 'daily' && <WatchedVideos collapsible />}{tab === 'sticker' && <Stickers dirty={config.dirty} />}{tab === 'persona' && <Persona />}{tab === 'adv' && <Advanced dirty={config.dirty} />}
  {tab === 'like' && <><Card title="互动"><button disabled={!!action.busy || invalid} onClick={() => void action.run('/reply/round', { count: config.draft.replyPerRun })}>{t('立即回复评论')}</button><Feedback error={action.error} busy={action.busy} /><Result value={action.result} /></Card><Publication draft={config.draft} dirty={config.dirty} /></>}
  </section></>}
  </div>
